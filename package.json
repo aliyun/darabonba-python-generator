@@ -1,0 +1,31 @@
+{
+  "name": "@darabonba/python-generator",
+  "version": "1.0.0",
+  "description": "The darabonba generator for Python",
+  "main": "src/generator.js",
+  "directories": {
+    "src": "src"
+  },
+  "scripts": {
+    "lint": "eslint --fix src/",
+    "test": "mocha --reporter spec --timeout 3000 tests/*.tests.js",
+    "test-cov": "nyc -r=lcov -r=html -r=text -r=json mocha -t 3000 -R spec tests/*.tests.js",
+    "ci": "npm run lint && npm run test-cov && codecov"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:aliyun/darabonba-python-generator.git"
+  },
+  "devDependencies": {
+    "eslint": "^5.12.0",
+    "mocha": "^6.2.2",
+    "codecov": "^3.1.0",
+    "nyc": "^14.1.1"
+  },
+  "author": "Alibaba Cloud OpenAPI Team",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@darabonba/parser": "^1",
+    "enum": "^2.5.0"
+  }
+}

@@ -1,6 +1,6 @@
-English | [简体中文](/README-CN.md)
+[English](/README.md) | 简体中文
 
-# Darabonba Python Generator
+# Darabonba Python 生成器
 
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
@@ -19,15 +19,15 @@ English | [简体中文](/README-CN.md)
 [download-image]: https://img.shields.io/npm/dm/@darabonba/python-generator.svg?style=flat-square
 [download-url]: https://npmjs.org/package/@darabonba/python-generator
 
-## Installation
+## 安装
 
-Darabonba Code Generator was designed to work in Node.js. The preferred way to install the Generator is to use the [NPM](https://www.npmjs.com/) package manager. Simply type the following into a terminal window:
+Darabonba 生成器只能在 Node.js 环境下运行。建议使用 [NPM](https://www.npmjs.com/) 包管理工具安装。在终端输入以下命令进行安装:
 
 ```bash
 npm install @darabonba/python-generator
 ```
 
-## Usage
+## 使用说明
 
 ```javascript
 'use strict';
@@ -39,34 +39,33 @@ const Generator = require('@darabonba/python-generator');
 const DSL = require('@darabonba/parser');
 
 const modulePath = '<module path>';
-const moduleOutputDir = '<output dir path>';
+const outputDir = '<output dir path>';
 
 const teaFile = fs.readFileSync(path.join(modulePath, 'teaFile'), 'utf8');
 const main = fs.readFileSync(path.join(modulePath, 'main.tea'), 'utf8');
 
 const pkgInfo = JSON.parse(teaFile);
 const config = {
-    outputDir: moduleOutputDir,
+    outputDir: outputDir,
     pkgDir: modulePath,
     ...pkgInfo
   };
-// generate AST data by parser
+
 const ast = DSL.parse(main, path.join(modulePath, 'main.tea'));
-// initialize generator
 const generator = new Generator(config, 'python');
 
 generator.visit(ast);
 ```
 
-## Issues
+## 问题
 
-[Opening an Issue](https://github.com/aliyun/darabonba-python-generator/issues/new), Issues not conforming to the guidelines may be closed immediately.
+[Opening an Issue](https://github.com/aliyun/darabonba-python-generator/issues/new)，不符合指南的问题可能会立即关闭。
 
-## Changelog
+## 发布日志
 
-Detailed changes for each release are documented in the [release notes](/ChangeLog.md).
+发布详情会更新在 [release notes](/ChangeLog.md) 文件中
 
-## License
+## 许可证
 
 [Apache-2.0](/LICENSE)
 Copyright (c) 2009-present, Alibaba Cloud All rights reserved.
