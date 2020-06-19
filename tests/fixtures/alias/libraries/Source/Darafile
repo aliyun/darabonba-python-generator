@@ -2,7 +2,7 @@
   "scope": "alibabacloud",
   "name": "source",
   "version": "0.0.1",
-  "main": "./source.tea",
+  "main": "./source.dara",
   "php": {
     "package": "Source",
     "clientName": "Client",

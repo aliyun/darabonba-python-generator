@@ -2,7 +2,7 @@
   "scope": "alibabacloud",
   "name": "import",
   "version": "0.0.1",
-  "main": "./import.tea",
+  "main": "./import.dara",
   "java": {
     "package": "com.import",
     "baseClient": "com.import.baseclient.BaseClient"
@@ -26,6 +26,6 @@
     "clientName": "SourceClient"
   },
   "releases": {
-    "ts": "@scope/module:*"
+    "ts": "@scope/name:*"
   }
 }

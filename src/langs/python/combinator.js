@@ -50,7 +50,7 @@ class Combinator extends CombinatorBase {
     this.thirdPackageClient = {};
     this.clientMap = {};
 
-    // Teafile: name (Tea Package name)
+    // Darafile: name (Tea Package name)
     this.config.package = this.config.package.split('.').map(item => item.toLowerCase()).join('_');
     if (this.config.emitType === 'model' && this.config.modelDirName) {
       if (this.config.layer.indexOf('.') > -1) {
@@ -76,16 +76,24 @@ class Combinator extends CombinatorBase {
       ast.imports.forEach(item => {
         const aliasId = item.lexeme;
         const moduleDir = this.config.libraries[aliasId];
-        const targetPath = path.join(this.config.pkgDir, lock[moduleDir]);
-        const teaFilePath = path.join(targetPath, 'Teafile');
-        const teaFile = JSON.parse(fs.readFileSync(teaFilePath));
-        if (!teaFile.python) {
+        let targetPath = '';
+        if (moduleDir.startsWith('./') || moduleDir.startsWith('../')) {
+          targetPath = path.join(this.config.pkgDir, moduleDir);
+        } else if (moduleDir.startsWith('/')) {
+          targetPath = moduleDir;
+        } else {
+          targetPath = path.join(this.config.pkgDir, lock[moduleDir]);
+        }
+        const daraFilePath = path.join(targetPath, 'Darafile');
+        const cfgFilePath = fs.existsSync(daraFilePath)?daraFilePath:path.join(targetPath, 'Teafile');
+        const daraFile = JSON.parse(fs.readFileSync(cfgFilePath));
+        if (!daraFile.python) {
           debug.stack(`The '${aliasId}' has no python supported.`);
         }
-        this.thirdPackageNamespace[aliasId] = teaFile.python.package;
-        this.thirdPackageClient[aliasId] = teaFile.python.clientName || 'client';
-        if (teaFile.releases && teaFile.releases.python) {
-          this.requirePackage.push(teaFile.releases.python);
+        this.thirdPackageNamespace[aliasId] = daraFile.python.package;
+        this.thirdPackageClient[aliasId] = daraFile.python.clientName || 'client';
+        if (daraFile.releases && daraFile.releases.python) {
+          this.requirePackage.push(daraFile.releases.python);
         }
       });
     }

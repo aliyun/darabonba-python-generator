@@ -41,8 +41,8 @@ const DSL = require('@darabonba/parser');
 const modulePath = '<module path>';
 const moduleOutputDir = '<output dir path>';
 
-const teaFile = fs.readFileSync(path.join(modulePath, 'teaFile'), 'utf8');
-const main = fs.readFileSync(path.join(modulePath, 'main.tea'), 'utf8');
+const teaFile = fs.readFileSync(path.join(modulePath, 'Darafile'), 'utf8');
+const main = fs.readFileSync(path.join(modulePath, 'main.dara'), 'utf8');
 
 const pkgInfo = JSON.parse(teaFile);
 const config = {
@@ -51,7 +51,7 @@ const config = {
     ...pkgInfo
   };
 // generate AST data by parser
-const ast = DSL.parse(main, path.join(modulePath, 'main.tea'));
+const ast = DSL.parse(main, path.join(modulePath, 'main.dara'));
 // initialize generator
 const generator = new Generator(config, 'python');
 

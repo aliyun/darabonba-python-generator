@@ -2,7 +2,7 @@
   "scope": "alibabacloud",
   "name": "main",
   "version": "0.0.1",
-  "main": "./main.tea",
+  "main": "./main.dara",
   "libraries": {
     "Import": "alibabacloud:Import:*",
     "Source" : "alibabacloud:Source:*"
