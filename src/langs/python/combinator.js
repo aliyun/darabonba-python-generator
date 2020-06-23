@@ -360,7 +360,7 @@ class Combinator extends CombinatorBase {
             this.levelUp();
             emitter.emitln('if k:', this.level);
             this.levelUp();
-            emitter.emitln(`self.validate_pattern(k, '${_avoidKeywords(_underScoreCase(prop.name))}', ${pattern[0].value})`, this.level);
+            emitter.emitln(`self.validate_pattern(k, '${_avoidKeywords(_underScoreCase(prop.name))}', '${pattern[0].value}')`, this.level);
             this.levelDown();
             this.levelDown();
             this.levelDown();
@@ -378,7 +378,7 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`if self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
           this.levelUp();
           if (pattern.length > 0) {
-            emitter.emitln(`self.validate_pattern(${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', ${pattern[0].value})`, this.level);
+            emitter.emitln(`self.validate_pattern(${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', '${pattern[0].value}')`, this.level);
           } else if (maxLength.length > 0) {
             emitter.emitln(`self.validate_max_length(${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', ${maxLength[0].value})`, this.level);
           }
