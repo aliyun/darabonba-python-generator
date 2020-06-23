@@ -1,17 +1,20 @@
 /**
- top annotation
+  top annotation
 */
 type @a = string
 
 /**
   TestModel
+
 */
 model Test{
   test: string(description='Alichange app id ', name='test')
 }
 
 /**
-  Init Func
+ * Init Func
+ * @param a The a
+ * @return void
 */
 init(){
 }

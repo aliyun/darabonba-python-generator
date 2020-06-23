@@ -6,30 +6,8 @@ function _upperFirst(str) {
   return str[0].toUpperCase() + str.substring(1);
 }
 
-function _camelCase(str, split = '_') {
-  if (str.indexOf(split) > -1) {
-    let tmp = str.split(split);
-    tmp = tmp.map((s, i) => {
-      if (s.length > 0 && i !== 0) {
-        return _upperFirst(s);
-      }
-      return s;
-    });
-    str = tmp.join('');
-  }
-  return str;
-}
-
 function _lowerFirst(str) {
   return str[0].toLowerCase() + str.substring(1);
-}
-
-function _subModelName(name) {
-  return name.split('.').map((name) => _upperFirst(name)).join('');
-}
-
-function _string(str) {
-  return str.string;
 }
 
 function _isBasicType(type) {
@@ -80,9 +58,6 @@ function _deepClone(obj) {
 
 module.exports = {
   _upperFirst,
-  _camelCase,
-  _string,
-  _subModelName,
   _lowerFirst,
   _isBasicType,
   _deepClone,

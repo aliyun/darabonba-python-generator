@@ -6,14 +6,13 @@ const Emitter = require('../../lib/emitter');
 
 const {
   Grammer,
-  GrammerThrows,
 
   Behavior,
   PropItem,
   AnnotationItem
 } = require('./items');
 
-const { _upperFirst, _lowerFirst } = require('../../lib/helper.js');
+const { _lowerFirst } = require('../../lib/helper.js');
 
 class BaseConbinator {
   constructor(langConfig = {}) {
@@ -57,19 +56,6 @@ class BaseConbinator {
     });
   }
 
-  findThrows(grammer, set = []) {
-    if (grammer.body) {
-      grammer.body.filter(node => {
-        if (node instanceof GrammerThrows) {
-          set.push(node);
-        } else if (node.body) {
-          this.findThrows(node, set);
-        }
-      });
-    }
-    return set;
-  }
-
   init(ast) {
     throw new Error('unimpelemented');
   }
@@ -92,18 +78,6 @@ class BaseConbinator {
     throw new Error('unimpelemented');
   }
 
-  systemfunc(emitter, gram) {
-    let tmp = [];
-    gram.path.forEach(path => {
-      tmp.push(_upperFirst(path.name));
-    });
-    let systemFunc = 'sys' + tmp.join('');
-    if (this[systemFunc]) {
-      this[systemFunc].apply(this, [emitter, gram]);
-    } else {
-      debug.stack(`unimpelemented ${systemFunc}(emitter, gram){} method\n`, gram);
-    }
-  }
   grammer(emit, gram, eol = true, newLine = true) {
     if (gram instanceof AnnotationItem) {
       this.emitAnnotation(emit, gram);
@@ -140,19 +114,6 @@ class BaseConbinator {
     emitter = null;
   }
 
-  grammerNewLine(emitter, gram) {
-    let number = gram.number;
-    while (number > 0) {
-      emitter.emitln();
-      number--;
-    }
-  }
-
-  emitGrammerValue(gram) {
-    let emitter = new Emitter();
-    this.grammerValue(emitter, gram);
-    return emitter.output;
-  }
 }
 
 module.exports = BaseConbinator;

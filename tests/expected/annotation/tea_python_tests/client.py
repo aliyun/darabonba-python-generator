@@ -16,6 +16,8 @@ class Client:
     def __init__(self, _a=None):
         """
         Init Func
+        @param a: The a
+        @return void
         """
         self._a = _a
 

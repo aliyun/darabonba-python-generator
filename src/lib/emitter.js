@@ -35,13 +35,6 @@ class Emitter {
     return this;
   }
 
-  emits(level, ...strs) {
-    strs.forEach(str => {
-      this.emitln(str, level);
-    });
-    return this;
-  }
-
   erase(lenght) {
     this.output = this.output.substring(0, this.output.length - lenght);
     return this;

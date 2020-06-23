@@ -26,7 +26,6 @@ const {
 } = require('../common/items');
 
 const {
-  _name,
   _type,
   _symbol,
   _exception,
@@ -373,7 +372,7 @@ class Combinator extends CombinatorBase {
         emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))}.validate()`, this.level);
         this.levelDown();
         haveValidate = true;
-      } else {
+      } else {        
         if (pattern.length + maxLength.length > 0) {
           emitter.emitln(`if self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
           this.levelUp();
@@ -631,27 +630,6 @@ class Combinator extends CombinatorBase {
       });
       emitter.emitln('"""', this.level);
     }
-  }
-
-
-  emitProp(emitter, prop) {
-    let annotationsNoteKeys = [
-      'description',
-      'example',
-    ];
-
-    if (prop.notes.length > 0) {
-      let annotation = new AnnotationItem(prop.index, 'multi');
-      annotation.content = [];
-      prop.notes.forEach(note => {
-        if (annotationsNoteKeys.indexOf(note.key) > -1) {
-          annotation.content.push(`@${note.key} ${note.value}`);
-        }
-      });
-      annotation.content.push(`@var ${_type(prop.type)}`);
-      this.emitAnnotation(emitter, annotation);
-    }
-    emitter.emitln(`${_name(prop.name)} = None`, this.level);
   }
 
   emitInclude(emitter) {
@@ -925,6 +903,8 @@ class Combinator extends CombinatorBase {
         debug.stack('Unsupported GrammerValue type', gram);
       }
     } else if (Array.isArray(gram)) {
+      console.log(gram);
+      
       let grammerValue = new GrammerValue();
       grammerValue.type = 'array';
       grammerValue.value = gram;

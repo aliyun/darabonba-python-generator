@@ -64,70 +64,6 @@ function _underScoreCase(str) {
   return res;
 }
 
-function _name(str) {
-  if (str.indexOf('-') > -1) {
-    let tmp = str.split('-');
-    tmp.map((s, i) => {
-      if (i !== 0) {
-        return s;
-      }
-      return s;
-    });
-    str = tmp.join('');
-  }
-  return str;
-}
-
-const defaultValueMap = {
-  'boolean': 'False',
-  'number': '0',
-  'integer': '0',
-  'any': 'None',
-  'int32': '0',
-  'int16': '0',
-  'object': 'None',
-  'string': '""',
-  'long': '0',
-  'array': 'None',
-  'map': 'None',
-  'readable': 'None',
-  'float': '0',
-  'int64': '0',
-  'bytes': 'None'
-};
-
-function _default(type) {
-  if (type.lexeme) {
-    type = type.lexeme;
-  }
-  if (defaultValueMap[type]) {
-    return defaultValueMap[type];
-  }
-  if (_isBasicType(type)) {
-    debug.stack(type);
-  }
-  return 'None';
-}
-
-const modifyOrder = [
-  'PRIVATE',
-  'PROTECTED',
-  'PUBLIC',
-  'FINAL',
-  'ABSTRACT',
-  'STATIC'
-];
-
-function _modify(modify) {
-  if (Array.isArray(modify)) {
-    return modify.filter((m) => modifyOrder.indexOf(m) > -1)
-      .map((m) => _modify(m)).sort(function (a, b) {
-        return modifyOrder.indexOf(a.toUpperCase()) - modifyOrder.indexOf(b.toUpperCase());
-      }).join(' ');
-  }
-  return modify.toLowerCase();
-}
-
 function _isKeywords(str) {
   return config.keywords.indexOf(str.toLowerCase()) > -1;
 }
@@ -163,14 +99,11 @@ function _convertStaticParam(param) {
 }
 
 module.exports = {
-  _name,
   _type,
   _symbol,
-  _modify,
   _exception,
   _isKeywords,
   _avoidKeywords,
   _underScoreCase,
   _convertStaticParam,
-  _default
 };
