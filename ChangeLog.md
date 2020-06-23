@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.0.2 - 2020-06-23
+
+* Fixed validate_pattern syntax error
+
 ## 1.0.1 - 2020-06-22
 
 * Improve python generator to be compatible with darafile
