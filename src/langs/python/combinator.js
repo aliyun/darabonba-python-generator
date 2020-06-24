@@ -26,7 +26,6 @@ const {
 } = require('../common/items');
 
 const {
-  _name,
   _type,
   _symbol,
   _exception,
@@ -63,7 +62,7 @@ class Combinator extends CombinatorBase {
     this.config.layer = this.config.layer.split('.').map(m => {
       return _avoidKeywords(m);
     }).join('.');
-    this.config.dir = path.join(this.config.outputDir, this.config.package);
+    this.config.dir = this.config.outputDir ? path.join(this.config.outputDir, this.config.package) : '';
     this.config.filename = _underScoreCase(this.config.filename);
   }
 
@@ -85,7 +84,7 @@ class Combinator extends CombinatorBase {
           targetPath = path.join(this.config.pkgDir, lock[moduleDir]);
         }
         const daraFilePath = path.join(targetPath, 'Darafile');
-        const cfgFilePath = fs.existsSync(daraFilePath)?daraFilePath:path.join(targetPath, 'Teafile');
+        const cfgFilePath = fs.existsSync(daraFilePath) ? daraFilePath : path.join(targetPath, 'Teafile');
         const daraFile = JSON.parse(fs.readFileSync(cfgFilePath));
         if (!daraFile.python) {
           debug.stack(`The '${aliasId}' has no python supported.`);
@@ -631,27 +630,6 @@ class Combinator extends CombinatorBase {
       });
       emitter.emitln('"""', this.level);
     }
-  }
-
-
-  emitProp(emitter, prop) {
-    let annotationsNoteKeys = [
-      'description',
-      'example',
-    ];
-
-    if (prop.notes.length > 0) {
-      let annotation = new AnnotationItem(prop.index, 'multi');
-      annotation.content = [];
-      prop.notes.forEach(note => {
-        if (annotationsNoteKeys.indexOf(note.key) > -1) {
-          annotation.content.push(`@${note.key} ${note.value}`);
-        }
-      });
-      annotation.content.push(`@var ${_type(prop.type)}`);
-      this.emitAnnotation(emitter, annotation);
-    }
-    emitter.emitln(`${_name(prop.name)} = None`, this.level);
   }
 
   emitInclude(emitter) {

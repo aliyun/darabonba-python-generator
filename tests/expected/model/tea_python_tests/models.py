@@ -227,7 +227,7 @@ class M(TeaModel):
 
 
 class MyModel(TeaModel):
-    def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None, submodel=None, subarraymodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None):
+    def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None, submodel=None, subarraymodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None, class_end_time=None, max_length=None):
         self.stringfield = stringfield
         self.bytesfield = bytesfield
         self.stringarrayfield = []
@@ -241,6 +241,8 @@ class MyModel(TeaModel):
         self.numberfield = numberfield
         self.readable = readable
         self.exist_model = exist_model
+        self.class_end_time = class_end_time
+        self.max_length = max_length
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')
@@ -272,6 +274,10 @@ class MyModel(TeaModel):
         self.validate_required(self.exist_model, 'exist_model')
         if self.exist_model:
             self.exist_model.validate()
+        if self.class_end_time:
+            self.validate_pattern(class_end_time, 'class_end_time', '\\d{4}[-]\\d{1,2}[-]\\d{1,2}(\\s\\d{2}:\\d{2}(:\\d{2})?)?')
+        if self.max_length:
+            self.validate_max_length(max_length, 'max_length', 10)
 
     def to_map(self):
         result = {}
@@ -314,6 +320,8 @@ class MyModel(TeaModel):
             result['existModel'] = self.exist_model.to_map()
         else:
             result['existModel'] = None
+        result['class_end_time'] = self.class_end_time
+        result['max_length'] = self.max_length
         return result
 
     def from_map(self, map={}):
@@ -364,6 +372,8 @@ class MyModel(TeaModel):
             self.exist_model = temp_model.from_map(map['existModel'])
         else:
             self.exist_model = None
+        self.class_end_time = map.get('class_end_time')
+        self.max_length = map.get('max_length')
         return self
 
 

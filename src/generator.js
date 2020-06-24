@@ -1,11 +1,15 @@
 'use strict';
 
 class Generator {
-  constructor(option = {}) {
+  constructor(option = {}, lang = '') {
+    if (!option.outputDir) {
+      throw new Error('`option.outputDir` should not empty');
+    }
     this.option = {
       output: true,
       ...option
     };
+    this.lang = lang;
   }
   visit(ast) {
     const ModuleVisitor = require('./visitor/module');

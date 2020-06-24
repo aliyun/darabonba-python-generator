@@ -17,10 +17,16 @@
     "url": "git@github.com:aliyun/darabonba-python-generator.git"
   },
   "devDependencies": {
-    "eslint": "^5.12.0",
-    "mocha": "^6.2.2",
-    "codecov": "^3.1.0",
-    "nyc": "^14.1.1"
+    "nyc": "^15.0.0",
+    "chai": "^4.2.0",
+    "codecov": "^3",
+    "eslint": "^6",
+    "expect.js": "^0.3.1",
+    "has-flag": "^4.0.0",
+    "mm": "^3.2.0",
+    "mocha": "^7.1",
+    "mocha-sinon": "^2.1.2",
+    "sinon": "^9.0.2"
   },
   "author": "Alibaba Cloud OpenAPI Team",
   "license": "Apache-2.0",

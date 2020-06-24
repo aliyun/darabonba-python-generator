@@ -2,7 +2,6 @@
 
 const assert = require('assert');
 const BaseVisitor = require('./base');
-const debug = require('../lib/debug');
 
 const {
   AnnotationItem,
@@ -75,28 +74,6 @@ class ModelVisitor extends BaseVisitor {
         });
       }
     }
-
-    if (predefined) {
-      // for parser 1.0+
-      // submodels
-      const subModels = Object.keys(predefined).filter((key) => {
-        return !key.startsWith('$')
-          && predefined[key].type === 'model'
-          && key.indexOf('.') !== -1
-          && key.indexOf(this.modelName + '.') !== -1;
-      }).map((key) => {
-        return predefined[key];
-      });
-
-      if (subModels.length !== 0) {
-        for (let i = 0; i < subModels.length; i++) {
-          let subModelObject = new ObjectItem();
-          subModelObject.addExtends(combinator.addInclude('$Model'));
-          this.initProp(subModelObject, subModels[i].modelBody.nodes);
-          this.object.addBodyNode(subModelObject);
-        }
-      }
-    }
     this.done();
   }
 
@@ -107,7 +84,7 @@ class ModelVisitor extends BaseVisitor {
     }
     subModelUsed.push(name);
     node.fieldValue.nodes.forEach(item => {
-      if (item.fieldValue.fieldType === undefined) {
+      if (typeof item.fieldValue.fieldType === 'undefined') {
         this.findSubModelsUsed(item, subModelUsed, name);
       }
     });
@@ -116,7 +93,7 @@ class ModelVisitor extends BaseVisitor {
   initProp(obj, nodes) {
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
-      if (node.fieldValue.fieldType === undefined) {
+      if (typeof node.fieldValue.fieldType === 'undefined') {
         let subModelUsed = [];
         this.findSubModelsUsed(node, subModelUsed, obj.name);
         subModelUsed.forEach(subModel => {
@@ -141,8 +118,6 @@ class ModelVisitor extends BaseVisitor {
         prop.type = node.fieldValue.fieldType;
       } else if (node.fieldValue.type && node.fieldValue.type === 'modelBody') {
         prop.type = this.combinator.addModelInclude([obj.name, node.fieldName.lexeme].join('.'));
-      } else {
-        debug.stack(obj, node);
       }
       if (node.fieldValue && node.fieldValue.fieldItemType) {
         if (node.fieldValue.fieldItemType.type) {
@@ -150,28 +125,15 @@ class ModelVisitor extends BaseVisitor {
             prop.itemType = this.combinator.addModelInclude(node.fieldValue.itemType);
           } else if (node.fieldValue.fieldItemType.type === 'map') {
             prop.itemType = `map[${node.fieldValue.fieldItemType.keyType.lexeme},${node.fieldValue.fieldItemType.valueType.lexeme}]`;
-          } else {
-            debug.stack(node);
           }
         } else if (node.fieldValue.fieldItemType.idType === 'model') {
           prop.itemType = this.combinator.addModelInclude(node.fieldValue.fieldItemType.lexeme);
-        } else if (node.fieldValue.itemType) {
-          prop.itemType = node.fieldValue.itemType;
-        } else if (node.fieldValue.fieldItemType.valueType) {
-          prop.itemType = node.fieldValue.fieldItemType.valueType.lexeme;
         } else if (_isBasicType(node.fieldValue.fieldItemType.lexeme)) {
           prop.itemType = node.fieldValue.fieldItemType.lexeme;
         } else if (node.type === 'modelField') {
           if (node.fieldValue && node.fieldValue.fieldItemType && !_isBasicType(node.fieldValue.fieldItemType.lexeme)) {
             prop.itemType = this.combinator.addModelInclude(node.fieldValue.fieldItemType.lexeme);
-          } else {
-            debug.stack(node);
           }
-        } else {
-          debug.stack(node);
-        }
-        if (!prop.itemType) {
-          debug.stack(prop, node);
         }
       } else if (node.fieldValue && node.fieldValue.fieldType) {
         if (node.fieldValue.fieldType.type === 'moduleModel') {
@@ -180,11 +142,7 @@ class ModelVisitor extends BaseVisitor {
             tmp.push(item.lexeme);
           });
           prop.type = this.combinator.addModelInclude(tmp.join('.'));
-        } else if (!prop.type) {
-          debug.stack(node, prop);
         }
-      } else if (!prop.type) {
-        debug.stack(node, prop);
       }
       prop.modify.push(Modify.public());
       if (node.required) {
@@ -202,14 +160,12 @@ class ModelVisitor extends BaseVisitor {
 
       node.attrs.forEach((attr) => {
         let value;
-        if (attr.attrValue.string !== undefined) {
+        if (typeof attr.attrValue.string !== 'undefined') {
           value = attr.attrValue.string;
-        } else if (attr.attrValue.value !== undefined) {
+        } else if (typeof attr.attrValue.value !== 'undefined') {
           value = attr.attrValue.value;
-        } else if (attr.attrValue.lexeme !== undefined) {
+        } else if (typeof attr.attrValue.lexeme !== 'undefined') {
           value = attr.attrValue.lexeme;
-        } else {
-          debug.stack(attr);
         }
         let note = new NoteItem(
           attr.attrName.lexeme,
