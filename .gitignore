@@ -3,3 +3,4 @@ coverage/
 runtime/
 output/
 .DS_Store
+.nyc_output/

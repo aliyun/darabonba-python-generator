@@ -1,6 +1,5 @@
 'use strict';
 
-const assert = require('assert');
 const debug = require('../../lib/debug');
 const Emitter = require('../../lib/emitter');
 
@@ -41,7 +40,7 @@ class BaseConbinator {
         prop.notes.forEach(note => {
           note.belong = prop.index;
           note.prop = prop.name;
-          if (notes[note.key] === undefined) {
+          if (typeof notes[note.key] === 'undefined') {
             notes[note.key] = [];
           }
           notes[note.key].push(note);
@@ -97,6 +96,9 @@ class BaseConbinator {
     gram.path.forEach(path => {
       tmp.push(_upperFirst(path.name));
     });
+    if (tmp.length === 0) {
+      debug.stack('Invalid path. path list cannot be empty.');
+    }
     let systemFunc = 'sys' + tmp.join('');
     if (this[systemFunc]) {
       this[systemFunc].apply(this, [emitter, gram]);
@@ -109,7 +111,7 @@ class BaseConbinator {
       this.emitAnnotation(emit, gram);
       return;
     }
-    assert.equal(true, gram instanceof Grammer);
+
     let emitter = new Emitter();
     let method = null;
     if (gram instanceof Behavior) {
@@ -119,7 +121,7 @@ class BaseConbinator {
     } else {
       debug.stack('Unsupported', gram);
     }
-    if (this[method] !== undefined) {
+    if (typeof this[method] !== 'undefined') {
       this[method].call(this, emitter, gram);
     } else {
       debug.stack('Unimpelemented : ' + method);
