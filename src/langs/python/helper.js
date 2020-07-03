@@ -64,6 +64,7 @@ function _underScoreCase(str) {
   if (tmp.length > 0) {
     res += '_' + tmp.toLowerCase();
   }
+  res = res.replace(/-/g, '_');
   return res;
 }
 
