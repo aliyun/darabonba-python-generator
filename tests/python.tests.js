@@ -116,7 +116,7 @@ describe('New Generator', function () {
   it('empty should ok', function () {
     check('empty', [
       'tea_python_tests/client.py',
-      'setup.py'
+      '.gitignore'
     ],
     {
       python: {
