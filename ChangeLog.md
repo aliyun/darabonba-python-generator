@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.0.3 - 2020-07-03
+
+* Fixed unsupported symbols
+
 ## 1.0.2 - 2020-06-23
 
 * Fixed validate_pattern syntax error
