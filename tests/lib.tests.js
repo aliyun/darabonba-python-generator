@@ -11,6 +11,7 @@ const {
   _camelCase,
   _subModelName,
   _string,
+  _upperFirst
 } = require('../src/lib/helper');
 
 describe('lib tests', function () {
@@ -150,6 +151,10 @@ describe('lib tests', function () {
     const filename = emitter.savePath();
 
     expect(filename).to.be.eql('/tmp/filename.tmp');
+  });
+
+  it('helper._upperFirst should be ok', function () { 
+    expect(_upperFirst(null)).to.be.eql('');
   });
 
   it('helper._camelCase should be ok', function () {

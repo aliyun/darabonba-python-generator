@@ -5,8 +5,6 @@ const debug = require('../../lib/debug');
 const CombinatorBase = require('../common/combinator');
 const Emitter = require('../../lib/emitter');
 const PackageInfo = require('./package_info');
-const path = require('path');
-const fs = require('fs');
 const modelConbinator = require('./models.js');
 
 const {
@@ -26,76 +24,44 @@ const {
 } = require('../common/items');
 
 const {
-  _type,
-  _symbol,
-  _exception,
-  _isKeywords,
-  _avoidKeywords,
-  _underScoreCase,
-  _convertStaticParam
-} = require('./helper');
-
-const {
   _isBasicType,
-  _upperFirst
+  _upperFirst,
+  _config,
+  _convertStaticParam,
+  _underScoreCase,
+  _avoidKeywords,
+  _isKeywords,
+  _exception,
+  _symbol,
+  _deepClone
 } = require('../../lib/helper');
 
-class Combinator extends CombinatorBase {
-  constructor(config) {
-    super(config);
-    this.eol = '';
+function _type(type) {
+  const config = _config();
+  let t = type instanceof Object ? type.lexeme : type;
+  if (config.typeMap[t]) {
+    return config.typeMap[t];
+  }
+  if (!_isBasicType(t)) {
+    return t;
+  }
+  if (t[0] === '$') {
+    t = t.replace('$', 'Tea');
+  }
+  return t;
+}
 
-    this.thirdPackageNamespace = {};
-    this.thirdPackageClient = {};
+class Combinator extends CombinatorBase {
+  constructor(config, imports) {
+    super(config, imports);
+    this.eol = '';
     this.clientMap = {};
+    if (this.config.modelDirName) {
+      this.config.model.dir = this.config.modelDirName;
+    }
 
     // Darafile: name (Tea Package name)
     this.config.package = this.config.package.split('.').map(item => item.toLowerCase()).join('_');
-    if (this.config.emitType === 'model' && this.config.modelDirName) {
-      if (this.config.layer.indexOf('.') > -1) {
-        this.config.layer = this.config.modelDirName + this.config.layer.split('.').slice(1).join('.');
-      } else {
-        this.config.layer = this.config.modelDirName;
-      }
-    }
-    this.model_dir = this.config.modelDirName ? this.config.modelDirName : 'models';
-    this.config.layer = this.config.layer.split('.').map(m => {
-      return _avoidKeywords(m);
-    }).join('.');
-    this.config.dir = this.config.outputDir ? path.join(this.config.outputDir, this.config.package) : '';
-    this.config.filename = _underScoreCase(this.config.filename);
-  }
-
-  init(ast) {
-    const imports = ast.imports;
-    this.requirePackage = [];
-    if (imports.length > 0) {
-      const lockPath = path.join(this.config.pkgDir, '.libraries.json');
-      const lock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));
-      ast.imports.forEach(item => {
-        const aliasId = item.lexeme;
-        const moduleDir = this.config.libraries[aliasId];
-        let targetPath = '';
-        if (moduleDir.startsWith('./') || moduleDir.startsWith('../')) {
-          targetPath = path.join(this.config.pkgDir, moduleDir);
-        } else if (moduleDir.startsWith('/')) {
-          targetPath = moduleDir;
-        } else {
-          targetPath = path.join(this.config.pkgDir, lock[moduleDir]);
-        }
-        const daraFilePath = path.join(targetPath, 'Darafile');
-        const cfgFilePath = fs.existsSync(daraFilePath) ? daraFilePath : path.join(targetPath, 'Teafile');
-        const daraFile = JSON.parse(fs.readFileSync(cfgFilePath));
-        if (!daraFile.python) {
-          debug.stack(`The '${aliasId}' has no python supported.`);
-        }
-        this.thirdPackageNamespace[aliasId] = daraFile.python.package;
-        this.thirdPackageClient[aliasId] = daraFile.python.clientName || 'client';
-        if (daraFile.releases && daraFile.releases.python) {
-          this.requirePackage.push(daraFile.releases.python);
-        }
-      });
-    }
   }
 
   addInclude(className) {
@@ -185,11 +151,6 @@ class Combinator extends CombinatorBase {
       } else {
         resultName = fromName.split('.').join('_') + '_models' + '.' + accessPath.slice(1).map(item => _upperFirst(item)).join('');
       }
-    } else if (this.thirdPackageNamespace[modelName]) {
-      // is third package
-      importName = _upperFirst(this.thirdPackageClient[modelName]);
-      fromName = this.thirdPackageNamespace[modelName] + '.' + this.thirdPackageClient[modelName];
-      resultName = fromName.split('.').join('_') + '_' + importName;
     } else {
       // self model
       fromName = this.config.package;
@@ -220,21 +181,11 @@ class Combinator extends CombinatorBase {
     return resultName;
   }
 
-  combine(emitter, object) {
-    if (this.config.emitType === 'code' && this.config.packageInfo) {
-      const packageInfo = new PackageInfo(this.config);
-      packageInfo.emit(this.config.packageInfo, this.requirePackage);
-    }
-    let classPrefix = '';
-    if (this.config.emitType === 'model') {
-      if (object.name.indexOf('.') > -1) {
-        object.name = object.name.split('.').map(item => _upperFirst(item)).join('');
-      }
-      emitter.config.layer = '';
-    }
-    emitter.config.layer = emitter.config.layer.split('.').map(m => {
-      return _avoidKeywords(m);
-    }).join('.');
+  combine(object) {
+    const outputPars = { header: '', body: '', foot: '' };
+    let emitter;
+    /****************************** resolve object *****************************/
+    this.config.dir = this.config.outputDir + '/' + this.config.package + '/';
 
     var parent = '';
     if (object.extends.length > 0) {
@@ -247,34 +198,30 @@ class Combinator extends CombinatorBase {
       });
       parent = '(' + tmp.join(', ') + ')';
     }
-
-    if (object.topAnnotation.length > 0) {
-      this.emitAnnotations(emitter, object.topAnnotation);
-    }
-
-    const emitGlobal = new Emitter(emitter.config);
-    emitGlobal.emit(emitter.output);
-    emitter = new Emitter();
-
-    // emit class
     let className = object.name;
     if (this.config.emitType === 'code') {
-      if (this.config.clientName === undefined || this.config.clientName === '') {
-        this.config.clientName = 'client';
-      }
       className = this.config.clientName;
-      emitter.config.filename = className;
+    } else {
+      className = object.name.split('.').map(item => _upperFirst(item)).join('');
     }
+    if (_isKeywords(className)) {
+      className = _avoidKeywords(className);
+    }
+
+    /**************************** emit package files ***************************/
+    if (this.config.emitType === 'code' && this.config.packageInfo) {
+      const packageInfo = new PackageInfo(this.config);
+      packageInfo.emit(this.config.packageInfo, this.requirePackage);
+    }
+
+    /******************************* emit body   *******************************/
+    emitter = new Emitter(this.config);
     if (object.annotations.length > 0) {
       this.emitAnnotations(emitter, object.annotations);
       emitter.emitln();
     }
-    if (_isKeywords(className)) {
-      className = _avoidKeywords(className);
-      emitter.config.filename = className;
-    }
     emitter.emitln();
-    emitter.emitln(`class ${classPrefix}${_upperFirst(className)}${parent}:`, this.level);
+    emitter.emitln(`class ${_upperFirst(className)}${parent}:`, this.level);
 
     this.levelUp();
     const notes = this.resolveNotes(object.body);
@@ -303,20 +250,37 @@ class Combinator extends CombinatorBase {
       this.emitToMap(emitter, props, notes);
       this.emitFromMap(emitter, object.name, props, notes);
     }
-
     this.levelDown();
+    outputPars.body = emitter.output;
+    /******************************* emit foot   *******************************/
+
+
+    /******************************* emit head   *******************************/
+    emitter = new Emitter(this.config);
+    if (object.topAnnotation.length > 0) {
+      this.emitAnnotations(emitter, object.topAnnotation);
+    }
     if (this.config.emitType === 'model') {
       modelConbinator.pushInclude(this.includeList);
     } else {
-      this.emitInclude(emitGlobal);
+      this.emitInclude(emitter);
     }
-    emitGlobal.emit(emitter.output);
-    if (this.config.output === undefined || this.config.output === true) {
-      if (this.config.emitType === 'model') {
-        modelConbinator.addModel(emitGlobal.config, emitGlobal.output);
-      } else {
-        emitGlobal.save();
-      }
+    outputPars.head = emitter.output;
+
+    /***************************** combine output ******************************/
+    const config = _deepClone(this.config);
+    if (this.config.emitType === 'code') {
+      config.filename = this.config.clientName;
+    }
+    const globalEmitter = new Emitter(config);
+    globalEmitter.emit(outputPars.head);
+    globalEmitter.emit(outputPars.body);
+    globalEmitter.emit(outputPars.foot);
+    if (this.config.emitType === 'model') {
+      config.layer = '';
+      modelConbinator.addModel(config, globalEmitter.output);
+    } else {
+      globalEmitter.save();
     }
   }
 

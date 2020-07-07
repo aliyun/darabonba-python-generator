@@ -106,6 +106,40 @@ class Test3(TeaModel):
         return self
 
 
+class ComplexRequestHeader(TeaModel):
+    def __init__(self, content=None):
+        self.content = content
+
+    def validate(self):
+        self.validate_required(self.content, 'content')
+
+    def to_map(self):
+        result = {}
+        result['Content'] = self.content
+        return result
+
+    def from_map(self, map={}):
+        self.content = map.get('Content')
+        return self
+
+
+class ComplexRequestPart(TeaModel):
+    def __init__(self, part_number=None):
+        self.part_number = part_number
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        result = {}
+        result['PartNumber'] = self.part_number
+        return result
+
+    def from_map(self, map={}):
+        self.part_number = map.get('PartNumber')
+        return self
+
+
 class ComplexRequest(TeaModel):
     def __init__(self, access_key=None, body=None, strs=None, header=None, num=None, part=None):
         self.access_key = access_key
@@ -174,38 +208,4 @@ class ComplexRequest(TeaModel):
                 self.part.append(temp_model)
         else:
             self.part = None
-        return self
-
-
-class ComplexRequestHeader(TeaModel):
-    def __init__(self, content=None):
-        self.content = content
-
-    def validate(self):
-        self.validate_required(self.content, 'content')
-
-    def to_map(self):
-        result = {}
-        result['Content'] = self.content
-        return result
-
-    def from_map(self, map={}):
-        self.content = map.get('Content')
-        return self
-
-
-class ComplexRequestPart(TeaModel):
-    def __init__(self, part_number=None):
-        self.part_number = part_number
-
-    def validate(self):
-        pass
-
-    def to_map(self):
-        result = {}
-        result['PartNumber'] = self.part_number
-        return result
-
-    def from_map(self, map={}):
-        self.part_number = map.get('PartNumber')
         return self

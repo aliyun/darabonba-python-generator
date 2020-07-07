@@ -5,6 +5,7 @@ const defaultConfig = require('../common/config');
 module.exports = {
   ...defaultConfig,
   indent: '    ',
+  clientName: 'client',
   ext: '.py',
   keywords: [
     'default',
@@ -43,6 +44,24 @@ module.exports = {
     'with',
     'yield'
   ],
+  symbolMap: {
+    'ASSIGN': '=',
+    'EQ': '==',
+    'NOT': 'NOT',
+    'AND': 'and',
+    'OR': 'or',
+    'PLUS': '+',
+    'SUB': '-',
+    'MULTI': '*',
+    'DIV': '/',
+    'POWER': '^',
+    'GREATER': '>',
+    'GREATER_EQ': '>=',
+    'LESS': '<',
+    'LESS_EQ': '<=',
+    'REVERSE': 'not ',
+    'CONCAT': '+'
+  },
   typeMap: {
     'boolean': 'bool',
     'number': 'integer',
@@ -53,17 +72,17 @@ module.exports = {
     'bytes': 'array',
     'long': 'integer'
   },
+  exceptionMap: {
+    'BASE': 'Tea.exceptions.TeaException',
+  },
   model: {
     dir: 'models',
     include: [
-      //{ 'from': '', 'import': 're' }
     ],
   },
   client: {
     filename: 'Client',
-    include: [
-      //{ 'from': '', 'import': 'time' }
-    ]
+    include: []
   },
   tea: {
     core: {
@@ -81,6 +100,7 @@ module.exports = {
     response: { name: 'Tea.response.TeaResponse' },
     request: { name: 'Tea.request.TeaRequest' },
     exception: { name: 'Tea.exceptions.TeaException' },
+    error: { name: 'Tea.exceptions.TeaException' },
     exceptionUnretryable: { name: 'Tea.exceptions.UnretryableException' },
   }
 };

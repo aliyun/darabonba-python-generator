@@ -12,7 +12,7 @@ const lang = 'python';
 
 const expectedDir = path.join(__dirname, 'expected/');
 const fixturesDir = path.join(__dirname, 'fixtures');
-const outputDir = path.join(__dirname, '../', 'output/');
+const outputDir = path.join(__dirname, '../', 'output/tests/');
 
 function check(moduleName, expectedFiles = [], option = {}) {
   const mainFilePath = path.join(fixturesDir, moduleName, 'main.dara') ? path.join(fixturesDir, moduleName, 'main.dara') : path.join(fixturesDir, moduleName, 'main.tea');
