@@ -5,7 +5,6 @@ const debug = require('../../lib/debug');
 const CombinatorBase = require('../common/combinator');
 const Emitter = require('../../lib/emitter');
 const PackageInfo = require('./package_info');
-const modelConbinator = require('./models.js');
 
 const {
   Symbol,
@@ -187,6 +186,48 @@ class Combinator extends CombinatorBase {
     /****************************** resolve object *****************************/
     this.config.dir = this.config.outputDir + '/' + this.config.package + '/';
 
+
+    /**************************** emit package files ***************************/
+    if (this.config.emitType === 'code' && this.config.packageInfo) {
+      const packageInfo = new PackageInfo(this.config);
+      packageInfo.emit(this.config.packageInfo, this.requirePackage);
+    }
+
+    /******************************* emit body   *******************************/
+    emitter = new Emitter(this.config);
+    this.emitClass(emitter, object);
+    if (this.config.emitType === 'model' && object.subObject && object.subObject.length > 0) {
+      object.subObject.forEach(obj => {
+        this.emitClass(emitter, obj);
+      });
+    }
+    outputPars.body = emitter.output;
+    /******************************* emit foot   *******************************/
+
+    /******************************* emit head   *******************************/
+    emitter = new Emitter(this.config);
+    if (object.topAnnotation.length > 0) {
+      this.emitAnnotations(emitter, object.topAnnotation);
+    }
+    this.emitInclude(emitter);
+    outputPars.head = emitter.output;
+
+    /***************************** combine output ******************************/
+    const config = _deepClone(this.config);
+    if (this.config.emitType === 'code') {
+      config.filename = this.config.clientName;
+    } else {
+      config.layer = '';
+      config.filename = 'models';
+    }
+    const globalEmitter = new Emitter(config);
+    globalEmitter.emit(outputPars.head);
+    globalEmitter.emit(outputPars.body);
+    globalEmitter.emit(outputPars.foot);
+    globalEmitter.save();
+  }
+
+  emitClass(emitter, object) {
     var parent = '';
     if (object.extends.length > 0) {
       let tmp = [];
@@ -207,15 +248,6 @@ class Combinator extends CombinatorBase {
     if (_isKeywords(className)) {
       className = _avoidKeywords(className);
     }
-
-    /**************************** emit package files ***************************/
-    if (this.config.emitType === 'code' && this.config.packageInfo) {
-      const packageInfo = new PackageInfo(this.config);
-      packageInfo.emit(this.config.packageInfo, this.requirePackage);
-    }
-
-    /******************************* emit body   *******************************/
-    emitter = new Emitter(this.config);
     if (object.annotations.length > 0) {
       this.emitAnnotations(emitter, object.annotations);
       emitter.emitln();
@@ -251,37 +283,6 @@ class Combinator extends CombinatorBase {
       this.emitFromMap(emitter, object.name, props, notes);
     }
     this.levelDown();
-    outputPars.body = emitter.output;
-    /******************************* emit foot   *******************************/
-
-
-    /******************************* emit head   *******************************/
-    emitter = new Emitter(this.config);
-    if (object.topAnnotation.length > 0) {
-      this.emitAnnotations(emitter, object.topAnnotation);
-    }
-    if (this.config.emitType === 'model') {
-      modelConbinator.pushInclude(this.includeList);
-    } else {
-      this.emitInclude(emitter);
-    }
-    outputPars.head = emitter.output;
-
-    /***************************** combine output ******************************/
-    const config = _deepClone(this.config);
-    if (this.config.emitType === 'code') {
-      config.filename = this.config.clientName;
-    }
-    const globalEmitter = new Emitter(config);
-    globalEmitter.emit(outputPars.head);
-    globalEmitter.emit(outputPars.body);
-    globalEmitter.emit(outputPars.foot);
-    if (this.config.emitType === 'model') {
-      config.layer = '';
-      modelConbinator.addModel(config, globalEmitter.output);
-    } else {
-      globalEmitter.save();
-    }
   }
 
   emitValidate(emitter, props, notes) {
