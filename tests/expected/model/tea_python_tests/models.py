@@ -106,6 +106,40 @@ class Test3(TeaModel):
         return self
 
 
+class ComplexRequestHeader(TeaModel):
+    def __init__(self, content=None):
+        self.content = content
+
+    def validate(self):
+        self.validate_required(self.content, 'content')
+
+    def to_map(self):
+        result = {}
+        result['Content'] = self.content
+        return result
+
+    def from_map(self, map={}):
+        self.content = map.get('Content')
+        return self
+
+
+class ComplexRequestPart(TeaModel):
+    def __init__(self, part_number=None):
+        self.part_number = part_number
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        result = {}
+        result['PartNumber'] = self.part_number
+        return result
+
+    def from_map(self, map={}):
+        self.part_number = map.get('PartNumber')
+        return self
+
+
 class ComplexRequest(TeaModel):
     def __init__(self, access_key=None, body=None, strs=None, header=None, num=None, part=None):
         self.access_key = access_key
@@ -177,41 +211,39 @@ class ComplexRequest(TeaModel):
         return self
 
 
-class ComplexRequestHeader(TeaModel):
-    def __init__(self, content=None):
-        self.content = content
-
-    def validate(self):
-        self.validate_required(self.content, 'content')
-
-    def to_map(self):
-        result = {}
-        result['Content'] = self.content
-        return result
-
-    def from_map(self, map={}):
-        self.content = map.get('Content')
-        return self
-
-
-class ComplexRequestPart(TeaModel):
-    def __init__(self, part_number=None):
-        self.part_number = part_number
+class M(TeaModel):
+    def __init__(self):
+        pass
 
     def validate(self):
         pass
 
     def to_map(self):
         result = {}
-        result['PartNumber'] = self.part_number
         return result
 
     def from_map(self, map={}):
-        self.part_number = map.get('PartNumber')
         return self
 
 
-class M(TeaModel):
+class MyModelSubmodel(TeaModel):
+    def __init__(self, stringfield=None):
+        self.stringfield = stringfield
+
+    def validate(self):
+        self.validate_required(self.stringfield, 'stringfield')
+
+    def to_map(self):
+        result = {}
+        result['stringfield'] = self.stringfield
+        return result
+
+    def from_map(self, map={}):
+        self.stringfield = map.get('stringfield')
+        return self
+
+
+class MyModelSubarraymodel(TeaModel):
     def __init__(self):
         pass
 
@@ -374,36 +406,4 @@ class MyModel(TeaModel):
             self.exist_model = None
         self.class_end_time = map.get('class_end_time')
         self.max_length = map.get('max_length')
-        return self
-
-
-class MyModelSubmodel(TeaModel):
-    def __init__(self, stringfield=None):
-        self.stringfield = stringfield
-
-    def validate(self):
-        self.validate_required(self.stringfield, 'stringfield')
-
-    def to_map(self):
-        result = {}
-        result['stringfield'] = self.stringfield
-        return result
-
-    def from_map(self, map={}):
-        self.stringfield = map.get('stringfield')
-        return self
-
-
-class MyModelSubarraymodel(TeaModel):
-    def __init__(self):
-        pass
-
-    def validate(self):
-        pass
-
-    def to_map(self):
-        result = {}
-        return result
-
-    def from_map(self, map={}):
         return self

@@ -1,160 +1,105 @@
 'use strict';
 
-const expect = require('chai').expect;
 const mm = require('mm');
+const expect = require('chai').expect;
 require('mocha-sinon');
-const BaseVisitor = require('../src/visitor/base');
-const CodeVisitor = require('../src/visitor/code');
-const ModelVisitor = require('../src/visitor/model');
+
+const ModelResolver = require('../src/resolver/model');
+const ClientResolver = require('../src/resolver/client');
 
 const {
-  ObjectItem,
+  PropItem,
+  AnnotationItem,
   BehaviorDoAction,
   GrammerValue,
-  FuncItem,
-  PropItem
+  FuncItem
 } = require('../src/langs/common/items');
+const { _deepClone } = require('../src/lib/helper');
 
 const lang = 'python';
+const Combinator = require(`../src/langs/${lang}/combinator.js`);
+const config = require(`../src/langs/${lang}/config.js`);
 
-describe('visitor tests', function () {
+describe('client resolver should be ok', function () {
   beforeEach(function () {
     this.sinon.stub(console, 'log');
   });
 
-  it('base : visit should be ok', function () {
-    const visitor = new BaseVisitor({}, lang);
-    expect(function () {
-      visitor.visit({});
-    }).to.be.throw('Please override visit(ast)');
-  });
+  it('resolve should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), { });
+    const code = new ClientResolver({moduleBody: { nodes: [] }}, combinator, {});
+    mm(code, 'initAnnotation', function () { return; });
+    mm(code, 'resolveProps', function () { return; });
+    mm(code.combinator, 'addInclude', function (className) { return className; });
+    code.config.baseClient = 'BaseClient';
+    code.resolve();
+    expect(code.object.extends).to.be.eql(['BaseClient']);
 
-  it('base : resolveAnnotation should be ok', function () {
-    const visitor = new BaseVisitor({}, lang);
-    const annotationItem = visitor.resolveAnnotation({
-      index: 1,
-      value: '/**\n* test row 1\n * test row 2\n* test row 3\n*/'
-    }, 0);
-    expect(annotationItem.content).to.be.eql(['test row 1', 'test row 2', 'test row 3']);
-  });
-
-  it('base : addAnnotations should be ok', function () {
-    const visitor = new BaseVisitor({}, lang);
-    visitor.commentsSet = [];
-    mm(visitor, 'getComments', function (annotation, belong) {
-      return [
-        {
-          index: 1,
-          value: '/**\n* test row 1\n * test row 2\n* test row 3\n*/'
-        }
-      ];
-    });
-    expect(function () {
-      visitor.addAnnotations({}, {});
-    }).to.be.throw('');
-    expect(console.log.calledWith({})).to.be.true;
     mm.restore();
   });
 
-  it('base : findComments should be ok', function () {
-    const visitor = new BaseVisitor({}, lang);
-    visitor.commentsSet = [];
-    mm(visitor, 'getComments', function (annotation, belong) {
-      return [
-        {
-          index: 1,
-          value: '/**\n* test row 1\n * test row 2\n* test row 3\n*/'
-        }
-      ];
-    });
-    expect(function () {
-      visitor.findComments({}, {});
-    }).to.be.throw('');
-    expect(console.log.calledWith({})).to.be.true;
-    mm.restore();
-  });
-
-  it('code : visitInitBody should be ok', function () {
-    const code = new CodeVisitor({}, lang);
-    code.object = new ObjectItem();
-    mm(code.getCombinator(), 'addModelInclude', function (modelName) {
+  it('resolveInitBody should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const code = new ClientResolver({}, combinator, {});
+    mm(code.combinator, 'addModelInclude', function (modelName) {
       expect(modelName).to.be.eql('modelType');
     });
-    mm(code.getCombinator(), 'addInclude', function (className) {
+    mm(code.combinator, 'addInclude', function (className) {
       return className;
     });
-    code.langConfig.baseClient = 'BaseClient';
-    let ast = {
-      moduleBody: {
-        nodes: [{
-          type: 'init', params: {
-            params: [{
-              paramType: {
-                idType: 'model',
-                lexeme: 'modelType'
-              },
-              paramName: {
-                lexeme: 'modelName'
-              }
-            }, {
-              paramType: {
-                idType: 'module',
-                lexeme: 'moduleType'
-              },
-              paramName: {
-                lexeme: 'moduleName'
-              }
-            }]
+    code.config.baseClient = 'BaseClient';
+    let init = {
+      type: 'init', params: {
+        params: [{
+          paramType: {
+            idType: 'model',
+            lexeme: 'modelType'
+          },
+          paramName: {
+            lexeme: 'modelName'
+          }
+        }, {
+          paramType: {
+            idType: 'module',
+            lexeme: 'moduleType'
+          },
+          paramName: {
+            lexeme: 'moduleName'
           }
         }]
       }
     };
-    code.visitInitBody(ast);
-    expect(code.object.extends).to.be.eql(['BaseClient']);
-
-    code.langConfig.baseClient = ['BaseClient', 'BaseClient2'];
-    code.visitInitBody(ast);
-    expect(code.object.extends).to.be.eql(['BaseClient', 'BaseClient2']);
-
-    code.langConfig.baseClient = null;
-    code.visitInitBody(ast);
+    code.resolveInitBody(init);
     mm.restore();
   });
 
-  it('code : visitWrap should be ok', function () {
-    const code = new CodeVisitor({}, lang);
-    mm(code, 'visit', function (func) {
-      expect(func.name).to.be.eql('test');
-      return;
-    });
-    code.visitWrap({
-      wrapName: {
-        lexeme: 'test'
-      }
-    }, {});
-  });
-
-  it('code : visit should be ok', function () {
-    const code = new CodeVisitor({}, lang);
-    code.object = new ObjectItem();
+  it('resolveFunc should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const code = new ClientResolver({}, combinator, {});
     const funcItem = new FuncItem();
     expect(function () {
-      code.visit(funcItem, {
+      code.resolveFunc(funcItem, {
         params: { params: [] }
       }, {}, {});
     }).to.be.throw('Unsupported ast.returnType');
 
-    mm(code.getCombinator(), 'addInclude', function (className) {
+    mm(code.combinator, 'addInclude', function (className) {
       return className;
     });
-    code.visit(funcItem, {
+    code.resolveFunc(funcItem, {
       params: { params: [] },
       returnType: {
         idType: 'module',
         lexeme: 'object',
       }
-    }, {}, {});
-    code.visit(funcItem, {
+    }, {});
+    code.resolveFunc(funcItem, {
       params: {
         params: [
           {
@@ -167,13 +112,16 @@ describe('visitor tests', function () {
         idType: 'module',
         lexeme: 'object',
       }
-    }, {}, {});
+    }, {});
 
     mm.restore();
   });
 
   it('code : requestBody should be ok', function () {
-    const code = new CodeVisitor({}, lang);
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const code = new ClientResolver({}, combinator, {});
     mm(code, 'visitStmt', function (func) {
       expect(func.name).to.be.eql('testFuncName');
     });
@@ -191,8 +139,11 @@ describe('visitor tests', function () {
     }, funcItem);
   });
 
-  it('code : renderGrammerValue should be ok', function () {
-    const code = new CodeVisitor({}, lang);
+  it('renderGrammerValue should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const code = new ClientResolver({}, combinator, {});
     expect(function () {
       code.renderGrammerValue(null, { type: 'invalid' });
     }).to.be.throw('unimpelemented : invalid');
@@ -264,7 +215,7 @@ describe('visitor tests', function () {
     });
     expect(grammerValue.value.path.length).to.be.eql(2);
 
-    mm(code.getCombinator(), 'addModelInclude', function (modelName) {
+    mm(code.combinator, 'addModelInclude', function (modelName) {
       return modelName;
     });
     grammerValue = code.renderGrammerValue(null, {
@@ -299,8 +250,11 @@ describe('visitor tests', function () {
     mm.restore();
   });
 
-  it('code : visitStmt should be ok', function () {
-    const code = new CodeVisitor({}, lang);
+  it('visitStmt should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const code = new ClientResolver({}, combinator, {});
     const obj = new BehaviorDoAction();
 
     expect(function () {
@@ -320,7 +274,7 @@ describe('visitor tests', function () {
     expect(obj.body.length).to.be.eql(2);
 
     stmt = { type: 'throw', expr: [{}] };
-    mm(code.getCombinator(), 'addInclude', function (className) {
+    mm(code.combinator, 'addInclude', function (className) {
       return className;
     });
     code.visitStmt(obj, stmt);
@@ -358,8 +312,11 @@ describe('visitor tests', function () {
     mm.restore();
   });
 
-  it('code : visitIfConfition should be ok', function () {
-    const code = new CodeVisitor({}, lang);
+  it('visitIfConfition should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const code = new ClientResolver({}, combinator, {});
     const stmtCondition = { left: {}, type: 'invalid' };
     expect(function () {
       code.visitIfConfition(stmtCondition);
@@ -377,8 +334,11 @@ describe('visitor tests', function () {
     mm.restore();
   });
 
-  it('code : visitIfElse should be ok', function () {
-    const code = new CodeVisitor({}, lang);
+  it('visitIfElse should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const code = new ClientResolver({}, combinator, {});
     expect(function () {
       code.visitIfElse({});
     }).to.be.throw('');
@@ -397,38 +357,45 @@ describe('visitor tests', function () {
     const grammer = code.visitIfElse(stmt);
     expect(grammer.elseItem.length).to.be.eql(1);
   });
+});
 
-  it('model : init should be ok', function () {
-    const model = new ModelVisitor({}, lang);
-    model.langConfig = {
-      modelDirName: 'Models',
-      model: {
-        dir: ''
-      }
-    };
-    model.init({
-      modelName: { lexeme: 'TestModel' }
-    }, 0);
-    expect(model.langConfig.model.dir).to.be.eql('Models');
-    expect(model.layer).to.be.eql('Models');
+describe('model resolver should be ok', function () {
+  it('resolve should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const model = new ModelResolver({
+      type: 'model',
+      modelName: { lexeme: 'test' },
+      modelBody: { nodes: [] },
+      tokenRange: [1, 100]
+    }, combinator, {});
+    mm(model, 'initAnnotation', function () { return; });
+    mm(model.combinator, 'addInclude', function (modelName) { return modelName; });
+    mm(model, 'initProp', function () { return; });
+    mm(model, 'resolveAnnotations', function () { return [new AnnotationItem()]; });
+    mm(model, 'getBetweenComments', function () { return; });
+    model.resolve();
+    expect(model.object.body.length).to.be.eql(1);
   });
 
-  it('model : initProp should be ok', function () {
-    const model = new ModelVisitor({}, lang);
-    const object = new ObjectItem();
-
+  it('initProp should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const model = new ModelResolver({}, combinator, {});
     expect(function () {
-      model.initProp(object, [{
+      model.initProp([{
         fieldValue: {
           fieldType: null
         }
       }]);
     }).to.be.throw('');
 
-    mm(model.getCombinator(), 'addModelInclude', function (modelName) {
+    mm(model.combinator, 'addModelInclude', function (modelName) {
       expect(modelName).to.be.eql('a');
     });
-    model.initProp(object, [{
+    model.initProp([{
       fieldValue: {
         fieldType: { type: 'moduleModel', path: [{ lexeme: 'a' }] }
       },
@@ -441,18 +408,21 @@ describe('visitor tests', function () {
     mm(model, 'findSubModelsUsed', function () {
       return;
     });
-    model.initProp(object, [{
+    model.initProp([{
       type: 'modelField',
       fieldValue: { fieldType: 'array', fieldItemType: { lexeme: '' } },
       fieldName: { lexeme: 'test' },
       attrs: []
     }]);
-    expect(object.body.filter(item => item instanceof PropItem).length).to.be.eql(2);
+    expect(model.object.body.filter(item => item instanceof PropItem).length).to.be.eql(2);
     mm.restore();
   });
 
-  it('model : findSubModelsUsed should be ok', function () {
-    const model = new ModelVisitor({}, lang);
+  it('findSubModelsUsed should be ok', function () {
+    const combinator = new Combinator(Object.assign(_deepClone(config), {
+      package: 'test', model: { dir: 'Models' }
+    }), {});
+    const model = new ModelResolver({}, combinator, {});
     const subModelUsed = [];
     model.findSubModelsUsed({
       fieldName: { lexeme: 'test' },
@@ -464,23 +434,5 @@ describe('visitor tests', function () {
       }
     }, subModelUsed);
     expect(subModelUsed.length).to.be.eql(2);
-  });
-
-  it('model : visit should be ok', function () {
-    const model = new ModelVisitor({ outputDir: '', filename: 'test' }, lang);
-    mm(model, 'init', function () { return; });
-    mm(model.getCombinator(), 'init', function () { return; });
-    mm(model, 'done', function () { return; });
-    const prop = new PropItem();
-    prop.name = 'testProp';
-    mm(model, 'getBetweenComments', function () { return; });
-    mm(model, 'resolveAnnotations', function () { return [prop]; });
-    model.visit({
-      type: 'model',
-      modelName: { lexeme: 'modelName' },
-      modelBody: { nodes: [] },
-      tokenRange: [1, 100]
-    }, 0, {}, {});
-    expect(model.object.body.filter(item => item instanceof PropItem).length).to.be.eql(1);
   });
 });

@@ -2,6 +2,15 @@
 
 const DSL = require('@darabonba/parser');
 
+let config = {};
+
+function _config(langConfig = null) {
+  if (null !== langConfig) {
+    config = langConfig;
+  }
+  return config;
+}
+
 function _upperFirst(str) {
   if (!str) {
     return '';
@@ -39,49 +48,81 @@ function _isBasicType(type) {
   return DSL.util.isBasicType(type);
 }
 
-function _getTaskConfig(option) {
-  return {
-    outputDir: '',
-    indent: '    '
-    , ...option
-  };
-}
-
-function _getLangConfig(option, lang) {
-  let config = require(`../langs/${lang}/config`);
-  return {
-    package: 'Alibabacloud.SDK',
-    clientName: 'Client',
-    include: [],
-    parent: [],
-    pkgDir: '',
-    ...config,
-    ...option,
-    ...option[lang]
-  };
-}
-
-function _getEmitConfig(option, lang) {
-  const taskConfig = _getTaskConfig(option);
-  const langConfig = _getLangConfig(option, lang);
-  return {
-    ...langConfig,
-    dir: taskConfig.outputDir,
-    layer: langConfig.package,
-    showInfo: false
-  };
-}
-
-function _getCombinator(lang, langConfig) {
-  const Combinator = require(`../langs/${lang}/combinator`);
-  return new Combinator(langConfig);
-}
-
 function _deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+function _avoidKeywords(str) {
+  if (config.keywords.indexOf(str.toLowerCase()) > -1) {
+    return str + '_';
+  }
+  return str;
+}
+
+function _convertStaticParam(param) {
+  if (param === '__response') {
+    param = config.response;
+  } else if (param === '__request') {
+    param = config.request;
+  }
+  return param;
+}
+
+function _isKeywords(str) {
+  return config.keywords.indexOf(str.toLowerCase()) > -1;
+}
+
+function _modify(modify) {
+  if (Array.isArray(modify)) {
+    return modify.filter((m) => config.modifyOrder.indexOf(m) > -1)
+      .map((m) => _modify(m)).sort(function (a, b) {
+        return config.modifyOrder.indexOf(a.toUpperCase()) - config.modifyOrder.indexOf(b.toUpperCase());
+      }).join(' ');
+  }
+  return modify.toLowerCase();
+}
+
+function _symbol(str) {
+  if (config.symbolMap[str]) {
+    return config.symbolMap[str];
+  }
+  throw new Error(`Unsupported symbol : ${str}`);
+}
+
+function _exception(str) {
+  if (config.exceptionMap[str]) {
+    return config.exceptionMap[str];
+  }
+  return str;
+}
+
+function _underScoreCase(str) {
+  if (!str) {
+    return '';
+  }
+  let res = '';
+  let tmp = '';
+  for (const c of str) {
+    if (/[A-Z|0-9]/.test(c)) {
+      tmp += c;
+    } else {
+      if (tmp.length > 0) {
+        res += res === '' ? tmp.toLowerCase() : '_' + tmp.toLowerCase();
+        tmp = '';
+      }
+      res += c;
+    }
+  }
+  if (tmp.length > 0) {
+    res += '_' + tmp.toLowerCase();
+  }
+  res = res.replace(/-/g, '_');
+  return res;
+}
+
+
 module.exports = {
+  _config,
   _upperFirst,
   _camelCase,
   _string,
@@ -89,8 +130,11 @@ module.exports = {
   _lowerFirst,
   _isBasicType,
   _deepClone,
-
-  _getLangConfig,
-  _getEmitConfig,
-  _getCombinator,
+  _avoidKeywords,
+  _convertStaticParam,
+  _isKeywords,
+  _modify,
+  _symbol,
+  _exception,
+  _underScoreCase
 };
