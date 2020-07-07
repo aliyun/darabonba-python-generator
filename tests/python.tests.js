@@ -11,18 +11,19 @@ let Generator = require('../src/generator');
 const lang = 'python';
 
 const expectedDir = path.join(__dirname, 'expected/');
-const fixturesDir = path.join(__dirname, 'fixtures');
+const fixturesDir = path.join(__dirname, 'fixtures/');
 const outputDir = path.join(__dirname, '../', 'output/tests/');
 
 function check(moduleName, expectedFiles = [], option = {}) {
   const mainFilePath = path.join(fixturesDir, moduleName, 'main.dara') ? path.join(fixturesDir, moduleName, 'main.dara') : path.join(fixturesDir, moduleName, 'main.tea');
   const moduleOutputDir = path.join(outputDir, moduleName);
+  const prefixDir = path.join(fixturesDir, moduleName);
   const pkgContent = fs.readFileSync(
-    fs.existsSync(path.join(__dirname, `fixtures/${moduleName}/Darafile`)) ? path.join(__dirname, `fixtures/${moduleName}/Darafile`) : path.join(__dirname, `fixtures/${moduleName}/Teafile`), 'utf8');
+    fs.existsSync(path.join(prefixDir, 'Darafile')) ? path.join(prefixDir, 'Darafile') : path.join(prefixDir, 'Teafile'), 'utf8');
   const pkgInfo = JSON.parse(pkgContent);
   const config = {
     outputDir: moduleOutputDir,
-    pkgDir: path.join(__dirname, `fixtures/${moduleName}`),
+    pkgDir: path.join(fixturesDir, moduleName),
     ...pkgInfo,
     ...option
   };
@@ -39,7 +40,7 @@ function check(moduleName, expectedFiles = [], option = {}) {
   });
 }
 
-describe('New Generator', function () {
+describe('Python Generator', function () {
   it('alias should ok', function () {
     check('alias', [
       'tea_python_tests/client.py'
