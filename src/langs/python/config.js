@@ -77,7 +77,7 @@ module.exports = {
   },
   model: {
     dir: 'models',
-    mode: 'group',
+    mode: 'single_file',
     include: [
     ],
   },
