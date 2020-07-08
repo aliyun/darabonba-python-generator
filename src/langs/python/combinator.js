@@ -41,6 +41,9 @@ function _type(type) {
   if (config.typeMap[t]) {
     return config.typeMap[t];
   }
+  if (t.indexOf('map[') === 0) {
+    return 'map';
+  }
   if (!_isBasicType(t)) {
     return t;
   }
@@ -180,51 +183,94 @@ class Combinator extends CombinatorBase {
     return resultName;
   }
 
-  combine(object) {
-    const outputPars = { header: '', body: '', foot: '' };
-    let emitter;
-    /****************************** resolve object *****************************/
+  combine(objectArr = []) {
+    super.combine(objectArr);
     this.config.dir = this.config.outputDir + '/' + this.config.package + '/';
+    const [clientObjectItem] = objectArr.filter(obj => obj.type === 'client');
+    this.combineClient(clientObjectItem);
+    this.includeList = [];
+    this.includeModelList = [];
+    const models = objectArr.filter(obj => obj.type === 'model');
+    if (models.length > 0) {
+      this.combineModel(models);
+    }
+  }
 
-
-    /**************************** emit package files ***************************/
-    if (this.config.emitType === 'code' && this.config.packageInfo) {
+  combineClient(object) {
+    this.config.emitType = 'client';
+    this.includeList = object.includeList;
+    this.includeModelList = object.includeModelList;
+    if (this.config.packageInfo) {
       const packageInfo = new PackageInfo(this.config);
       packageInfo.emit(this.config.packageInfo, this.requirePackage);
     }
+    let emitter, outputParts = { head: '', body: '', foot: '' };
+    // generate __init__.py
+    emitter = new Emitter(this.config);
+    emitter.config.filename = '__init__';
+    emitter.save();
 
-    /******************************* emit body   *******************************/
+    /******************************** emit body ********************************/
     emitter = new Emitter(this.config);
     this.emitClass(emitter, object);
-    if (this.config.emitType === 'model' && object.subObject && object.subObject.length > 0) {
-      object.subObject.forEach(obj => {
-        this.emitClass(emitter, obj);
-      });
-    }
-    outputPars.body = emitter.output;
-    /******************************* emit foot   *******************************/
+    outputParts.body = emitter.output;
 
-    /******************************* emit head   *******************************/
+    /******************************** emit head *******************************/
     emitter = new Emitter(this.config);
     if (object.topAnnotation.length > 0) {
       this.emitAnnotations(emitter, object.topAnnotation);
     }
     this.emitInclude(emitter);
-    outputPars.head = emitter.output;
+    outputParts.head = emitter.output;
 
     /***************************** combine output ******************************/
     const config = _deepClone(this.config);
-    if (this.config.emitType === 'code') {
-      config.filename = this.config.clientName;
-    } else {
-      config.layer = '';
-      config.filename = 'models';
+    config.filename = this.config.clientName;
+    this.combineOutputParts(config, outputParts);
+  }
+
+  combineModel(models) {
+    this.config.emitType = 'model';
+    let emitter, outputParts = { head: '', body: '', foot: '' };
+    let includeSet = [];
+    // merge includeList
+    models.forEach(object => {
+      object.includeList.forEach(include => {
+        let key = `${include.import}:${include.from}`;
+        if (includeSet.indexOf(key) === -1) {
+          this.includeList.push(include);
+          includeSet.push(key);
+        }
+      });
+    });
+    /******************************** emit body ********************************/
+    emitter = new Emitter(this.config);
+    models.forEach(object => {
+      this.emitClass(emitter, object);
+      if (object.subObject && object.subObject.length > 0) {
+        object.subObject.forEach(obj => {
+          this.emitClass(emitter, obj);
+        });
+      }
+    });
+    outputParts.body = emitter.output;
+
+    /******************************** emit head ********************************/
+    emitter = new Emitter(this.config);
+    for (let i = 0; i < models.length; i++) {
+      if (models[0].topAnnotation) {
+        this.emitAnnotations(emitter, models[0].topAnnotation);
+        break;
+      }
     }
-    const globalEmitter = new Emitter(config);
-    globalEmitter.emit(outputPars.head);
-    globalEmitter.emit(outputPars.body);
-    globalEmitter.emit(outputPars.foot);
-    globalEmitter.save();
+    this.emitInclude(emitter);
+    outputParts.head = emitter.output;
+
+    /***************************** combine output ******************************/
+    const config = _deepClone(this.config);
+    config.layer = '';
+    config.filename = 'models';
+    this.combineOutputParts(config, outputParts);
   }
 
   emitClass(emitter, object) {
@@ -240,7 +286,7 @@ class Combinator extends CombinatorBase {
       parent = '(' + tmp.join(', ') + ')';
     }
     let className = object.name;
-    if (this.config.emitType === 'code') {
+    if (this.config.emitType === 'client') {
       className = this.config.clientName;
     } else {
       className = object.name.split('.').map(item => _upperFirst(item)).join('');
@@ -254,7 +300,6 @@ class Combinator extends CombinatorBase {
     }
     emitter.emitln();
     emitter.emitln(`class ${_upperFirst(className)}${parent}:`, this.level);
-
     this.levelUp();
     const notes = this.resolveNotes(object.body);
     if (Object.keys(notes).length > 0) {
@@ -286,7 +331,7 @@ class Combinator extends CombinatorBase {
   }
 
   emitValidate(emitter, props, notes) {
-    //print validate
+  //print validate
     emitter.emitln('');
     emitter.emitln('def validate(self):', this.level);
     this.levelUp();
@@ -342,9 +387,9 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`if self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
           this.levelUp();
           if (pattern.length > 0) {
-            emitter.emitln(`self.validate_pattern(${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', '${pattern[0].value}')`, this.level);
+            emitter.emitln(`self.validate_pattern(self.${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', '${pattern[0].value}')`, this.level);
           } else if (maxLength.length > 0) {
-            emitter.emitln(`self.validate_max_length(${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', ${maxLength[0].value})`, this.level);
+            emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', ${maxLength[0].value})`, this.level);
           }
           haveValidate = true;
           this.levelDown();
@@ -450,9 +495,7 @@ class Combinator extends CombinatorBase {
     this.levelDown();
   }
 
-  emitNotes(emitter, notes) {
-
-  }
+  emitNotes(emitter, notes) { }
 
   emitConstruct(emitter, construct, parent, props) {
     if (construct.params.length + props.length > 0) {
@@ -489,7 +532,7 @@ class Combinator extends CombinatorBase {
     }
     if (construct.annotations) {
       this.emitFuncComment(emitter, construct);
-      //this.emitAnnotations(emitter, construct.annotations);
+    //this.emitAnnotations(emitter, construct.annotations);
     }
 
     props.forEach(prop => {
@@ -512,7 +555,7 @@ class Combinator extends CombinatorBase {
       emitter.emitln('pass', this.level);
     }
     this.levelDown();
-    //emitter.emitln();
+  //emitter.emitln();
   }
 
   emitAnnotation(emitter, annotation, level) {
@@ -629,7 +672,7 @@ class Combinator extends CombinatorBase {
   }
 
   grammerCall(emitter, gram) {
-    // path : 'parent', 'object', 'object_static', 'call', 'call_static', 'prop', 'prop_static', 'map', 'list'
+  // path : 'parent', 'object', 'object_static', 'call', 'call_static', 'prop', 'prop_static', 'map', 'list'
     var pre = '';
     let params = '';
     if (gram.params.length > 0) {
@@ -680,9 +723,6 @@ class Combinator extends CombinatorBase {
   }
 
   grammerExpr(emitter, gram) {
-    if (gram.left && gram.left.name === 'createClusterRequestBody') {
-      //debug.stack(gram.right.value.params.value[13]);
-    }
     if (!gram.left && !gram.right) {
       emitter.emit(` ${_symbol(gram.opt)} `);
       return;

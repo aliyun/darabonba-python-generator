@@ -2,6 +2,20 @@
 from Tea.model import TeaModel
 
 
+class M(TeaModel):
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        result = {}
+        return result
+
+    def from_map(self, map={}):
+        return self
+
 class MyModel(TeaModel):
     def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None, submodel=None, subarraymodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None, class_end_time=None, max_length=None):
         self.stringfield = stringfield
@@ -51,9 +65,9 @@ class MyModel(TeaModel):
         if self.exist_model:
             self.exist_model.validate()
         if self.class_end_time:
-            self.validate_pattern(class_end_time, 'class_end_time', '\\d{4}[-]\\d{1,2}[-]\\d{1,2}(\\s\\d{2}:\\d{2}(:\\d{2})?)?')
+            self.validate_pattern(self.class_end_time, 'class_end_time', '\\d{4}[-]\\d{1,2}[-]\\d{1,2}(\\s\\d{2}:\\d{2}(:\\d{2})?)?')
         if self.max_length:
-            self.validate_max_length(max_length, 'max_length', 10)
+            self.validate_max_length(self.max_length, 'max_length', 10)
 
     def to_map(self):
         result = {}
@@ -135,7 +149,7 @@ class MyModel(TeaModel):
         self.maparray = []
         if map.get('maparray') is not None:
             for k in map.get('maparray'):
-                temp_model = map[string,any]()
+                temp_model = map()
                 temp_model = temp_model.from_map(k)
                 self.maparray.append(temp_model)
         else:
