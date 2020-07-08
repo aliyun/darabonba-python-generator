@@ -27,6 +27,7 @@ class Test1(TeaModel):
         self.test = map.get('test')
         self.test_2 = map.get('test2')
         return self
+
 """
 TestModel2
 """
@@ -53,6 +54,7 @@ class Test2(TeaModel):
         self.test = map.get('test')
         self.test_2 = map.get('test2')
         return self
+
 """
 TestModel3
 """
@@ -81,3 +83,4 @@ class Test3(TeaModel):
         self.test = map.get('test')
         self.test_1 = map.get('test1')
         return self
+

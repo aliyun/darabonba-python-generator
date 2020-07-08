@@ -15,7 +15,8 @@ const {
   _config,
   _avoidKeywords,
   _modify,
-  _symbol
+  _symbol,
+  _underScoreCase
 } = require('../src/lib/helper');
 
 describe('debug should be ok', function () {
@@ -206,7 +207,6 @@ describe('helper tests', function () {
       ]
     });
     expect(_modify('PRIVATE')).to.be.eql('private');
-    expect(_modify(['PRIVATE', 'STATIC'])).to.be.eql('private static');
   });
 
   it('_symbol should be ok', function () {
@@ -216,5 +216,10 @@ describe('helper tests', function () {
     }).to.be.throw('Unsupported symbol : InvalidSymbol');
 
     expect(_symbol('ASSIGN')).to.be.eql('=');
+  });
+
+  it('_underScoreCase should be ok', function () {
+    expect(_underScoreCase('TestABC')).to.be.eql('test_abc');
+    expect(_underScoreCase(null)).to.be.eql('');
   });
 });

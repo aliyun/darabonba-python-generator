@@ -247,9 +247,11 @@ class Combinator extends CombinatorBase {
     emitter = new Emitter(this.config);
     models.forEach(object => {
       this.emitClass(emitter, object);
+      emitter.emitln();
       if (object.subObject && object.subObject.length > 0) {
         object.subObject.forEach(obj => {
           this.emitClass(emitter, obj);
+          emitter.emitln();
         });
       }
     });
