@@ -172,7 +172,8 @@ describe('Python Generator', function () {
 
   it('model should ok', function () {
     check('model', [
-      'tea_python_tests/client.py'
+      'tea_python_tests/client.py',
+      'tea_python_tests/models.py',
     ],
     {
       python: {

@@ -72,6 +72,7 @@ class ComplexRequest(TeaModel):
             self.part = None
         return self
 
+
 class ComplexRequestHeader(TeaModel):
     def __init__(self, content=None):
         self.content = content
@@ -88,6 +89,7 @@ class ComplexRequestHeader(TeaModel):
         self.content = map.get('Content')
         return self
 
+
 class ComplexRequestPart(TeaModel):
     def __init__(self, part_number=None):
         self.part_number = part_number
@@ -103,3 +105,4 @@ class ComplexRequestPart(TeaModel):
     def from_map(self, map={}):
         self.part_number = map.get('PartNumber')
         return self
+

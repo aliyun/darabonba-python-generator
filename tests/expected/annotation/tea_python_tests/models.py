@@ -21,3 +21,4 @@ class Test(TeaModel):
     def from_map(self, map={}):
         self.test = map.get('test')
         return self
+

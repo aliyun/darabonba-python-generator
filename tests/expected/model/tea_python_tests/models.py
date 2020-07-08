@@ -16,6 +16,7 @@ class M(TeaModel):
     def from_map(self, map={}):
         return self
 
+
 class MyModel(TeaModel):
     def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None, submodel=None, subarraymodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None, class_end_time=None, max_length=None):
         self.stringfield = stringfield
@@ -166,6 +167,7 @@ class MyModel(TeaModel):
         self.max_length = map.get('max_length')
         return self
 
+
 class MyModelSubmodel(TeaModel):
     def __init__(self, stringfield=None):
         self.stringfield = stringfield
@@ -182,6 +184,7 @@ class MyModelSubmodel(TeaModel):
         self.stringfield = map.get('stringfield')
         return self
 
+
 class MyModelSubarraymodel(TeaModel):
     def __init__(self):
         pass
@@ -195,3 +198,4 @@ class MyModelSubarraymodel(TeaModel):
 
     def from_map(self, map={}):
         return self
+
