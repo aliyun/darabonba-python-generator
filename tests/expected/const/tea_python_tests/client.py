@@ -1,6 +1,4 @@
 # This file is auto-generated, don't edit it. Thanks.
-
-
 class Client:
 
     @staticmethod

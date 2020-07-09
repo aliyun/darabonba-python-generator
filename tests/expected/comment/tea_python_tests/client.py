@@ -9,12 +9,11 @@ from Tea.core import TeaCore
 from Tea.response import TeaResponse
 from Tea.exceptions import UnretryableException
 
-"""
-top annotation
-"""
-
 
 class Client:
+    """
+    top annotation
+    """
     # type's comment
     def __init__(self, _a=None):
         """

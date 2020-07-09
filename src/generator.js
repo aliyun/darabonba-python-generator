@@ -81,7 +81,6 @@ class Generator {
 
     const config = {
       package: 'DarabonbaSDK',
-      clientName: '',
       include: [],
       parent: [],
       pkgDir: '',
@@ -97,6 +96,9 @@ class Generator {
       Object.assign(config,
         meta[this.lang],
       );
+    }
+    if (!config.clientName) {
+      config.clientName = config.client.defaultName;
     }
     this.config = config;
   }
@@ -136,14 +138,14 @@ class Generator {
           packageName = daraMeta[this.lang].package ? daraMeta[this.lang].package : daraMeta.name;
           clientName = daraMeta[this.lang].clientName
             ? daraMeta[this.lang].clientName
-            : 'Client';
+            : this.config.clientName.defaultName;
           modelDir = daraMeta[this.lang].modelDirName
             ? daraMeta[this.lang].modelDirName
-            : 'Models';
+            : this.config.model.dir;
         } else {
           packageName = daraMeta.name;
-          clientName = 'Client';
-          modelDir = 'Models';
+          clientName = this.config.clientName.defaultName;
+          modelDir = this.config.model.dir;
         }
 
         // resolve third package namespace

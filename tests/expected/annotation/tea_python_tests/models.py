@@ -1,12 +1,11 @@
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
 
-"""
-TestModel
-"""
-
 
 class Test(TeaModel):
+    """
+    TestModel
+    """
     def __init__(self, test=None):
         self.test = test
 
@@ -21,4 +20,3 @@ class Test(TeaModel):
     def from_map(self, map={}):
         self.test = map.get('test')
         return self
-

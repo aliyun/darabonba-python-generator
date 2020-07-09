@@ -105,4 +105,3 @@ class ComplexRequestPart(TeaModel):
     def from_map(self, map={}):
         self.part_number = map.get('PartNumber')
         return self
-

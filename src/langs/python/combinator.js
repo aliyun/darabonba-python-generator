@@ -245,14 +245,18 @@ class Combinator extends CombinatorBase {
     });
     /******************************** emit body ********************************/
     emitter = new Emitter(this.config);
-    models.forEach(object => {
+    models.forEach((object, i) => {
       this.emitClass(emitter, object);
-      emitter.emitln();
       if (object.subObject && object.subObject.length > 0) {
-        object.subObject.forEach(obj => {
+        emitter.emitln().emitln();
+        object.subObject.forEach((obj, j) => {
           this.emitClass(emitter, obj);
-          emitter.emitln();
+          if (j < object.subObject.length - 1) {
+            emitter.emitln().emitln();
+          }
         });
+      } else if (i < models.length - 1) {
+        emitter.emitln().emitln();
       }
     });
     outputParts.body = emitter.output;
@@ -296,13 +300,11 @@ class Combinator extends CombinatorBase {
     if (_isKeywords(className)) {
       className = _avoidKeywords(className);
     }
-    if (object.annotations.length > 0) {
-      this.emitAnnotations(emitter, object.annotations);
-      emitter.emitln();
-    }
-    emitter.emitln();
     emitter.emitln(`class ${_upperFirst(className)}${parent}:`, this.level);
     this.levelUp();
+    if (object.annotations.length > 0) {
+      this.emitAnnotations(emitter, object.annotations);
+    }
     const notes = this.resolveNotes(object.body);
     if (Object.keys(notes).length > 0) {
       this.emitNotes(emitter, notes);
@@ -333,7 +335,7 @@ class Combinator extends CombinatorBase {
   }
 
   emitValidate(emitter, props, notes) {
-  //print validate
+    //print validate
     emitter.emitln('');
     emitter.emitln('def validate(self):', this.level);
     this.levelUp();
@@ -534,7 +536,7 @@ class Combinator extends CombinatorBase {
     }
     if (construct.annotations) {
       this.emitFuncComment(emitter, construct);
-    //this.emitAnnotations(emitter, construct.annotations);
+      //this.emitAnnotations(emitter, construct.annotations);
     }
 
     props.forEach(prop => {
@@ -557,7 +559,7 @@ class Combinator extends CombinatorBase {
       emitter.emitln('pass', this.level);
     }
     this.levelDown();
-  //emitter.emitln();
+    //emitter.emitln();
   }
 
   emitAnnotation(emitter, annotation, level) {
@@ -645,16 +647,21 @@ class Combinator extends CombinatorBase {
   emitInclude(emitter) {
     let importList = this.includeList.filter(node => !node.from && node.import);
     let fromList = this.includeList.filter(node => node.from);
-    importList.forEach(include => {
-      this.emitIncludeRow(emitter, include);
-    });
     if (importList.length) {
+      importList.forEach(include => {
+        this.emitIncludeRow(emitter, include);
+      });
       emitter.emitln();
     }
-    fromList.forEach(include => {
-      this.emitIncludeRow(emitter, include);
-    });
-    emitter.emitln();
+    if (fromList.length) {
+      fromList.forEach(include => {
+        this.emitIncludeRow(emitter, include);
+      });
+      emitter.emitln();
+    }
+    if (importList.length || fromList.length) {
+      emitter.emitln();
+    }
   }
 
   emitIncludeRow(emitter, include) {
@@ -674,7 +681,7 @@ class Combinator extends CombinatorBase {
   }
 
   grammerCall(emitter, gram) {
-  // path : 'parent', 'object', 'object_static', 'call', 'call_static', 'prop', 'prop_static', 'map', 'list'
+    // path : 'parent', 'object', 'object_static', 'call', 'call_static', 'prop', 'prop_static', 'map', 'list'
     var pre = '';
     let params = '';
     if (gram.params.length > 0) {
