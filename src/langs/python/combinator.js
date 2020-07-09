@@ -614,12 +614,13 @@ class Combinator extends CombinatorBase {
   }
 
   emitFuncComment(emitter, func) {
-    const commentTag = ['@param'];
+    const commentTag = ['@param', '@return'];
     if (func.annotations.length > 0) {
       emitter.emitln('"""', this.level);
       func.annotations.forEach(annotation => {
         if (annotation.mode === 'multi') {
           annotation.content.forEach(c => {
+            c = c.replace('*', '').trim('', 'left');
             let tagIndex = null;
             c.split(' ').forEach((item, index) => {
               if (commentTag.indexOf(item) > -1) {
@@ -629,7 +630,28 @@ class Combinator extends CombinatorBase {
             if (tagIndex !== null) {
               let tmp = c.split(' ');
               if (tmp[tagIndex] === '@param') {
-                tmp[tagIndex + 1] = _underScoreCase(_avoidKeywords(tmp[tagIndex + 1])) + ':';
+                const param = tmp[tagIndex + 1];
+                tmp[tagIndex] = ':param';
+                tmp[tagIndex + 1] = _underScoreCase(_avoidKeywords(param)) + ':';
+                let type = func.params.map(p => {
+                  if (param === p.key) {
+                    return p.type;
+                  }
+                });
+                const typeMap = this.config.typeMap;
+                type = typeMap[type.join('')];
+                
+                emitter.emitln();
+                if (type) {
+                  let typeTmp = tmp.slice(0, 2);
+                  typeTmp[tagIndex] = ':type';
+                  typeTmp.push(type);
+                  emitter.emitln(typeTmp.join(' '), this.level);
+                }
+                emitter.emitln(tmp.join(' '), this.level);
+              }else if (tmp[tagIndex] === '@return') {
+                tmp[tagIndex] = ':return:';
+                emitter.emitln();
                 emitter.emitln(tmp.join(' '), this.level);
               }
             } else {

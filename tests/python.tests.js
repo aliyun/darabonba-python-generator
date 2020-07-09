@@ -55,7 +55,8 @@ describe('Python Generator', function () {
 
   it('add annotation should ok', function () {
     check('annotation', [
-      'tea_python_tests/client.py'
+      'tea_python_tests/client.py',
+      'tea_python_tests/models.py'
     ],
     {
       python: {
@@ -79,7 +80,8 @@ describe('Python Generator', function () {
 
   it('add comments should ok', function () {
     check('comment', [
-      'tea_python_tests/models.py',
+      'tea_python_tests/client.py',
+      'tea_python_tests/models.py'
     ],
     {
       python: {
@@ -173,7 +175,7 @@ describe('Python Generator', function () {
   it('model should ok', function () {
     check('model', [
       'tea_python_tests/client.py',
-      'tea_python_tests/models.py',
+      'tea_python_tests/models.py'
     ],
     {
       python: {

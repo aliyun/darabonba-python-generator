@@ -62,13 +62,13 @@ module.exports = {
     'CONCAT': '+'
   },
   typeMap: {
+    'string': 'str',
     'boolean': 'bool',
     'number': 'integer',
     'integer': 'integer',
-    'object': 'object',
-    'map': 'array',
-    'readable': 'Stream',
-    'bytes': 'array',
+    'object': 'dict',
+    'map': 'dict',
+    'bytes': 'bytes',
     'long': 'integer'
   },
   exceptionMap: {

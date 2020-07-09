@@ -135,9 +135,14 @@ class Client:
     def test_func(str, val):
         """
         testFunc
-          * @param str: description: string parameter
-          * @param val: description: boolean parameter
-          * @return void description for return
+
+        :type str: str
+        :param str: description: string parameter
+
+        :type val: bool
+        :param val: description: boolean parameter
+
+        :return: void description for return
         """
         # empty comment1
         # empty comment2
