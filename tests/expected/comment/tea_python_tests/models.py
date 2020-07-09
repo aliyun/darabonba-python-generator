@@ -1,12 +1,11 @@
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
 
-"""
-TestModel
-"""
-
 
 class Test1(TeaModel):
+    """
+    TestModel
+    """
     # model的test back comment
     # model的test2 back comment
     def __init__(self, test=None, test_2=None):
@@ -28,12 +27,11 @@ class Test1(TeaModel):
         self.test_2 = map.get('test2')
         return self
 
-"""
-TestModel2
-"""
-
 
 class Test2(TeaModel):
+    """
+    TestModel2
+    """
     # model的test front comment
     # model的test front comment
     def __init__(self, test=None, test_2=None):
@@ -55,12 +53,11 @@ class Test2(TeaModel):
         self.test_2 = map.get('test2')
         return self
 
-"""
-TestModel3
-"""
-
 
 class Test3(TeaModel):
+    """
+    TestModel3
+    """
     # model的test front comment
     # empty comment1
     # empy comment2
@@ -83,4 +80,3 @@ class Test3(TeaModel):
         self.test = map.get('test')
         self.test_1 = map.get('test1')
         return self
-

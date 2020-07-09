@@ -5,7 +5,6 @@ const defaultConfig = require('../common/config');
 module.exports = {
   ...defaultConfig,
   indent: '    ',
-  clientName: 'client',
   ext: '.py',
   keywords: [
     'default',
@@ -82,7 +81,7 @@ module.exports = {
     ],
   },
   client: {
-    filename: 'Client',
+    defaultName: 'client',
     include: []
   },
   tea: {

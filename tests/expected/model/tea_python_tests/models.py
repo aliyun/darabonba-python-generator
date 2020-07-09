@@ -198,4 +198,3 @@ class MyModelSubarraymodel(TeaModel):
 
     def from_map(self, map={}):
         return self
-
