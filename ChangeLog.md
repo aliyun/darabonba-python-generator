@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 1.0.4 - 2020-07-10
+
+* Imporve models
+* Imporve function comments
+
 ## 1.0.3 - 2020-07-03
 
 * Fixed unsupported symbols
