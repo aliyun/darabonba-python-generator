@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
 
@@ -8,23 +9,38 @@ class Test1(TeaModel):
     """
     # model的test back comment
     # model的test2 back comment
-    def __init__(self, test=None, test_2=None):
+    def __init__(self, test=None, test_2=None, test_3=None):
+        # test desc
         self.test = test
+        # test2 desc
         self.test_2 = test_2
+        self.test_3 = []
 
     def validate(self):
         self.validate_required(self.test, 'test')
         self.validate_required(self.test_2, 'test_2')
+        self.validate_required(self.test_3, 'test_3')
+        if self.test_3:
+            self.test_3.validate()
 
     def to_map(self):
         result = {}
         result['test'] = self.test
         result['test2'] = self.test_2
+        if self.test_3 is not None:
+            result['test3'] = self.test_3.to_map()
+        else:
+            result['test3'] = None
         return result
 
     def from_map(self, map={}):
         self.test = map.get('test')
         self.test_2 = map.get('test2')
+        if map.get('test3') is not None:
+            temp_model = array()
+            self.test_3 = temp_model.from_map(map['test3'])
+        else:
+            self.test_3 = None
         return self
 
 
@@ -35,7 +51,9 @@ class Test2(TeaModel):
     # model的test front comment
     # model的test front comment
     def __init__(self, test=None, test_2=None):
+        # test desc
         self.test = test
+        # test2 desc
         self.test_2 = test_2
 
     def validate(self):
@@ -63,7 +81,9 @@ class Test3(TeaModel):
     # empy comment2
     # model的test back comment
     def __init__(self, test=None, test_1=None):
+        # test desc
         self.test = test
+        # test desc
         self.test_1 = test_1
 
     def validate(self):

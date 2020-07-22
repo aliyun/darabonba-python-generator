@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.core import TeaCore
 
 
-class Client:
+class Client(object):
 
     @staticmethod
     def hello():

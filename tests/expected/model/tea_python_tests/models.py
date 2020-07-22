@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
 
@@ -32,7 +33,9 @@ class MyModel(TeaModel):
         self.numberfield = numberfield
         self.readable = readable
         self.exist_model = exist_model
+        # 结束时间
         self.class_end_time = class_end_time
+        # 最大长度
         self.max_length = max_length
 
     def validate(self):

@@ -217,6 +217,7 @@ class Combinator extends CombinatorBase {
 
     /******************************** emit head *******************************/
     emitter = new Emitter(this.config);
+    emitter.emitln('# -*- coding: utf-8 -*-');
     if (object.topAnnotation.length > 0) {
       this.emitAnnotations(emitter, object.topAnnotation);
     }
@@ -263,6 +264,7 @@ class Combinator extends CombinatorBase {
 
     /******************************** emit head ********************************/
     emitter = new Emitter(this.config);
+    emitter.emitln('# -*- coding: utf-8 -*-');
     for (let i = 0; i < models.length; i++) {
       if (models[0].topAnnotation) {
         this.emitAnnotations(emitter, models[0].topAnnotation);
@@ -279,6 +281,19 @@ class Combinator extends CombinatorBase {
     this.combineOutputParts(config, outputParts);
   }
 
+  getClassName(name){
+    let className = name;
+    if (this.config.emitType === 'client') {
+      className = this.config.clientName;
+    } else {
+      className = name.split('.').map(item => _upperFirst(item)).join('');
+    }
+    if (_isKeywords(className)) {
+      className = _avoidKeywords(className);
+    }
+    return className;
+  }
+
   emitClass(emitter, object) {
     var parent = '';
     if (object.extends.length > 0) {
@@ -290,16 +305,10 @@ class Combinator extends CombinatorBase {
         tmp.push(baseClass);
       });
       parent = '(' + tmp.join(', ') + ')';
+    }else {
+      parent = '(object)';
     }
-    let className = object.name;
-    if (this.config.emitType === 'client') {
-      className = this.config.clientName;
-    } else {
-      className = object.name.split('.').map(item => _upperFirst(item)).join('');
-    }
-    if (_isKeywords(className)) {
-      className = _avoidKeywords(className);
-    }
+    let className = this.getClassName(object.name);
     emitter.emitln(`class ${_upperFirst(className)}${parent}:`, this.level);
     this.levelUp();
     if (object.annotations.length > 0) {
@@ -540,11 +549,20 @@ class Combinator extends CombinatorBase {
     }
 
     props.forEach(prop => {
+      const description = prop.notes.filter(note => {
+        if (note.key === 'description') {
+          return note.value
+        }
+      })
+
       if (prop.type === 'map') {
         emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = {}`, this.level);
       } else if (prop.type === 'array') {
         emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = []`, this.level);
       } else {
+        if (description.length === 1) {
+          emitter.emitln(`# ${description[0].value}`, this.level)
+        }
         emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = ${_avoidKeywords(_underScoreCase(prop.name))}`, this.level);
       }
     });
@@ -716,7 +734,7 @@ class Combinator extends CombinatorBase {
       params = tmp.join(', ');
     }
     if (gram.type === 'super') {
-      pre = `super().__init__(${params})`;
+      pre = `super(${_upperFirst(this.getClassName(this.config.clientName))}, self).__init__(${params})`;
     } else {
       gram.path.forEach((path, i) => {
         let pathName = path.name.replace('@', '_');
