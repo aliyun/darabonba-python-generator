@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 import time
 
@@ -8,7 +9,7 @@ from Tea.response import TeaResponse
 from Tea.exceptions import UnretryableException
 
 
-class Client:
+class Client(object):
     """
     top annotation
     """

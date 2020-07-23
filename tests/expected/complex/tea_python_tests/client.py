@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 import time
 
@@ -12,6 +13,8 @@ from Tea.exceptions import UnretryableException
 
 
 class Client(SourceSourceClient):
+    def __init__(self):
+        pass
 
     def complex_1(self, request, client):
         request.validate()
@@ -149,5 +152,3 @@ class Client(SourceSourceClient):
             status = "catch exception"
         finally:
             status = "ok"
-    def __init__(self):
-        pass

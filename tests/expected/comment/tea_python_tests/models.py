@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
 
@@ -6,25 +7,55 @@ class Test1(TeaModel):
     """
     TestModel
     """
-    # model的test back comment
-    # model的test2 back comment
-    def __init__(self, test=None, test_2=None):
+    def __init__(self, test=None, test_2=None, test_3=None, test_5=None, sts=None, a_sts=None):
+        # test desc
         self.test = test
+        # test2 desc
         self.test_2 = test_2
+        # test3 desc
+        self.test_3 = test_3
+        # test desc
+        self.test_5 = test_5
+        # sts desc
+        self.sts = sts
+        # asts desc
+        self.a_sts = a_sts
 
     def validate(self):
         self.validate_required(self.test, 'test')
         self.validate_required(self.test_2, 'test_2')
+        self.validate_required(self.test_3, 'test_3')
+        self.validate_required(self.test_5, 'test_5')
+        self.validate_required(self.sts, 'sts')
+        self.validate_required(self.a_sts, 'a_sts')
 
     def to_map(self):
         result = {}
         result['test'] = self.test
         result['test2'] = self.test_2
+        result['test3'] = []
+        if self.test_3 is not None:
+            for k in self.test_3:
+                result['test3'].append(k)
+        else:
+            result['test3'] = None
+        result['test5'] = self.test_5
+        result['sts'] = self.sts
+        result['asts'] = self.a_sts
         return result
 
     def from_map(self, map={}):
         self.test = map.get('test')
         self.test_2 = map.get('test2')
+        self.test_3 = []
+        if map.get('test3') is not None:
+            for k in map.get('test3'):
+                self.test_3.append(k)
+        else:
+            self.test_3 = None
+        self.test_5 = map.get('test5')
+        self.sts = map.get('sts')
+        self.a_sts = map.get('asts')
         return self
 
 
@@ -32,10 +63,10 @@ class Test2(TeaModel):
     """
     TestModel2
     """
-    # model的test front comment
-    # model的test front comment
     def __init__(self, test=None, test_2=None):
+        # test desc
         self.test = test
+        # test2 desc
         self.test_2 = test_2
 
     def validate(self):
@@ -58,12 +89,10 @@ class Test3(TeaModel):
     """
     TestModel3
     """
-    # model的test front comment
-    # empty comment1
-    # empy comment2
-    # model的test back comment
     def __init__(self, test=None, test_1=None):
+        # test desc
         self.test = test
+        # test desc
         self.test_1 = test_1
 
     def validate(self):

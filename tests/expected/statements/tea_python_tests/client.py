@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.request import TeaRequest
 from Tea.response import TeaResponse
@@ -5,7 +6,7 @@ from Tea.exceptions import TeaException
 from Tea.core import TeaCore
 
 
-class Client:
+class Client(object):
     def __init__(self):
         pass
 
