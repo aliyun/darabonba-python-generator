@@ -64,12 +64,29 @@ module.exports = {
   typeMap: {
     'string': 'str',
     'boolean': 'bool',
-    'number': 'integer',
-    'integer': 'integer',
+    'number': 'int',
+    'integer': 'int',
     'object': 'dict',
     'map': 'dict',
     'bytes': 'bytes',
-    'long': 'integer'
+    'long': 'int',
+    'array': 'list',
+    'readable': 'STREAM_CLASS'
+  },
+  type: {
+    // 'long': 'base',
+    // 'unicode': 'base',
+    // 'tuple': 'complex',
+    // 'set': 'complex',
+    'str': 'base',
+    'bytes': 'base',
+    'int': 'base',
+    'float': 'base',
+    'bool': 'base',
+    'None': 'base',
+    'dict': 'complex',
+    'list': 'complex',
+    'STREAM_CLASS': 'custom',
   },
   exceptionMap: {
     'BASE': 'Tea.exceptions.TeaException',

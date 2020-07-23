@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
 
@@ -5,11 +6,15 @@ from Tea.model import TeaModel
 class ComplexRequest(TeaModel):
     def __init__(self, access_key=None, body=None, strs=None, header=None, num=None, part=None):
         self.access_key = access_key
+        # Body
         self.body = body
-        self.strs = []
+        # Strs
+        self.strs = strs
+        # header
         self.header = header
         self.num = num
-        self.part = []
+        # Part
+        self.part = part
 
     def validate(self):
         self.validate_required(self.access_key, 'access_key')
@@ -21,7 +26,7 @@ class ComplexRequest(TeaModel):
         self.validate_required(self.num, 'num')
         if self.part:
             for k in self.part:
-                if k :
+                if k:
                     k.validate()
 
     def to_map(self):
@@ -75,6 +80,7 @@ class ComplexRequest(TeaModel):
 
 class ComplexRequestHeader(TeaModel):
     def __init__(self, content=None):
+        # Body
         self.content = content
 
     def validate(self):
@@ -92,6 +98,7 @@ class ComplexRequestHeader(TeaModel):
 
 class ComplexRequestPart(TeaModel):
     def __init__(self, part_number=None):
+        # PartNumber
         self.part_number = part_number
 
     def validate(self):

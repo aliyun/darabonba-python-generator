@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # top comment
 # This file is auto-generated, don't edit it. Thanks.
 import time
@@ -10,16 +11,17 @@ from Tea.response import TeaResponse
 from Tea.exceptions import UnretryableException
 
 
-class Client:
+class Client(object):
     """
     top annotation
     """
-    # type's comment
-    def __init__(self, _a=None):
+    def __init__(self, _a=None, _comple_list=None, _endpoint_map=None):
         """
         Init Func
         """
-        self._a = []
+        self._a = _a
+        self._comple_list = _comple_list
+        self._endpoint_map = _endpoint_map
         # string declate comment
         str = "sss"
         # new model instance comment
@@ -68,7 +70,14 @@ class Client:
                 _last_request = _request
                 _response = TeaCore.do_action(_request, _runtime)
                 # static async function call
-                self.test_func("test", True)
+                self.test_func("test", True, [
+                    [
+                        "str"
+                    ],
+                    [
+                        "str1"
+                    ]
+                ])
                 # return comment
                 return
             except Exception as e:
@@ -82,12 +91,12 @@ class Client:
         """
         testAPI2 comment
         """
-        _runtime = [
+        _runtime = {
             # runtime retry comment
             "retry": True,
             # runtime back comment one
             # runtime back comment two
-        ]
+        }
         _last_request = None
         _last_exception = None
         _now = time.time()
@@ -132,7 +141,7 @@ class Client:
         ]
 
     @staticmethod
-    def test_func(str, val):
+    def test_func(str, val, comple_list):
         """
         testFunc
 

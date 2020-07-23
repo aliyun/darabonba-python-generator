@@ -3,10 +3,6 @@ import Source;
 type @id = [ string ];
 type @str = string;
 
-init(id: [ string ], str: string) {
-    @id = id;
-    @str = str;
-}
 
 static function Sample(client: Source): void {
     var runtime = new Source.RuntimeObject{};

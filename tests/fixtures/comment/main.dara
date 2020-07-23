@@ -5,7 +5,9 @@
 // import comment
 import Source
 // type's comment
-type @a = [ string  ]
+type @a = [ string ]
+type @compleList = [[string]]
+type @endpointMap = map[string]string
 
 /**
   TestModel
@@ -13,6 +15,10 @@ type @a = [ string  ]
 model Test1{
   test: string(description='test desc', name='test'), //model的test back comment
   test2: string(description='test2 desc', name='test2', deprecated=true), //model的test2 back comment
+  test3: [[string]](description='test3 desc', name='test3'),
+  Test5: string(description='test desc', name='test5', deprecated=true),
+  STS: string(description='sts desc', name='sts', deprecated=true),
+  aSTS: string(description='asts desc', name='asts', deprecated=true),
 }
 
 /**
@@ -79,7 +85,7 @@ api testAPI(): void {
   staticFunc();
 } returns {
   // static async function call
-  testFunc('test',true);
+  testFunc('test',true, [['str'], ['str1']]);
   // return comment
    return;
 } runtime {
@@ -124,7 +130,7 @@ static function staticFunc(): void{
   * @param val description: boolean parameter
   * @return void description for return
   */
-static async function testFunc(str: string, val: boolean): void {
+static async function testFunc(str: string, val: boolean, compleList:[[string]]): void {
     // empty comment1
     // empty comment2
 }

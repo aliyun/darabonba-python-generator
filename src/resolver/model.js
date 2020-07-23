@@ -106,8 +106,11 @@ class ModelResolver extends BaseResolver {
             prop.itemType = this.combinator.addModelInclude(node.fieldValue.itemType);
           } else if (node.fieldValue.fieldItemType.type === 'map') {
             prop.itemType = `map[${node.fieldValue.fieldItemType.keyType.lexeme},${node.fieldValue.fieldItemType.valueType.lexeme}]`;
+          } else {
+            prop.itemType = node.fieldValue.fieldItemType.fieldType;
           }
         } else if (node.fieldValue.fieldItemType.idType === 'model') {
+          
           prop.itemType = this.combinator.addModelInclude(node.fieldValue.fieldItemType.lexeme);
         } else if (_isBasicType(node.fieldValue.fieldItemType.lexeme)) {
           prop.itemType = node.fieldValue.fieldItemType.lexeme;

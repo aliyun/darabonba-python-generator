@@ -27,7 +27,7 @@ const {
   _upperFirst,
   _config,
   _convertStaticParam,
-  _underScoreCase,
+  _toSnakeCase,
   _avoidKeywords,
   _isKeywords,
   _exception,
@@ -42,7 +42,7 @@ function _type(type) {
     return config.typeMap[t];
   }
   if (t.indexOf('map[') === 0) {
-    return 'map';
+    return 'dict';
   }
   if (!_isBasicType(t)) {
     return t;
@@ -90,7 +90,7 @@ class Combinator extends CombinatorBase {
       if (/^[A-Z]+$/.test(importName[0])) {
         alias = className + importName;
       } else {
-        alias = _underScoreCase(className) + '_' + importName;
+        alias = _toSnakeCase(className) + '_' + importName;
       }
     }
 
@@ -147,7 +147,7 @@ class Combinator extends CombinatorBase {
       // is third package
       importName = 'models';
       fromName = this.thirdPackageNamespace[accessPath[0]];
-      alias = _underScoreCase(accessPath[0]) + '_models';
+      alias = _toSnakeCase(accessPath[0]) + '_models';
       if (alias) {
         resultName = alias + '.' + accessPath.slice(1).map(item => _upperFirst(item)).join('');
       } else {
@@ -161,7 +161,7 @@ class Combinator extends CombinatorBase {
         resultName = modelName.split('.').map(m => _upperFirst(m)).join('');
         return resultName;
       }
-      alias = _underScoreCase(this.config.name) + '_' + importName;
+      alias = _toSnakeCase(this.config.name) + '_' + importName;
       resultName = alias + '.' + modelName.split('.').map(m => _upperFirst(m)).join('');
     }
 
@@ -217,6 +217,7 @@ class Combinator extends CombinatorBase {
 
     /******************************** emit head *******************************/
     emitter = new Emitter(this.config);
+    emitter.emitln('# -*- coding: utf-8 -*-');
     if (object.topAnnotation.length > 0) {
       this.emitAnnotations(emitter, object.topAnnotation);
     }
@@ -263,6 +264,7 @@ class Combinator extends CombinatorBase {
 
     /******************************** emit head ********************************/
     emitter = new Emitter(this.config);
+    emitter.emitln('# -*- coding: utf-8 -*-');
     for (let i = 0; i < models.length; i++) {
       if (models[0].topAnnotation) {
         this.emitAnnotations(emitter, models[0].topAnnotation);
@@ -279,6 +281,19 @@ class Combinator extends CombinatorBase {
     this.combineOutputParts(config, outputParts);
   }
 
+  getClassName(name){
+    let className = name;
+    if (this.config.emitType === 'client') {
+      className = this.config.clientName;
+    } else {
+      className = name.split('.').map(item => _upperFirst(item)).join('');
+    }
+    if (_isKeywords(className)) {
+      className = _avoidKeywords(className);
+    }
+    return className;
+  }
+
   emitClass(emitter, object) {
     var parent = '';
     if (object.extends.length > 0) {
@@ -290,16 +305,10 @@ class Combinator extends CombinatorBase {
         tmp.push(baseClass);
       });
       parent = '(' + tmp.join(', ') + ')';
+    }else {
+      parent = '(object)';
     }
-    let className = object.name;
-    if (this.config.emitType === 'client') {
-      className = this.config.clientName;
-    } else {
-      className = object.name.split('.').map(item => _upperFirst(item)).join('');
-    }
-    if (_isKeywords(className)) {
-      className = _avoidKeywords(className);
-    }
+    let className = this.getClassName(object.name);
     emitter.emitln(`class ${_upperFirst(className)}${parent}:`, this.level);
     this.levelUp();
     if (object.annotations.length > 0) {
@@ -311,19 +320,15 @@ class Combinator extends CombinatorBase {
     }
     let props = object.body.filter(node => node instanceof PropItem);
 
-
     if (object.body.filter(node => node instanceof ConstructItem).length === 0) {
-      object.body.push(new ConstructItem());
+      object.body.unshift(new ConstructItem());
     }
-
     // emit body nodes : PropItem | FuncItem | ConstructItem | AnnotationItem
     object.body.forEach(node => {
       if (node instanceof FuncItem) {
         this.emitFunc(emitter, node);
       } else if (node instanceof ConstructItem) {
         this.emitConstruct(emitter, node, parent, props);
-      } else if (node instanceof AnnotationItem) {
-        this.emitAnnotation(emitter, node);
       }
     });
     if (this.config.emitType === 'model') {
@@ -345,20 +350,21 @@ class Combinator extends CombinatorBase {
       let maxLength = prop.notes.filter(item => item.key === 'maxLength');
       let pattern = prop.notes.filter(item => item.key === 'pattern');
       if (required.length > 0) {
-        emitter.emitln(`self.validate_required(self.${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}')`, this.level);
+        emitter.emitln(`self.validate_required(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}')`, this.level);
         haveValidate = true;
       }
-      if (_type(prop.type) === 'array' && prop.itemType !== '') {
+      
+      if (prop.type === 'array' && prop.itemType !== '') {
         if (maxLength > 0) {
-          emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', ${maxLength[0].value})`, this.level);
+          emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maxLength[0].value})`, this.level);
           haveValidate = true;
         }
-        if (!_isBasicType(prop.itemType)) {
-          emitter.emitln(`if self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
+        if (!this.config.type[_type(prop.itemType)]) {
+          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
           this.levelUp();
-          emitter.emitln(`for k in self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
+          emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
           this.levelUp();
-          emitter.emitln('if k :', this.level);
+          emitter.emitln('if k:', this.level);
           this.levelUp();
           emitter.emitln('k.validate()', this.level);
           this.levelDown();
@@ -367,33 +373,33 @@ class Combinator extends CombinatorBase {
           haveValidate = true;
         } else {
           if (pattern.length > 0) {
-            emitter.emitln(`if self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
+            emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
             this.levelUp();
-            emitter.emitln(`for k in self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
+            emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
             this.levelUp();
             emitter.emitln('if k:', this.level);
             this.levelUp();
-            emitter.emitln(`self.validate_pattern(k, '${_avoidKeywords(_underScoreCase(prop.name))}', '${pattern[0].value}')`, this.level);
+            emitter.emitln(`self.validate_pattern(k, '${_avoidKeywords(_toSnakeCase(prop.name))}', '${pattern[0].value}')`, this.level);
             this.levelDown();
             this.levelDown();
             this.levelDown();
             haveValidate = true;
           }
         }
-      } else if (!_isBasicType(prop.type)) {
-        emitter.emitln(`if self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
+      } else if (!this.config.typeMap[prop.type]) {
+        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
         this.levelUp();
-        emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))}.validate()`, this.level);
+        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))}.validate()`, this.level);
         this.levelDown();
         haveValidate = true;
       } else {
         if (pattern.length + maxLength.length > 0) {
-          emitter.emitln(`if self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
+          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
           this.levelUp();
           if (pattern.length > 0) {
-            emitter.emitln(`self.validate_pattern(self.${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', '${pattern[0].value}')`, this.level);
+            emitter.emitln(`self.validate_pattern(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', '${pattern[0].value}')`, this.level);
           } else if (maxLength.length > 0) {
-            emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_underScoreCase(prop.name))}, '${_avoidKeywords(_underScoreCase(prop.name))}', ${maxLength[0].value})`, this.level);
+            emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maxLength[0].value})`, this.level);
           }
           haveValidate = true;
           this.levelDown();
@@ -415,13 +421,13 @@ class Combinator extends CombinatorBase {
     props.forEach(prop => {
       let noteName = prop.notes.filter(item => item.key === 'name');
       let name = noteName.length > 0 ? noteName[0].value : prop.name;
-      if (_type(prop.type) === 'array' && prop.itemType !== '') {
+      if (prop.type === 'array' && prop.itemType !== '') {
         emitter.emitln(`result['${name}'] = []`, this.level);
-        emitter.emitln(`if self.${_avoidKeywords(_underScoreCase(prop.name))} is not None:`, this.level);
+        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
         this.levelUp();
-        emitter.emitln(`for k in self.${_avoidKeywords(_underScoreCase(prop.name))}:`, this.level);
+        emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
         this.levelUp();
-        if (!_isBasicType(prop.itemType) && !this.thirdPackageNamespace[_type(prop.itemType)]) {
+        if (!this.config.type[_type(prop.itemType)] && !this.thirdPackageNamespace[_type(prop.itemType)]) {
           emitter.emitln(`result['${name}'].append(k.to_map() if k else None)`, this.level);
         } else {
           emitter.emitln(`result['${name}'].append(k)`, this.level);
@@ -433,17 +439,17 @@ class Combinator extends CombinatorBase {
         emitter.emitln(`result['${name}'] = None`, this.level);
         this.levelDown();
       } else {
-        if (!_isBasicType(prop.type) && !this.thirdPackageNamespace[_type(prop.type)]) {
-          emitter.emitln(`if self.${_avoidKeywords(_underScoreCase(prop.name))} is not None:`, this.level);
+        if (!this.config.type[_type(prop.type)] && !this.thirdPackageNamespace[_type(prop.type)]) {
+          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
           this.levelUp();
-          emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_underScoreCase(prop.name))}.to_map()`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}.to_map()`, this.level);
           this.levelDown();
           emitter.emitln('else:', this.level);
           this.levelUp();
           emitter.emitln(`result['${name}'] = None`, this.level);
           this.levelDown();
         } else {
-          emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_underScoreCase(prop.name))}`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
         }
       }
     });
@@ -458,40 +464,40 @@ class Combinator extends CombinatorBase {
     props.forEach(prop => {
       let noteName = prop.notes.filter(item => item.key === 'name');
       let name = noteName.length > 0 ? noteName[0].value : prop.name;
-      if (_type(prop.type) === 'array' && prop.itemType !== '') {
-        emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = []`, this.level);
+      if (prop.type === 'array' && prop.itemType !== '') {
+        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = []`, this.level);
         emitter.emitln(`if map.get('${name}') is not None:`, this.level);
         this.levelUp();
         emitter.emitln(`for k in map.get('${name}'):`, this.level);
         this.levelUp();
-        if (!_isBasicType(prop.itemType) && !this.thirdPackageNamespace[_type(prop.itemType)]) {
+        if (!this.config.type[_type(prop.itemType)] && !this.thirdPackageNamespace[_type(prop.itemType)]) {
           let type = _type(prop.itemType);
           emitter.emitln(`temp_model = ${type}()`, this.level);
           emitter.emitln('temp_model = temp_model.from_map(k)', this.level);
-          emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))}.append(temp_model)`, this.level);
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))}.append(temp_model)`, this.level);
         } else {
-          emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))}.append(k)`, this.level);
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))}.append(k)`, this.level);
         }
         this.levelDown();
         this.levelDown();
         emitter.emitln('else:', this.level);
         this.levelUp();
-        emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = None`, this.level);
+        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = None`, this.level);
         this.levelDown();
       } else {
-        if (!_isBasicType(prop.type) && !this.thirdPackageNamespace[_type(prop.type)]) {
+        if (!_isBasicType(prop.type) && !this.config.typeMap[prop.type] && !this.thirdPackageNamespace[_type(prop.type)]) {
           let type = _type(prop.type);
           emitter.emitln(`if map.get('${name}') is not None:`, this.level);
           this.levelUp();
           emitter.emitln(`temp_model = ${type}()`, this.level);
-          emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = temp_model.from_map(map['${name}'])`, this.level);
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = temp_model.from_map(map['${name}'])`, this.level);
           this.levelDown();
           emitter.emitln('else:', this.level);
           this.levelUp();
-          emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = None`, this.level);
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = None`, this.level);
           this.levelDown();
         } else {
-          emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = map.get('${name}')`, this.level);
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = map.get('${name}')`, this.level);
         }
       }
     });
@@ -506,9 +512,9 @@ class Combinator extends CombinatorBase {
       let constructParams = [];
       construct.params.forEach(param => {
         if (param.value !== null && param.value !== 'null') {
-          constructParams.push(`${_avoidKeywords(_underScoreCase(param.key))}=${param.value}`);
+          constructParams.push(`${_avoidKeywords(_toSnakeCase(param.key))}=${param.value}`);
         } else {
-          constructParams.push(`${_avoidKeywords(_underScoreCase(param.key))}`);
+          constructParams.push(`${_avoidKeywords(_toSnakeCase(param.key))}`);
         }
       });
       emitter.emit('def __init__(self', this.level);
@@ -520,11 +526,24 @@ class Combinator extends CombinatorBase {
 
       if (props.length > 0) {
         let constructProps = [];
+        let max_length = 90;
+        let curr_length = 0;
         props.forEach((prop) => {
-          constructProps.push(`${_avoidKeywords(_underScoreCase(prop.name))}=None`);
+          if(prop instanceof AnnotationItem){
+            this.emitAnnotation(emitter,prop);
+            return;
+          }
+          let str = ` ${_avoidKeywords(_toSnakeCase(prop.name))}=None`;
+          if(curr_length+str.length>=max_length){
+            str =  emitter.eol + emitter.indent(this.level + 3) + str;
+            curr_length = 0;
+          }else{
+            curr_length = curr_length + str.length;
+          }
+          constructProps.push(str);
         });
-        emitter.emit(', ');
-        emitter.emit(constructProps.join(', '));
+        emitter.emit(',');
+        emitter.emit(constructProps.join(','));
       }
       emitter.emitln('):');
       this.levelUp();
@@ -540,13 +559,15 @@ class Combinator extends CombinatorBase {
     }
 
     props.forEach(prop => {
-      if (prop.type === 'map') {
-        emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = {}`, this.level);
-      } else if (prop.type === 'array') {
-        emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = []`, this.level);
-      } else {
-        emitter.emitln(`self.${_avoidKeywords(_underScoreCase(prop.name))} = ${_avoidKeywords(_underScoreCase(prop.name))}`, this.level);
+      const description = prop.notes.filter(note => {
+        if (note.key === 'description') {
+          return note.value
+        }
+      })
+      if (description.length === 1) {
+        emitter.emitln(`# ${description[0].value}`, this.level)
       }
+      emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
     });
 
     if (construct.body.length > 0) {
@@ -588,17 +609,17 @@ class Combinator extends CombinatorBase {
     }
     if (func.params.length > 0) {
       let selfVar = this.func_static ? '' : 'self, ';
-      emitter.emit(`def ${_avoidKeywords(_underScoreCase(func.name))}(${selfVar}`, this.level);
+      emitter.emit(`def ${_avoidKeywords(_toSnakeCase(func.name))}(${selfVar}`, this.level);
       if (func.params.length > 0) {
         let params = [];
         func.params.forEach(p => {
-          params.push(`${_underScoreCase(p.key)}`);
+          params.push(`${_toSnakeCase(p.key)}`);
         });
         emitter.emit(params.join(', '));
       }
     } else {
       let selfVar = this.func_static ? '' : 'self';
-      emitter.emit(`def ${_avoidKeywords(_underScoreCase(func.name))}(${selfVar}`, this.level);
+      emitter.emit(`def ${_avoidKeywords(_toSnakeCase(func.name))}(${selfVar}`, this.level);
     }
     emitter.emitln('):');
     this.levelUp();
@@ -632,7 +653,7 @@ class Combinator extends CombinatorBase {
               if (tmp[tagIndex] === '@param') {
                 const param = tmp[tagIndex + 1];
                 tmp[tagIndex] = ':param';
-                tmp[tagIndex + 1] = _underScoreCase(_avoidKeywords(param)) + ':';
+                tmp[tagIndex + 1] = _toSnakeCase(_avoidKeywords(param)) + ':';
                 let type = func.params.map(p => {
                   if (param === p.key) {
                     return p.type;
@@ -716,27 +737,27 @@ class Combinator extends CombinatorBase {
       params = tmp.join(', ');
     }
     if (gram.type === 'super') {
-      pre = `super().__init__(${params})`;
+      pre = `super(${_upperFirst(this.getClassName(this.config.clientName))}, self).__init__(${params})`;
     } else {
       gram.path.forEach((path, i) => {
         let pathName = path.name.replace('@', '_');
         if (path.type === 'parent') {
           pre += this.func_self;
           if (path.name) {
-            pre += `.${_avoidKeywords(_underScoreCase(path.name))}`;
+            pre += `.${_avoidKeywords(_toSnakeCase(path.name))}`;
           }
         } else if (path.type === 'object') {
-          pre += `${_avoidKeywords(_underScoreCase(_convertStaticParam(pathName)))}`;
+          pre += `${_avoidKeywords(_toSnakeCase(_convertStaticParam(pathName)))}`;
         } else if (path.type === 'object_static') {
           pre += `${_convertStaticParam(pathName)}`;
         } else if (path.type === 'call') {
-          pre += `.${_avoidKeywords(_underScoreCase(pathName))}(${params})`;
+          pre += `.${_avoidKeywords(_toSnakeCase(pathName))}(${params})`;
         } else if (path.type === 'call_static') {
-          pre += `.${_avoidKeywords(_underScoreCase(pathName))}(${params})`;
+          pre += `.${_avoidKeywords(_toSnakeCase(pathName))}(${params})`;
         } else if (path.type === 'prop') {
-          pre += `.${_avoidKeywords(_underScoreCase(pathName))}`;
+          pre += `.${_avoidKeywords(_toSnakeCase(pathName))}`;
         } else if (path.type === 'prop_static') {
-          pre += `.${_avoidKeywords(_underScoreCase(pathName))}`;
+          pre += `.${_avoidKeywords(_toSnakeCase(pathName))}`;
         } else if (path.type === 'map') {
           pre += `.get('${pathName}')`;
         } else if (path.type === 'list') {
@@ -769,7 +790,7 @@ class Combinator extends CombinatorBase {
       emitter.emit(`${name}()`);
     } else if (gram.varType === 'var' || gram.varType === 'const') {
       const name = gram.name ? gram.name : gram.key;
-      emitter.emit(`${_convertStaticParam(_underScoreCase(name))}`);
+      emitter.emit(`${_convertStaticParam(_toSnakeCase(name))}`);
     } else {
       debug.stack(gram);
     }
@@ -781,7 +802,7 @@ class Combinator extends CombinatorBase {
       if (!isparams) {
         emitter.emit(`"${gram.key}": `);
       } else {
-        emitter.emit(`${_underScoreCase(gram.key)}=`, this.level);
+        emitter.emit(`${_toSnakeCase(gram.key)}=`, this.level);
       }
     }
     if (gram instanceof GrammerCall) {
@@ -837,7 +858,9 @@ class Combinator extends CombinatorBase {
         }
       } else {
         if (gram.value.length > 0) {
-          if (gram.value[0].key && gram.value[0].key !== '') {
+          const tmp = gram.value.filter(item=>!(item instanceof AnnotationItem));
+          const isMap = tmp[0] && tmp[0].key && tmp[0].key !== '';
+          if (isMap) {
             emitter.emitln('{');
           } else {
             emitter.emitln('[');
@@ -858,7 +881,7 @@ class Combinator extends CombinatorBase {
               emitter.emitln('');
             }
           }
-          if (gram.value[0].key && gram.value[0].key !== '') {
+          if (isMap) {
             emitter.emit('}', this.level + layer - 1);
           } else {
             emitter.emit(']', this.level + layer - 1);
@@ -888,7 +911,7 @@ class Combinator extends CombinatorBase {
     } else if (gram.type === 'string') {
       emitter.emit(`"${gram.value}"`);
     } else if (gram.type === 'param') {
-      emitter.emit(`${_convertStaticParam(_underScoreCase(gram.value))}`);
+      emitter.emit(`${_convertStaticParam(_toSnakeCase(gram.value))}`);
     } else if (gram.type === 'call') {
       this.grammerCall(emitter, gram.value);
     } else if (gram.type === 'number') {
@@ -1102,7 +1125,7 @@ class Combinator extends CombinatorBase {
         gram.params.forEach(p => {
           let emit = new Emitter();
           if (p.key) {
-            emit.emit(`${_underScoreCase(p.key)}`);
+            emit.emit(`${_toSnakeCase(p.key)}`);
             emit.emit('=');
           }
           if (typeof (p.value) === 'string') {

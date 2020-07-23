@@ -96,7 +96,7 @@ function _exception(str) {
   return str;
 }
 
-function _underScoreCase(str) {
+function _toSnakeCase(str) {
   if (!str) {
     return '';
   }
@@ -117,6 +117,9 @@ function _underScoreCase(str) {
     res += '_' + tmp.toLowerCase();
   }
   res = res.replace(/-/g, '_');
+  if (res[0] === '_' && str[0] !== '_') {
+    res = res.substring(1)
+  }
   return res;
 }
 
@@ -136,5 +139,5 @@ module.exports = {
   _modify,
   _symbol,
   _exception,
-  _underScoreCase
+  _toSnakeCase
 };

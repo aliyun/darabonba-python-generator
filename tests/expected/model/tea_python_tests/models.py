@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
 
@@ -18,21 +19,24 @@ class M(TeaModel):
 
 
 class MyModel(TeaModel):
-    def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None, submodel=None, subarraymodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None, class_end_time=None, max_length=None):
+    def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None,
+                 submodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None,
+                 class_end_time=None, max_length=None):
         self.stringfield = stringfield
         self.bytesfield = bytesfield
-        self.stringarrayfield = []
-        self.mapfield = {}
+        self.stringarrayfield = stringarrayfield
+        self.mapfield = mapfield
         self.name = name
         self.submodel = submodel
-        self.subarraymodel = []
-        self.subarray = []
-        self.maparray = []
+        self.subarray = subarray
+        self.maparray = maparray
         self.object = object
         self.numberfield = numberfield
         self.readable = readable
         self.exist_model = exist_model
+        # 结束时间
         self.class_end_time = class_end_time
+        # 最大长度
         self.max_length = max_length
 
     def validate(self):
@@ -44,21 +48,12 @@ class MyModel(TeaModel):
         self.validate_required(self.submodel, 'submodel')
         if self.submodel:
             self.submodel.validate()
-        self.validate_required(self.subarraymodel, 'subarraymodel')
-        if self.subarraymodel:
-            for k in self.subarraymodel:
-                if k :
-                    k.validate()
         self.validate_required(self.subarray, 'subarray')
         if self.subarray:
             for k in self.subarray:
-                if k :
+                if k:
                     k.validate()
         self.validate_required(self.maparray, 'maparray')
-        if self.maparray:
-            for k in self.maparray:
-                if k :
-                    k.validate()
         self.validate_required(self.object, 'object')
         self.validate_required(self.numberfield, 'numberfield')
         self.validate_required(self.readable, 'readable')
@@ -86,12 +81,6 @@ class MyModel(TeaModel):
             result['submodel'] = self.submodel.to_map()
         else:
             result['submodel'] = None
-        result['subarraymodel'] = []
-        if self.subarraymodel is not None:
-            for k in self.subarraymodel:
-                result['subarraymodel'].append(k.to_map() if k else None)
-        else:
-            result['subarraymodel'] = None
         result['subarray'] = []
         if self.subarray is not None:
             for k in self.subarray:
@@ -101,7 +90,7 @@ class MyModel(TeaModel):
         result['maparray'] = []
         if self.maparray is not None:
             for k in self.maparray:
-                result['maparray'].append(k.to_map() if k else None)
+                result['maparray'].append(k)
         else:
             result['maparray'] = None
         result['object'] = self.object
@@ -131,14 +120,6 @@ class MyModel(TeaModel):
             self.submodel = temp_model.from_map(map['submodel'])
         else:
             self.submodel = None
-        self.subarraymodel = []
-        if map.get('subarraymodel') is not None:
-            for k in map.get('subarraymodel'):
-                temp_model = MyModelSubarraymodel()
-                temp_model = temp_model.from_map(k)
-                self.subarraymodel.append(temp_model)
-        else:
-            self.subarraymodel = None
         self.subarray = []
         if map.get('subarray') is not None:
             for k in map.get('subarray'):
@@ -150,9 +131,7 @@ class MyModel(TeaModel):
         self.maparray = []
         if map.get('maparray') is not None:
             for k in map.get('maparray'):
-                temp_model = map()
-                temp_model = temp_model.from_map(k)
-                self.maparray.append(temp_model)
+                self.maparray.append(k)
         else:
             self.maparray = None
         self.object = map.get('object')
@@ -182,19 +161,4 @@ class MyModelSubmodel(TeaModel):
 
     def from_map(self, map={}):
         self.stringfield = map.get('stringfield')
-        return self
-
-
-class MyModelSubarraymodel(TeaModel):
-    def __init__(self):
-        pass
-
-    def validate(self):
-        pass
-
-    def to_map(self):
-        result = {}
-        return result
-
-    def from_map(self, map={}):
         return self

@@ -133,7 +133,6 @@ class BaseResolver {
 
   resolveProps(ast) {
     this.comments = ast.comments;
-
     ast.moduleBody.nodes.filter((item) => {
       return item.type === 'type';
     }).forEach(item => {
@@ -143,7 +142,7 @@ class BaseResolver {
       prop.type = type;
       if (type === 'array') {
         prop.itemType = item.value.subType;
-        if (!_isBasicType(item.value.subType.lexeme)) {
+        if (!_isBasicType(item.value.subType.lexeme) && item.value.subType.lexeme) {
           this.combinator.addModelInclude(item.value.subType.lexeme);
         }
       } else {
