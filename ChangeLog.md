@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 1.0.5 - 2020-07-30
+
+* Support description.
+* Support [[ string ]] array.
+* Imporve model format.
+
 ## 1.0.4 - 2020-07-10
 
 * Imporve models
