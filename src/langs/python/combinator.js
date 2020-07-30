@@ -565,7 +565,10 @@ class Combinator extends CombinatorBase {
         }
       })
       if (description.length === 1) {
-        emitter.emitln(`# ${description[0].value}`, this.level)
+        const desc = description[0].value.split(emitter.eol)
+        desc.forEach(d => {
+          emitter.emitln(`# ${d}`, this.level)
+        })
       }
       emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
     });
