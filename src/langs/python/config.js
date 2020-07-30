@@ -71,7 +71,21 @@ module.exports = {
     'bytes': 'bytes',
     'long': 'int',
     'array': 'list',
-    'readable': 'STREAM_CLASS'
+    'readable': 'STREAM_CLASS',
+    'float': 'float',
+    'double': 'float',
+    'int64': 'int',
+    'int32': 'int',
+    'int16': 'int',
+    'int8': 'int',
+    'ulong': 'int',
+    'uint8': 'int',
+    'uint16': 'int',
+    'uint32': 'int',
+    'uint64': 'int',
+    'any': 'any',
+    'void': 'None',
+    'null': 'None'
   },
   type: {
     // 'long': 'base',
@@ -94,8 +108,7 @@ module.exports = {
   model: {
     dir: 'models',
     mode: 'single_file',
-    include: [
-    ],
+    include: [],
   },
   client: {
     defaultName: 'client',
@@ -112,12 +125,26 @@ module.exports = {
       toModel: 'toModel',
       merge: 'merge'
     },
-    model: { name: 'Tea.model.TeaModel' },
-    converter: { name: 'Converter' },
-    response: { name: 'Tea.response.TeaResponse' },
-    request: { name: 'Tea.request.TeaRequest' },
-    exception: { name: 'Tea.exceptions.TeaException' },
-    error: { name: 'Tea.exceptions.TeaException' },
-    exceptionUnretryable: { name: 'Tea.exceptions.UnretryableException' },
+    model: {
+      name: 'Tea.model.TeaModel'
+    },
+    converter: {
+      name: 'Converter'
+    },
+    response: {
+      name: 'Tea.response.TeaResponse'
+    },
+    request: {
+      name: 'Tea.request.TeaRequest'
+    },
+    exception: {
+      name: 'Tea.exceptions.TeaException'
+    },
+    error: {
+      name: 'Tea.exceptions.TeaException'
+    },
+    exceptionUnretryable: {
+      name: 'Tea.exceptions.UnretryableException'
+    },
   }
 };
