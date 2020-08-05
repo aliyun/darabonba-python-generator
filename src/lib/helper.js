@@ -96,6 +96,19 @@ function _exception(str) {
   return str;
 }
 
+function _toCamelCase(str) {
+  if (!str) {
+    return '';
+  }
+
+  const word = str.split('_');
+  let tmp = '';
+  word.forEach(w => {
+    tmp += _upperFirst(w);
+  });
+  return tmp;
+}
+
 function _toSnakeCase(str) {
   if (!str) {
     return '';
@@ -118,7 +131,7 @@ function _toSnakeCase(str) {
   }
   res = res.replace(/-/g, '_');
   if (res[0] === '_' && str[0] !== '_') {
-    res = res.substring(1)
+    res = res.substring(1);
   }
   return res;
 }
@@ -139,5 +152,6 @@ module.exports = {
   _modify,
   _symbol,
   _exception,
-  _toSnakeCase
+  _toSnakeCase,
+  _toCamelCase
 };
