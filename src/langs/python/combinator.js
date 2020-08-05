@@ -29,6 +29,7 @@ const {
   _config,
   _convertStaticParam,
   _toSnakeCase,
+  _toCamelCase,
   _avoidKeywords,
   _isKeywords,
   _exception,
@@ -84,7 +85,7 @@ class Combinator extends CombinatorBase {
 
     if (this.thirdPackageNamespace[className]) {
       // is third package
-      importName = _upperFirst(this.thirdPackageClient[className]);
+      importName = _toCamelCase(this.thirdPackageClient[className]);
       fromName = this.thirdPackageNamespace[className] + '.' + this.thirdPackageClient[className];
 
       // import classname as classname
@@ -310,7 +311,7 @@ class Combinator extends CombinatorBase {
       parent = '(object)';
     }
     let className = this.getClassName(object.name);
-    emitter.emitln(`class ${_upperFirst(className)}${parent}:`, this.level);
+    emitter.emitln(`class ${_toCamelCase(className)}${parent}:`, this.level);
     this.levelUp();
     if (object.annotations.length > 0) {
       this.emitAnnotations(emitter, object.annotations);
@@ -562,14 +563,14 @@ class Combinator extends CombinatorBase {
     props.forEach(prop => {
       const description = prop.notes.filter(note => {
         if (note.key === 'description') {
-          return note.value
+          return note.value;
         }
-      })
+      });
       if (description.length === 1) {
-        const desc = description[0].value.split(emitter.eol)
+        const desc = description[0].value.split(emitter.eol);
         desc.forEach(d => {
-          emitter.emitln(`# ${d}`, this.level)
-        })
+          emitter.emitln(`# ${d}`, this.level);
+        });
       }
       emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
     });
@@ -736,7 +737,7 @@ class Combinator extends CombinatorBase {
       gram.params.forEach(p => {
         let emit = new Emitter();
         if (p.value instanceof BehaviorToMap && gram.type === 'sys_func' && gram.path[1].name === 'isUnset') {
-          this.grammer(emit, p.value.grammer, false, false)
+          this.grammer(emit, p.value.grammer, false, false);
         } else {
           this.grammer(emit, p, false, false);
         }
@@ -745,7 +746,7 @@ class Combinator extends CombinatorBase {
       params = tmp.join(', ');
     }
     if (gram.type === 'super') {
-      pre = `super(${_upperFirst(this.getClassName(this.config.clientName))}, self).__init__(${params})`;
+      pre = `super(${_toCamelCase(this.getClassName(this.config.clientName))}, self).__init__(${params})`;
     } else {
       gram.path.forEach((path, i) => {
         let pathName = path.name.replace('@', '_');

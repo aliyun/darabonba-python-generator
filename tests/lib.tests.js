@@ -16,7 +16,8 @@ const {
   _avoidKeywords,
   _modify,
   _symbol,
-  _toSnakeCase
+  _toSnakeCase,
+  _toCamelCase
 } = require('../src/lib/helper');
 
 describe('debug should be ok', function () {
@@ -225,5 +226,14 @@ describe('helper tests', function () {
     expect(_toSnakeCase('_runtime')).to.be.eql('_runtime');
     expect(_toSnakeCase('TT123')).to.be.eql('tt123');
     expect(_toSnakeCase('fooBar')).to.be.eql('foo_bar');
+  });
+
+  it('_toCamelCase should be ok', function () {
+    expect(_toCamelCase('test_abc')).to.be.eql('TestAbc');
+    expect(_toCamelCase(null)).to.be.eql('');
+    expect(_toCamelCase('sls')).to.be.eql('Sls');
+    expect(_toCamelCase('_runtime')).to.be.eql('Runtime');
+    expect(_toCamelCase('tt_123')).to.be.eql('Tt123');
+    expect(_toCamelCase('foo_bar')).to.be.eql('FooBar');
   });
 });
