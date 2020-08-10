@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.0.6 - 2020-08-10
+
+* Support array access.
+
 ## 1.0.5 - 2020-07-30
 
 * Support description.
