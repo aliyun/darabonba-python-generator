@@ -11,5 +11,5 @@ class Client(SourceSourceClient):
             "ap-northeast-1": "cusanalytic.aliyuncs.com",
             "ap-south-1": "cusanalytic.aliyuncs.com"
         }
-        _endpoint_map.get('ap-northeast-1')
-        _endpoint_map["ap-northeast-1"] = ""
+        self._endpoint_map.get('ap-northeast-1')
+        self._endpoint_map["ap-northeast-1"] = ""

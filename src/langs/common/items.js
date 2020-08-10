@@ -125,7 +125,7 @@ class GrammerCall extends Grammer {
   addPath(path) {
     // {type: '', name: ''}
     const pathType = [
-      'parent', 'object', 'object_static', 'call', 'call_static', 'prop', 'prop_static', 'map', 'list'
+      'parent', 'object', 'object_static', 'call', 'call_static', 'prop', 'prop_static', 'map', 'list', 'map_set', 'map_get'
     ];
     if (pathType.indexOf(path.type) < 0) {
       throw new Error(

@@ -749,7 +749,15 @@ class Combinator extends CombinatorBase {
       pre = `super(${_toCamelCase(this.getClassName(this.config.clientName))}, self).__init__(${params})`;
     } else {
       gram.path.forEach((path, i) => {
-        let pathName = path.name.replace('@', '_');
+        let pathName = path.name;
+        if (typeof pathName === 'string') {
+          if (path.type === 'object') {
+            pathName = path.name.replace('@', 'self._');
+          } else {
+            pathName = path.name.replace('@', '_');
+          }
+        }
+
         if (path.type === 'parent') {
           pre += this.func_self;
           if (path.name) {
@@ -769,6 +777,8 @@ class Combinator extends CombinatorBase {
           pre += `.${_avoidKeywords(_toSnakeCase(pathName))}`;
         } else if (path.type === 'map') {
           pre += `.get('${pathName}')`;
+        } else if (path.type === 'map_set') {
+          pre += `['${pathName}']`;
         } else if (path.type === 'list') {
           pre += `[${pathName}]`;
         } else {
