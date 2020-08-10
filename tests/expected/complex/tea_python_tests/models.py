@@ -4,7 +4,7 @@ from Tea.model import TeaModel
 
 
 class ComplexRequest(TeaModel):
-    def __init__(self, access_key=None, body=None, strs=None, header=None, num=None, part=None):
+    def __init__(self, access_key=None, body=None, strs=None, header=None, num=None, configs=None, part=None):
         self.access_key = access_key
         # Body
         self.body = body
@@ -13,6 +13,7 @@ class ComplexRequest(TeaModel):
         # header
         self.header = header
         self.num = num
+        self.configs = configs
         # Part
         self.part = part
 
@@ -24,6 +25,9 @@ class ComplexRequest(TeaModel):
         if self.header:
             self.header.validate()
         self.validate_required(self.num, 'num')
+        self.validate_required(self.configs, 'configs')
+        if self.configs:
+            self.configs.validate()
         if self.part:
             for k in self.part:
                 if k:
@@ -44,6 +48,10 @@ class ComplexRequest(TeaModel):
         else:
             result['header'] = None
         result['Num'] = self.num
+        if self.configs is not None:
+            result['configs'] = self.configs.to_map()
+        else:
+            result['configs'] = None
         result['Part'] = []
         if self.part is not None:
             for k in self.part:
@@ -67,6 +75,11 @@ class ComplexRequest(TeaModel):
         else:
             self.header = None
         self.num = map.get('Num')
+        if map.get('configs') is not None:
+            temp_model = ComplexRequestConfigs()
+            self.configs = temp_model.from_map(map['configs'])
+        else:
+            self.configs = None
         self.part = []
         if map.get('Part') is not None:
             for k in map.get('Part'):
@@ -93,6 +106,41 @@ class ComplexRequestHeader(TeaModel):
 
     def from_map(self, map={}):
         self.content = map.get('Content')
+        return self
+
+
+class ComplexRequestConfigs(TeaModel):
+    def __init__(self, key=None, value=None, extra=None):
+        self.key = key
+        self.value = value
+        self.extra = extra
+
+    def validate(self):
+        self.validate_required(self.key, 'key')
+        self.validate_required(self.value, 'value')
+        self.validate_required(self.extra, 'extra')
+
+    def to_map(self):
+        result = {}
+        result['key'] = self.key
+        result['value'] = []
+        if self.value is not None:
+            for k in self.value:
+                result['value'].append(k)
+        else:
+            result['value'] = None
+        result['extra'] = self.extra
+        return result
+
+    def from_map(self, map={}):
+        self.key = map.get('key')
+        self.value = []
+        if map.get('value') is not None:
+            for k in map.get('value'):
+                self.value.append(k)
+        else:
+            self.value = None
+        self.extra = map.get('extra')
         return self
 
 

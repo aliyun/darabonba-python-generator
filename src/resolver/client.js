@@ -700,6 +700,33 @@ class ClientResolver extends BaseResolver {
         call.addParams(this.renderGrammerValue(null, arg));
       });
       valGrammer.value = call;
+    } else if (object.type === 'array_access') {
+      valGrammer.type = 'call';
+      
+      let accessIndex;
+      if (object.accessKey.type === 'number') {
+        accessIndex = object.accessKey.value.value;
+      } else {
+        debug.stack(object);
+      }
+
+      let call = new GrammerCall('key', [
+        { type: 'object', name: object.id.lexeme },
+      ]);
+      if (object.propertyPath) {
+        const current = object.id.inferred;
+        object.propertyPath.forEach(path => {
+          if (current.type === 'model') {
+            call.addPath({ type: 'prop', name: path.lexeme });
+          } else if (current.type === 'map') {
+            call.addPath({ type: 'map_set', name: path.lexeme });
+          } else {
+            call.addPath({ type: 'list', name: path.lexeme });
+          }
+        });
+      }
+      call.addPath({ type: 'list', name: accessIndex });
+      valGrammer.value = call;
     } else if (object.type === 'map_access') {
       valGrammer.type = 'call';
       let accessKey = object.accessKey.id ? object.accessKey.id.lexeme : object.accessKey.value.lexeme;
@@ -712,8 +739,20 @@ class ClientResolver extends BaseResolver {
       }
       let call = new GrammerCall('key', [
         { type: 'object', name: object.id.lexeme },
-        { type: 'map', name: accessKey }
       ]);
+      if (object.propertyPath) {
+        const current = object.id.inferred;
+        object.propertyPath.forEach(path => {
+          if (current.type === 'model') {
+            call.addPath({ type: 'prop', name: path.lexeme });
+          } else if (current.type === 'map') {
+            call.addPath({ type: 'map_set', name: path.lexeme });
+          } else {
+            call.addPath({ type: 'list', name: path.lexeme });
+          }
+        });
+      }
+      call.addPath({ type: 'map', name: accessKey });
       valGrammer.value = call;
     } else {
       debug.stack('unimpelemented : ' + object.type, object);

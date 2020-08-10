@@ -13,8 +13,10 @@ from Tea.exceptions import UnretryableException
 
 
 class Client(SourceSourceClient):
-    def __init__(self):
-        pass
+    def __init__(self, config, _configs=None):
+        self._configs = _configs
+        super(Client, self).__init__(config)
+        self._configs[0] = config
 
     def complex_1(self, request, client):
         request.validate()
@@ -152,3 +154,79 @@ class Client(SourceSourceClient):
             status = "catch exception"
         finally:
             status = "ok"
+
+    @staticmethod
+    def array_access():
+        configs = [
+            "a",
+            "b",
+            "c"
+        ]
+        config = configs[0]
+        return config
+
+    @staticmethod
+    def array_access_2():
+        data = {
+            "configs": [
+                "a",
+                "b",
+                "c"
+            ]
+        }
+        config = data['configs'][0]
+        return config
+
+    @staticmethod
+    def array_access_3(request):
+        config_val = request.configs.value[0]
+        return config_val
+
+    @staticmethod
+    def array_assign(config):
+        configs = [
+            "a",
+            "b",
+            "c"
+        ]
+        configs[3] = config
+        return configs
+
+    @staticmethod
+    def array_assign_2(config):
+        data = {
+            "configs": [
+                "a",
+                "b",
+                "c"
+            ]
+        }
+        data['configs'][3] = config
+        return data.get('configs')
+
+    @staticmethod
+    def array_assign_3(request, config):
+        request.configs.value[0] = config
+
+    @staticmethod
+    def map_access(request):
+        config_info = request.configs.extra.get('name')
+        return config_info
+
+    @staticmethod
+    def map_access_2(request):
+        config_info = request.configs.extra.get('name')
+        return config_info
+
+    @staticmethod
+    def map_access_3():
+        data = {
+            "configs": {
+                "value": "string"
+            }
+        }
+        return data['configs'].get('value')
+
+    @staticmethod
+    def map_assign(request, name):
+        request.configs.extra["name"] = name
