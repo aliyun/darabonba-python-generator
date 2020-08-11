@@ -29,7 +29,8 @@ class Client(object):
 
     @staticmethod
     def hello_params(a, b):
-        pass
+        Client.hello_interface()
+        Client.hello_array_map()
 
     @staticmethod
     def hello_interface():
@@ -37,3 +38,6 @@ class Client(object):
         interface mode
         """
         raise Tea.exceptions.TeaException('Un-implemented')
+
+    def a_params(self):
+        self.hello_params("a", "b")
