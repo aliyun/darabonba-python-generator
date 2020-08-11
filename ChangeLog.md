@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.0.7 - 2020-08-11
+
+* Fix the syntax of calling static methods.
+
 ## 1.0.6 - 2020-08-10
 
 * Support array access.
