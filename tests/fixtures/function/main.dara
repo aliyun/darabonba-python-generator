@@ -1,3 +1,6 @@
+init(){
+}
+
 static function hello(): void {
   return;
 }
@@ -20,7 +23,13 @@ static function helloArrayMap(): [map[string]string] {
 }
 
 static async function helloParams(a: string, b: string): void {
+  helloInterface();
+  helloArrayMap();
 }
 
 // interface mode
 static async function helloInterface(): void;
+
+async function aParams(): void {
+  helloParams("a", "b");
+}

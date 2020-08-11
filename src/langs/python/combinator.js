@@ -608,7 +608,7 @@ class Combinator extends CombinatorBase {
   emitFunc(emitter, func) {
     emitter.emitln();
     this.func_static = func.modify.indexOf('STATIC') > -1;
-    this.func_self = this.func_static ? '' : 'self';
+    this.func_self = this.func_static ? _upperFirst(this.getClassName()) : 'self';
     if (this.func_static) {
       emitter.emitln('@staticmethod', this.level);
     }
