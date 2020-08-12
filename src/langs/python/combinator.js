@@ -293,7 +293,7 @@ class Combinator extends CombinatorBase {
     if (_isKeywords(className)) {
       className = _avoidKeywords(className);
     }
-    return className;
+    return _toCamelCase(className);
   }
 
   emitClass(emitter, object) {
@@ -311,7 +311,7 @@ class Combinator extends CombinatorBase {
       parent = '(object)';
     }
     let className = this.getClassName(object.name);
-    emitter.emitln(`class ${_toCamelCase(className)}${parent}:`, this.level);
+    emitter.emitln(`class ${className}${parent}:`, this.level);
     this.levelUp();
     if (object.annotations.length > 0) {
       this.emitAnnotations(emitter, object.annotations);
@@ -321,6 +321,7 @@ class Combinator extends CombinatorBase {
       this.emitNotes(emitter, notes);
     }
     let props = object.body.filter(node => node instanceof PropItem);
+    let propItems = object.body.filter(node => node instanceof PropItem || node instanceof AnnotationItem);
 
     if (object.body.filter(node => node instanceof ConstructItem).length === 0) {
       object.body.unshift(new ConstructItem());
@@ -330,7 +331,7 @@ class Combinator extends CombinatorBase {
       if (node instanceof FuncItem) {
         this.emitFunc(emitter, node);
       } else if (node instanceof ConstructItem) {
-        this.emitConstruct(emitter, node, parent, props);
+        this.emitConstruct(emitter, node, parent, propItems);
       }
     });
     if (this.config.emitType === 'model') {
@@ -531,18 +532,16 @@ class Combinator extends CombinatorBase {
         let max_length = 90;
         let curr_length = 0;
         props.forEach((prop) => {
-          if(prop instanceof AnnotationItem){
-            this.emitAnnotation(emitter,prop);
-            return;
+          if (prop instanceof PropItem) {
+            let str = ` ${_avoidKeywords(_toSnakeCase(prop.name))}=None`;
+            if(curr_length+str.length>=max_length){
+              str =  emitter.eol + emitter.indent(this.level + 3) + str;
+              curr_length = 0;
+            }else{
+              curr_length = curr_length + str.length;
+            }
+            constructProps.push(str);
           }
-          let str = ` ${_avoidKeywords(_toSnakeCase(prop.name))}=None`;
-          if(curr_length+str.length>=max_length){
-            str =  emitter.eol + emitter.indent(this.level + 3) + str;
-            curr_length = 0;
-          }else{
-            curr_length = curr_length + str.length;
-          }
-          constructProps.push(str);
         });
         emitter.emit(',');
         emitter.emit(constructProps.join(','));
@@ -561,6 +560,10 @@ class Combinator extends CombinatorBase {
     }
 
     props.forEach(prop => {
+      if (prop instanceof AnnotationItem) {
+        this.emitAnnotation(emitter, prop);
+        return;
+      }
       const description = prop.notes.filter(note => {
         if (note.key === 'description') {
           return note.value;
@@ -608,7 +611,7 @@ class Combinator extends CombinatorBase {
   emitFunc(emitter, func) {
     emitter.emitln();
     this.func_static = func.modify.indexOf('STATIC') > -1;
-    this.func_self = this.func_static ? _upperFirst(this.getClassName()) : 'self';
+    this.func_self = this.func_static ? this.getClassName(this.config.clientName) : 'self';
     if (this.func_static) {
       emitter.emitln('@staticmethod', this.level);
     }
@@ -746,7 +749,7 @@ class Combinator extends CombinatorBase {
       params = tmp.join(', ');
     }
     if (gram.type === 'super') {
-      pre = `super(${_toCamelCase(this.getClassName(this.config.clientName))}, self).__init__(${params})`;
+      pre = `super(${this.getClassName(this.config.clientName)}, self).__init__(${params})`;
     } else {
       gram.path.forEach((path, i) => {
         let pathName = path.name;

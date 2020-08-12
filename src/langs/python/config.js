@@ -7,8 +7,9 @@ module.exports = {
   indent: '    ',
   ext: '.py',
   keywords: [
-    'default',
-    'list',
+    'nonlocal',
+    'async',
+    'await',
     'and',
     'as',
     'assert',
