@@ -19,6 +19,7 @@ class Client(object):
         """
         Init Func
         """
+        # type's comment
         self._a = _a
         self._comple_list = _comple_list
         self._endpoint_map = _endpoint_map
