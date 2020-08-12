@@ -134,3 +134,15 @@ static async function testFunc(str: string, val: boolean, compleList:[[string]])
     // empty comment1
     // empty comment2
 }
+
+/**
+  * testFuncComment
+  * @param compleList list parameter
+  * @param mapTest dict parameter
+  * @param read readable parameter
+  * @param anyTest any parameter
+  * @param test1 Model parameter
+  * @return void description for return
+  */
+static async function testFuncParams(compleList:[[string]], mapTest: map[string]string, read: readable, anyTest: any, test1: Test1): void {
+}

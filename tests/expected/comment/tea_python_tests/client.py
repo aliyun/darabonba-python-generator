@@ -157,3 +157,24 @@ class Client(object):
         # empty comment1
         # empty comment2
         pass
+
+    @staticmethod
+    def test_func_params(comple_list, map_test, read, any_test, test_1):
+        """
+        testFuncComment
+
+        :type comple_list: list
+        :param comple_list: list parameter
+
+        :type map_test: dict
+        :param map_test: dict parameter
+
+        :param read: readable parameter
+
+        :param any_test: any parameter
+
+        :param test_1: Model parameter
+
+        :return: void description for return
+        """
+        pass

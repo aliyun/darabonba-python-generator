@@ -667,8 +667,8 @@ class Combinator extends CombinatorBase {
                     return p.type;
                   }
                 });
-                const typeMap = this.config.typeMap;
-                type = typeMap[type.join('')];
+                
+                type = ['base', 'complex'].indexOf(this.config.type[_type(type.join(''))]) !== -1 ? _type(type.join('')) : null;
                 
                 emitter.emitln();
                 if (type) {
@@ -789,10 +789,10 @@ class Combinator extends CombinatorBase {
         }
       });
     }
-
     if (pre[0] === '.') {
       pre = pre.slice(1);
     }
+
     emitter.emit(pre);
   }
 
