@@ -65,7 +65,8 @@ class ModelResolver extends BaseResolver {
         });
       }
     }
-      
+    
+    object.includeList = this.combinator.includeList;
     return object;
   }
 

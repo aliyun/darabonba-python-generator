@@ -162,3 +162,5 @@ class MyModelSubmodel(TeaModel):
     def from_map(self, map={}):
         self.stringfield = map.get('stringfield')
         return self
+
+
