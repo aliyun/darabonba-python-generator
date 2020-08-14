@@ -9,19 +9,19 @@ class Test1(TeaModel):
     """
     def __init__(self, test=None, test_2=None, test_3=None, test_5=None, sts=None, a_sts=None):
         # test desc
-        self.test = test
+        self.test = test  # type: str
         # model的test back comment
         # test2 desc
-        self.test_2 = test_2
+        self.test_2 = test_2  # type: str
         # model的test2 back comment
         # test3 desc
-        self.test_3 = test_3
+        self.test_3 = test_3  # type: list
         # test desc
-        self.test_5 = test_5
+        self.test_5 = test_5  # type: str
         # sts desc
-        self.sts = sts
+        self.sts = sts  # type: str
         # asts desc
-        self.a_sts = a_sts
+        self.a_sts = a_sts  # type: str
 
     def validate(self):
         self.validate_required(self.test, 'test')
@@ -68,10 +68,10 @@ class Test2(TeaModel):
     def __init__(self, test=None, test_2=None):
         # model的test front comment
         # test desc
-        self.test = test
+        self.test = test  # type: str
         # model的test front comment
         # test2 desc
-        self.test_2 = test_2
+        self.test_2 = test_2  # type: str
 
     def validate(self):
         self.validate_required(self.test, 'test')
@@ -96,11 +96,11 @@ class Test3(TeaModel):
     def __init__(self, test=None, test_1=None):
         # model的test front comment
         # test desc
-        self.test = test
+        self.test = test  # type: str
         # empty comment1
         # empy comment2
         # test desc
-        self.test_1 = test_1
+        self.test_1 = test_1  # type: str
         # model的test back comment
 
     def validate(self):

@@ -20,9 +20,9 @@ class Client(object):
         Init Func
         """
         # type's comment
-        self._a = _a
-        self._comple_list = _comple_list
-        self._endpoint_map = _endpoint_map
+        self._a = _a  # type: list
+        self._comple_list = _comple_list  # type: list
+        self._endpoint_map = _endpoint_map  # type: dict
         # string declate comment
         str = "sss"
         # new model instance comment
@@ -146,13 +146,14 @@ class Client(object):
         """
         testFunc
 
-        :type str: str
-        :param str: description: string parameter
+        @type str: str
+        @param str: description: string parameter
 
-        :type val: bool
-        :param val: description: boolean parameter
+        @type val: bool
+        @param val: description: boolean parameter
 
-        :return: void description for return
+        @rtype: None
+        @return: void description for return
         """
         # empty comment1
         # empty comment2
@@ -163,18 +164,19 @@ class Client(object):
         """
         testFuncComment
 
-        :type comple_list: list
-        :param comple_list: list parameter
+        @type comple_list: list
+        @param comple_list: list parameter
 
-        :type map_test: dict
-        :param map_test: dict parameter
+        @type map_test: dict
+        @param map_test: dict parameter
 
-        :param read: readable parameter
+        @param read: readable parameter
 
-        :param any_test: any parameter
+        @param any_test: any parameter
 
-        :param test_1: Model parameter
+        @param test_1: Model parameter
 
-        :return: void description for return
+        @rtype: None
+        @return: void description for return
         """
         pass
