@@ -245,6 +245,16 @@ class Combinator extends CombinatorBase {
           includeSet.push(key);
         }
       });
+
+      object.subObject.forEach(subObject => {
+        subObject.includeList.forEach(include => {
+          let key = `${include.import}:${include.from}`;
+          if (includeSet.indexOf(key) === -1) {
+            this.includeList.push(include);
+            includeSet.push(key);
+          }
+        });
+      });
     });
     /******************************** emit body ********************************/
     emitter = new Emitter(this.config);
@@ -254,9 +264,7 @@ class Combinator extends CombinatorBase {
         emitter.emitln().emitln();
         object.subObject.forEach((obj, j) => {
           this.emitClass(emitter, obj);
-          if (j < object.subObject.length - 1) {
-            emitter.emitln().emitln();
-          }
+          emitter.emitln().emitln();
         });
       } else if (i < models.length - 1) {
         emitter.emitln().emitln();
