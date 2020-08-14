@@ -5,17 +5,17 @@ from Tea.model import TeaModel
 
 class ComplexRequest(TeaModel):
     def __init__(self, access_key=None, body=None, strs=None, header=None, num=None, configs=None, part=None):
-        self.access_key = access_key
+        self.access_key = access_key  # type: str
         # Body
         self.body = body
         # Strs
-        self.strs = strs
+        self.strs = strs  # type: list
         # header
-        self.header = header
-        self.num = num
-        self.configs = configs
+        self.header = header  # type: ComplexRequestHeader
+        self.num = num  # type: int
+        self.configs = configs  # type: ComplexRequestConfigs
         # Part
-        self.part = part
+        self.part = part  # type: list
 
     def validate(self):
         self.validate_required(self.access_key, 'access_key')
@@ -94,7 +94,7 @@ class ComplexRequest(TeaModel):
 class ComplexRequestHeader(TeaModel):
     def __init__(self, content=None):
         # Body
-        self.content = content
+        self.content = content  # type: str
 
     def validate(self):
         self.validate_required(self.content, 'content')
@@ -111,9 +111,9 @@ class ComplexRequestHeader(TeaModel):
 
 class ComplexRequestConfigs(TeaModel):
     def __init__(self, key=None, value=None, extra=None):
-        self.key = key
-        self.value = value
-        self.extra = extra
+        self.key = key  # type: str
+        self.value = value  # type: list
+        self.extra = extra  # type: dict
 
     def validate(self):
         self.validate_required(self.key, 'key')
@@ -147,7 +147,7 @@ class ComplexRequestConfigs(TeaModel):
 class ComplexRequestPart(TeaModel):
     def __init__(self, part_number=None):
         # PartNumber
-        self.part_number = part_number
+        self.part_number = part_number  # type: str
 
     def validate(self):
         pass

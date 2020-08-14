@@ -22,22 +22,22 @@ class MyModel(TeaModel):
     def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None,
                  submodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None,
                  class_end_time=None, max_length=None):
-        self.stringfield = stringfield
-        self.bytesfield = bytesfield
-        self.stringarrayfield = stringarrayfield
-        self.mapfield = mapfield
-        self.name = name
-        self.submodel = submodel
-        self.subarray = subarray
-        self.maparray = maparray
-        self.object = object
-        self.numberfield = numberfield
+        self.stringfield = stringfield  # type: str
+        self.bytesfield = bytesfield  # type: bytes
+        self.stringarrayfield = stringarrayfield  # type: list
+        self.mapfield = mapfield  # type: dict
+        self.name = name  # type: str
+        self.submodel = submodel  # type: MyModelSubmodel
+        self.subarray = subarray  # type: list
+        self.maparray = maparray  # type: list
+        self.object = object  # type: dict
+        self.numberfield = numberfield  # type: int
         self.readable = readable
-        self.exist_model = exist_model
+        self.exist_model = exist_model  # type: M
         # 结束时间
-        self.class_end_time = class_end_time
+        self.class_end_time = class_end_time  # type: str
         # 最大长度
-        self.max_length = max_length
+        self.max_length = max_length  # type: str
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')
@@ -149,7 +149,7 @@ class MyModel(TeaModel):
 
 class MyModelSubmodel(TeaModel):
     def __init__(self, stringfield=None):
-        self.stringfield = stringfield
+        self.stringfield = stringfield  # type: str
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')

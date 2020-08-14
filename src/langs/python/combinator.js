@@ -583,7 +583,12 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`# ${d}`, this.level);
         });
       }
-      emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
+      const fieldType = prop.type.lexeme ? prop.type.lexeme : _type(prop.type);
+      if (this.config.type[fieldType] === 'custom') {
+        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
+      } else {
+        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}  # type: ${fieldType}`, this.level);
+      }
     });
 
     if (construct.body.length > 0) {
@@ -600,7 +605,7 @@ class Combinator extends CombinatorBase {
   }
 
   emitAnnotation(emitter, annotation, level) {
-    if (level === undefined) {
+    if (typeof level === 'undefined') {
       level = this.level;
     }
     if (annotation.mode === 'single') {
@@ -668,7 +673,6 @@ class Combinator extends CombinatorBase {
               let tmp = c.split(' ');
               if (tmp[tagIndex] === '@param') {
                 const param = tmp[tagIndex + 1];
-                tmp[tagIndex] = ':param';
                 tmp[tagIndex + 1] = _toSnakeCase(_avoidKeywords(param)) + ':';
                 let type = func.params.map(p => {
                   if (param === p.key) {
@@ -681,14 +685,18 @@ class Combinator extends CombinatorBase {
                 emitter.emitln();
                 if (type) {
                   let typeTmp = tmp.slice(0, 2);
-                  typeTmp[tagIndex] = ':type';
+                  typeTmp[tagIndex] = '@type';
                   typeTmp.push(type);
                   emitter.emitln(typeTmp.join(' '), this.level);
                 }
                 emitter.emitln(tmp.join(' '), this.level);
               }else if (tmp[tagIndex] === '@return') {
-                tmp[tagIndex] = ':return:';
+                const rtype = ['base', 'complex'].indexOf(this.config.type[_type(func.return[0].type)]) !== -1 ? _type(func.return[0].type) : null;
+                tmp[tagIndex] = '@return:';
                 emitter.emitln();
+                if (rtype) {
+                  emitter.emitln(`@rtype: ${rtype}`, this.level);
+                }
                 emitter.emitln(tmp.join(' '), this.level);
               }
             } else {
@@ -1221,7 +1229,7 @@ class Combinator extends CombinatorBase {
   behaviorToModel(emitter, behavior) {
     emitter.emit(`${this.addModelInclude(behavior.expected)}().from_map(`);
     this.grammer(emitter, behavior.grammer, false, false);
-    emitter.emitln(')');
+    emitter.emit(')');
   }
 
   behaviorToMap(emitter, behavior) {
