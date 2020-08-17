@@ -23,7 +23,7 @@
   },
   "python": {
     "package": "Source",
-    "clientName": "SourceClient"
+    "clientName": "source_client"
   },
   "releases": {
     "ts": "@scope/name:*"

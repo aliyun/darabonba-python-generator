@@ -1,0 +1,11 @@
+{
+  "scope": "alibabacloud",
+  "name": "aliasSource",
+  "version": "0.0.1",
+  "main": "./main.dara",
+  "python": {
+    "package": "alias_source",
+    "clientName": "source_client",
+    "modelDirName": "Models"
+  }
+}

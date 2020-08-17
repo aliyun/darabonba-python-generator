@@ -2,7 +2,7 @@
 # This file is auto-generated, don't edit it. Thanks.
 import time
 
-from Source.SourceClient import SourceClient as SourceSourceClient
+from Source.source_client import SourceClient
 from tea_python_tests import models as main_models
 from Source import models as source_models
 from Tea.request import TeaRequest
@@ -12,7 +12,7 @@ from Tea.response import TeaResponse
 from Tea.exceptions import UnretryableException
 
 
-class Client(SourceSourceClient):
+class Client(SourceClient):
     def __init__(self, config, _configs=None):
         self._configs = _configs  # type: list
         super(Client, self).__init__(config)
@@ -44,11 +44,11 @@ class Client(SourceSourceClient):
                 _request.port = 80
                 _request.method = "GET"
                 _request.pathname = "/" + str(self._pathname) + ""
-                _request.query = SourceSourceClient.query(TeaCore.merge({
+                _request.query = SourceClient.query(TeaCore.merge({
                     "date": "2019"
                 }, request.header,
                     map_val))
-                _request.body = SourceSourceClient.body()
+                _request.body = SourceClient.body()
                 _last_request = _request
                 _response = TeaCore.do_action(_request, _runtime)
                 if True and True:
@@ -80,17 +80,17 @@ class Client(SourceSourceClient):
         config = source_models.Config(
 
         )
-        client = SourceSourceClient(config)
+        client = SourceClient(config)
         _request.protocol = "HTTP"
         _request.port = 80
         _request.method = "GET"
         _request.pathname = "/"
-        _request.query = SourceSourceClient.query({
+        _request.query = SourceClient.query({
             "date": "2019",
             "version": "2019-01-08",
             "protocol": _request.protocol
         })
-        _request.body = SourceSourceClient.body()
+        _request.body = SourceClient.body()
         _last_request = _request
         _response = TeaCore.do_action(_request)
 
@@ -102,10 +102,10 @@ class Client(SourceSourceClient):
         _request.port = 80
         _request.method = "GET"
         _request.pathname = "/"
-        _request.query = SourceSourceClient.query({
+        _request.query = SourceClient.query({
             "date": "2019"
         })
-        _request.body = SourceSourceClient.body()
+        _request.body = SourceClient.body()
         _request.headers["host"] = "hello"
         _last_request = _request
         _response = TeaCore.do_action(_request)
@@ -117,9 +117,9 @@ class Client(SourceSourceClient):
         self.array_0(request.to_map())
         req.accesskey = "accesskey"
         req.accesskey = request.access_key
-        SourceSourceClient.parse(main_models.ComplexRequest())
-        SourceSourceClient.array(request.to_map(), "1")
-        SourceSourceClient.async_func()
+        SourceClient.parse(main_models.ComplexRequest())
+        SourceClient.array(request.to_map(), "1")
+        SourceClient.async_func()
         return main_models.ComplexRequest().from_map(TeaCore.merge(_request.query))
 
     def hello(self, request, strs):

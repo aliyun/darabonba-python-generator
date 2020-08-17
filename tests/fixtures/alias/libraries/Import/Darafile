@@ -5,7 +5,7 @@
   "main": "./import.dara",
   "python": {
     "package": "Import",
-    "clientName": "Client",
+    "clientName": "client",
     "modelDirName": "Models"
   }
 }
