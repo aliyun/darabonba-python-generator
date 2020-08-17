@@ -71,7 +71,7 @@ class Combinator extends CombinatorBase {
   addInclude(className) {
     let importName = '';
     let fromName = '';
-    let needAlias = true;
+    let needAlias = false;
     let alias = '';
 
     if (className.indexOf('$') > -1) {
@@ -80,49 +80,54 @@ class Combinator extends CombinatorBase {
       importName = coreNamespl[coreNamespl.length - 1];
       coreNamespl.splice(coreNamespl.length - 1, 1);
       fromName = coreNamespl.join('.');
-      needAlias = false;
     }
 
     if (this.thirdPackageNamespace[className]) {
       // is third package
       importName = _toCamelCase(this.thirdPackageClient[className]);
       fromName = this.thirdPackageNamespace[className] + '.' + this.thirdPackageClient[className];
+      
+      if (importName === _toCamelCase(this.config.client.defaultName)) {
+        needAlias = true;
+      }
 
-      // import classname as classname
-      if (/^[A-Z]+$/.test(importName[0])) {
-        alias = className + importName;
-      } else {
-        alias = _toSnakeCase(className) + '_' + importName;
+      this.includeList.forEach(item => {
+        if (item.alias) {
+          if (item.alias === importName) {
+            needAlias = true;
+          }
+        } else {
+          if (item.import === importName && item.from !== fromName) {
+            needAlias = true;
+          }
+        }
+      });
+
+      if (needAlias === true) {
+        // import classname as classname
+        if (/^[A-Z]+$/.test(importName[0])) {
+          alias = className + importName;
+        } else {
+          alias = _toSnakeCase(className) + '_' + importName;
+        }
       }
     }
 
     let existResult = this.includeList.some(item => item.import === importName && item.from === fromName);
-
+    
     if (!existResult) {
-      const UseFullName = this.includeList.some(item => {
-        return (item.import !== importName || item.from !== fromName) &&
-          item.alias === alias &&
-          (!item.needAlias && item.import === importName || item.needAlias);
-      });
-      if (UseFullName === true) {
-        alias = '';
-        needAlias = true;
-      }
       this.includeList.push({
         'from': fromName,
         'import': importName,
         'alias': alias,
-        'needAlias': needAlias
       });
     }
 
     let packageName = '';
     if (alias) {
       packageName = alias;
-    } else if (needAlias === false) {
-      packageName = importName;
     } else {
-      packageName = fromName.split('.').join('_') + '_' + importName;
+      packageName = importName;
     }
 
     this.clientMap[packageName] = this.thirdPackageClient[className];
@@ -135,7 +140,6 @@ class Combinator extends CombinatorBase {
     let fromName = '';
     let resultName = '';
     let alias = '';
-    let needAlias = true;
 
     if (modelName.indexOf('$') > -1) {
       let coreModelName = this.coreClass(modelName);
@@ -144,7 +148,6 @@ class Combinator extends CombinatorBase {
       coreNamespl.splice(coreNamespl.length - 1, 1);
       fromName = coreNamespl.join('.');
       resultName = fromName.split('.').join('_') + '_' + importName + '.' + modelName.split('.').join('');
-      needAlias = false;
     } else if (accessPath.length > 1 && this.thirdPackageNamespace[accessPath[0]]) {
       // is third package
       importName = 'models';
@@ -178,10 +181,8 @@ class Combinator extends CombinatorBase {
         'from': fromName,
         'import': importName,
         'alias': alias,
-        'needAlias': needAlias
       });
     }
-
     return resultName;
   }
 
@@ -736,10 +737,8 @@ class Combinator extends CombinatorBase {
       emitter.emit(`from ${include.from} `);
       if (include.alias) {
         emitter.emitln(`import ${include.import} as ${include.alias}`);
-      } else if (include.needAlias === false) {
-        emitter.emitln(`import ${include.import}`);
       } else {
-        emitter.emitln(`import ${include.import} as ${include.from.split('.').join('_')}_${include.import}`);
+        emitter.emitln(`import ${include.import}`);
       }
     } else if (include.import) {
       emitter.emitln(`import ${include.import}`);

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from Import.Client import Client as ImportClient
-from Source.Client import Client as SourceClient
+from Import.client import Client as ImportClient
+from Source.client import Client as SourceClient
+from Alias.alias_client import AliasClient
+from alias_source.source_client import SourceClient as AliasSourceSourceClient
 
 
 class Client(object):
@@ -12,3 +14,5 @@ class Client(object):
     def empty_model():
         ImportClient.test()
         SourceClient.test()
+        AliasClient.test()
+        AliasSourceSourceClient.test()

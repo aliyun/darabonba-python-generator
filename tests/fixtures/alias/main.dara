@@ -1,7 +1,11 @@
 import Source;
 import Import;
+import Alias;
+import AliasSource;
 
 static async function emptyModel(): void {
   Import.test();
   Source.test();
+  Alias.test();
+  AliasSource.test();
 }

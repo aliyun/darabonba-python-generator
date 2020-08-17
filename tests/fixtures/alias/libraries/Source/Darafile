@@ -5,7 +5,7 @@
   "main": "./source.dara",
   "python": {
     "package": "Source",
-    "clientName": "Client",
+    "clientName": "client",
     "modelDirName": "Models"
   }
 }

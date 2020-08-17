@@ -5,6 +5,8 @@
   "main": "./main.dara",
   "libraries": {
     "Import": "alibabacloud:Import:*",
-    "Source" : "alibabacloud:Source:*"
+    "Source" : "alibabacloud:Source:*",
+    "Alias" : "alibabacloud:Alias:*",
+    "AliasSource" : "alibabacloud:AliasSource:*"
   }
 }

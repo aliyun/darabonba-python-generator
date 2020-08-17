@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from Source.SourceClient import SourceClient as SourceSourceClient
+from Source.source_client import SourceClient
 
 
-class Client(SourceSourceClient):
+class Client(SourceClient):
     def __init__(self, config):
         super(Client, self).__init__(config)
         self._endpoint_rule = "central"
