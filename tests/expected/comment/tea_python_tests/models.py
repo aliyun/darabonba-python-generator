@@ -35,12 +35,7 @@ class Test1(TeaModel):
         result = {}
         result['test'] = self.test
         result['test2'] = self.test_2
-        result['test3'] = []
-        if self.test_3 is not None:
-            for k in self.test_3:
-                result['test3'].append(k)
-        else:
-            result['test3'] = None
+        result['test3'] = self.test_3
         result['test5'] = self.test_5
         result['sts'] = self.sts
         result['asts'] = self.a_sts
@@ -49,12 +44,7 @@ class Test1(TeaModel):
     def from_map(self, map={}):
         self.test = map.get('test')
         self.test_2 = map.get('test2')
-        self.test_3 = []
-        if map.get('test3') is not None:
-            for k in map.get('test3'):
-                self.test_3.append(k)
-        else:
-            self.test_3 = None
+        self.test_3 = map.get('test3')
         self.test_5 = map.get('test5')
         self.sts = map.get('sts')
         self.a_sts = map.get('asts')

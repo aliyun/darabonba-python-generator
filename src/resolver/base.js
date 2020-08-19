@@ -170,6 +170,98 @@ class BaseResolver {
       this.object.addBodyNode(prop);
     });
   }
+
+  resolveType(typeNode, sourceNode, prop) {
+    if (typeNode.idType) {
+      if (typeNode.idType === 'model') {
+        return this.combinator.addModelInclude(typeNode.lexeme);
+      } else if (typeNode.idType === 'module') {
+        return this.combinator.addInclude(typeNode.lexeme);
+      } else if (typeNode.idType === 'builtin_model') {
+        return this.combinator.addInclude(typeNode.lexeme);
+      }
+      debug.stack(typeNode, sourceNode);
+    } else if (typeNode.type) {
+      if (typeNode.type === 'fieldType') {
+        if (typeNode.fieldType.idType) {
+          return this.combinator.addModelInclude(typeNode.fieldType.lexeme);
+        }
+        return this.resolveType(typeNode.fieldType, typeNode);
+      } else if (typeNode.type === 'modelBody') {
+        // is sub model
+        return this.combinator.addModelInclude([this.object.name, sourceNode.fieldName.lexeme].join('.'));
+      } else if (_isBasicType(typeNode.type)) {
+        return this.resolveType(typeNode.type, typeNode);
+      } else if (typeNode.type === 'basic') {
+        return this.resolveType(typeNode.name, sourceNode);
+      } else if (typeNode.type === 'model') {
+        let name = typeNode.name;
+        if (typeNode.moduleName) {
+          name = typeNode.moduleName + '.' + name;
+        }
+        return this.combinator.addModelInclude(name);
+      } else if (typeNode.type === 'module_instance') {
+        return this.combinator.addInclude(typeNode.name);
+      } else if (typeNode.type === 'param') {
+        if (typeNode.paramType.idType) {
+          return this.combinator.addModelInclude(typeNode.paramType.lexeme);
+        }
+        return this.resolveType(typeNode.paramType, typeNode);
+      } else if (typeNode.type === 'array') {
+        const subType = typeNode.subType ? typeNode.subType : typeNode.itemType;
+        const arrayType = {
+          lexeme: 'array',
+          itemType: this.resolveType(subType)
+        };
+        return arrayType;
+      } else if (typeNode.type === 'moduleModel') {
+        let tmp = [];
+        typeNode.path.forEach(item => {
+          tmp.push(item.lexeme);
+        });
+        return this.combinator.addModelInclude(tmp.join('.'));
+      } else if (typeNode.type === 'subModel_or_moduleModel') {
+        let tmp = [];
+        typeNode.path.forEach(item => {
+          tmp.push(item.lexeme);
+        });
+        return this.combinator.addModelInclude(tmp.join('.'));
+      }
+      debug.stack(typeNode, sourceNode);
+    } else if (typeNode.lexeme) {
+      return this.resolveType(typeNode.lexeme, sourceNode);
+    } else if (typeNode === 'array') {
+      let itemType;
+      if (sourceNode.fieldItemType.type === 'modelBody') {
+        itemType = this.combinator.addModelInclude(sourceNode.itemType);
+      } else if (sourceNode.fieldItemType.idType === 'model') {
+        itemType = this.combinator.addModelInclude(sourceNode.fieldItemType.lexeme);
+      } else {
+        itemType = this.resolveType(sourceNode.fieldItemType, sourceNode);
+      }
+      const arrayType = {
+        lexeme: 'array',
+        itemType: itemType
+      };
+      return arrayType;
+    } else if (typeNode === 'map') {
+      const keyType = this.resolveType(sourceNode.keyType);
+      const valType = this.resolveType(sourceNode.valueType);
+      const mapType = {
+        lexeme: 'map',
+        keyType: keyType,
+        valType: valType
+      };
+      return mapType;
+    } else if (typeNode) {
+      return typeNode;
+    }
+
+    if (typeof typeNode === 'string' && typeNode.length > 0) {
+      return this.combinator.addModelInclude(typeNode);
+    }
+    debug.stack('Unsupported type node', { typeNode, sourceNode });
+  }
 }
 
 module.exports = BaseResolver;

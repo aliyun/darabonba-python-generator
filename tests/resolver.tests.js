@@ -397,6 +397,7 @@ describe('model resolver should be ok', function () {
     });
     model.initProp([{
       fieldValue: {
+        type: 'fieldType',
         fieldType: { type: 'moduleModel', path: [{ lexeme: 'a' }] }
       },
       fieldName: {
@@ -410,7 +411,7 @@ describe('model resolver should be ok', function () {
     });
     model.initProp([{
       type: 'modelField',
-      fieldValue: { fieldType: 'array', fieldItemType: { lexeme: '' } },
+      fieldValue: { type: 'fieldType', fieldType: 'array', fieldItemType: { lexeme: 'string' } },
       fieldName: { lexeme: 'test' },
       attrs: []
     }]);

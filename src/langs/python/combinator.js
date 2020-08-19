@@ -351,6 +351,52 @@ class Combinator extends CombinatorBase {
     this.levelDown();
   }
 
+  emitComplexValidate(emitter, name, fieldType, haveValidate, depth, type) {
+    if (fieldType.lexeme) {
+      if (fieldType.lexeme === 'array') {
+        if (depth > 0) {
+          emitter.emitln(`for k${depth} in ${name}:`, this.level);
+          this.levelUp();
+          this.emitComplexValidate(emitter, `k${depth}`, fieldType.itemType, haveValidate, depth+1);
+          this.levelDown();
+        } else {
+          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
+          this.levelUp();
+          emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
+          this.levelUp();
+          this.emitComplexValidate(emitter, 'k', fieldType.itemType, haveValidate, depth+1);
+          this.levelDown();
+          this.levelDown();
+        }
+      } else if (fieldType.lexeme === 'map') {
+        if (depth > 0) {
+          emitter.emitln(`for v${depth} in ${name}.values():`, this.level);
+          this.levelUp();
+          this.emitComplexValidate(emitter, `v${depth}`, fieldType.valType, haveValidate, depth+1);
+          this.levelDown();
+        } else {
+          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
+          this.levelUp();
+          emitter.emitln(`for v in self.${_avoidKeywords(_toSnakeCase(name))}.values():`, this.level);
+          this.levelUp();
+          this.emitComplexValidate(emitter, 'v', fieldType.valType, haveValidate, depth+1);
+          this.levelDown();
+          this.levelDown();
+        }
+      }
+    } else {
+      if (!this.config.typeMap[fieldType]) {
+        emitter.emitln(`if ${name}:`, this.level);
+        this.levelUp();
+        emitter.emitln(`${name}.validate()`, this.level);
+        this.levelDown();
+        emitter.needSave = true;
+      } else {
+        emitter.needSave = false;
+      }
+    }
+  }
+
   emitValidate(emitter, props, notes) {
     //print validate
     emitter.emitln('');
@@ -365,56 +411,38 @@ class Combinator extends CombinatorBase {
         emitter.emitln(`self.validate_required(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}')`, this.level);
         haveValidate = true;
       }
-      
-      if (prop.type === 'array' && prop.itemType !== '') {
-        if (maxLength > 0) {
+      if (maxLength.length > 0 || pattern.length > 0) {
+        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
+        this.levelUp();
+        if (maxLength.length > 0) {
           emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maxLength[0].value})`, this.level);
           haveValidate = true;
         }
-        if (!this.config.type[_type(prop.itemType)]) {
-          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
-          this.levelUp();
-          emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
-          this.levelUp();
-          emitter.emitln('if k:', this.level);
-          this.levelUp();
-          emitter.emitln('k.validate()', this.level);
-          this.levelDown();
-          this.levelDown();
-          this.levelDown();
+        if (pattern.length > 0) {
+          emitter.emitln(`self.validate_pattern(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', '${pattern[0].value}')`, this.level);
           haveValidate = true;
-        } else {
-          if (pattern.length > 0) {
-            emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
-            this.levelUp();
-            emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
-            this.levelUp();
-            emitter.emitln('if k:', this.level);
-            this.levelUp();
-            emitter.emitln(`self.validate_pattern(k, '${_avoidKeywords(_toSnakeCase(prop.name))}', '${pattern[0].value}')`, this.level);
-            this.levelDown();
-            this.levelDown();
-            this.levelDown();
-            haveValidate = true;
-          }
         }
-      } else if (!this.config.typeMap[prop.type]) {
-        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
-        this.levelUp();
-        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))}.validate()`, this.level);
         this.levelDown();
-        haveValidate = true;
+      }
+      
+      
+      if (prop.type.lexeme) {
+        let emt = new Emitter(emitter.config);
+        if (prop.type.lexeme === 'array') {
+          this.emitComplexValidate(emt, prop.name, prop.type, haveValidate, 0, 'array');
+        } else if (prop.type.lexeme === 'map') {
+          this.emitComplexValidate(emt, prop.name, prop.type, haveValidate, 0, 'map');
+        }
+        if (emt.needSave === true) {
+          emitter.emit(emt.output);
+        }
       } else {
-        if (pattern.length + maxLength.length > 0) {
+        if (!this.config.typeMap[prop.type]) {
           emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
           this.levelUp();
-          if (pattern.length > 0) {
-            emitter.emitln(`self.validate_pattern(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', '${pattern[0].value}')`, this.level);
-          } else if (maxLength.length > 0) {
-            emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maxLength[0].value})`, this.level);
-          }
-          haveValidate = true;
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))}.validate()`, this.level);
           this.levelDown();
+          haveValidate = true;
         }
       }
     });
@@ -426,6 +454,127 @@ class Combinator extends CombinatorBase {
     emitter.emitln();
   }
 
+  emitComplexToMap(emitter, prop, carrier, depth) {
+    const name = prop.name;
+    const fieldName = prop.fieldName;
+    const type = prop.type;
+    const parentType = prop.parentType;
+
+    if (type.lexeme) {
+      if (type.lexeme === 'array') {
+        if (depth > 0) {
+          emitter.emitln(`l${depth} = []`, this.level);
+          emitter.emitln(`for k${depth} in ${name}:`, this.level);
+          this.levelUp();
+          const propInfo = {
+            name: `k${depth}`,
+            fieldName: fieldName,
+            type: type.itemType,
+            parentType: type.lexeme
+          };
+          this.emitComplexToMap(emitter, propInfo, `l${depth}`, depth+1);
+          this.levelDown();
+          if (parentType === 'array') {
+            emitter.emitln(`${carrier}.append(l${depth})`, this.level);
+          } else if (parentType === 'map') {
+            const num = depth-1>0 ? depth-1 : '';
+            emitter.emitln(`${carrier}[k${num}] = l${depth}`, this.level);
+          }
+        } else {
+          emitter.emitln(`result['${fieldName}'] = []`, this.level);
+          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))} is not None:`, this.level);
+          this.levelUp();
+          emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
+          this.levelUp();
+          if (type.itemType.lexeme) {
+            const propInfo = {
+              name: 'k',
+              fieldName: fieldName,
+              type: type.itemType,
+              parentType: type.lexeme
+            };
+            this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth+1);
+          } else {
+            if (!this.config.typeMap[type.itemType]) {
+              emitter.emitln(`result['${fieldName}'].append(k.to_map() if k else None)`, this.level);
+              emitter.needSave = true;
+            } else {
+              emitter.needSave = false;
+            }
+          }
+          this.levelDown();
+          this.levelDown();
+          emitter.emitln('else:', this.level);
+          this.levelUp();
+          emitter.emitln(`result['${fieldName}'] = None`, this.level);
+          this.levelDown();
+        }
+      } else if (type.lexeme === 'map') {
+        if (depth > 0) {
+          emitter.emitln(`d${depth} = {}`, this.level);
+          emitter.emitln(`for k${depth} ,v${depth} in ${name}.items():`, this.level);
+          this.levelUp();
+          const propInfo = {
+            name: `v${depth}`,
+            fieldName: fieldName,
+            type: type.valType,
+            parentType: type.lexeme
+          };
+          this.emitComplexToMap(emitter, propInfo, `d${depth}`, depth+1);
+          this.levelDown();
+          if (parentType === 'array') {
+            emitter.emitln(`${carrier}.append(d${depth})`, this.level);
+          } else if (parentType === 'map') {
+            const num = depth-1>0 ? depth-1 : '';
+            emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
+          }
+        } else {
+          emitter.emitln(`result['${fieldName}'] = {}`, this.level);
+          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))} is not None:`, this.level);
+          this.levelUp();
+          emitter.emitln(`for k, v in self.${_avoidKeywords(_toSnakeCase(name))}.items():`, this.level);
+          this.levelUp();
+          if (type.valType.lexeme) {
+            const propInfo = {
+              name: 'v',
+              fieldName: fieldName,
+              type: type.valType,
+              parentType: type.lexeme
+            };
+            this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth+1);
+          } else {
+            if (!this.config.typeMap[type.valType]) {
+              emitter.emitln(`result['${fieldName}'][k] = v.to_map()`, this.level);
+              emitter.needSave = true;
+            } else {
+              emitter.needSave = false;
+            }
+          }
+          this.levelDown();
+          this.levelDown();
+          emitter.emitln('else:', this.level);
+          this.levelUp();
+          emitter.emitln(`result['${fieldName}'] = None`, this.level);
+          this.levelDown();
+        }
+      }
+    } else {
+      if (depth > 1) {
+        if (!this.config.typeMap[type]) {
+          const num = depth-1>0 ? depth-1 : '';
+          if (parentType === 'array') {
+            emitter.emitln(`l${num}.append(k${num}.to_map() if k${num} else None)`, this.level);
+          } else if (parentType === 'map') {
+            emitter.emitln(`d${num}[k${num}] = v${num}.to_map()`, this.level);
+          }
+          emitter.needSave = true;
+        } else {
+          emitter.needSave = false;
+        }
+      }
+    }
+  }
+
   emitToMap(emitter, props, notes) {
     emitter.emitln('def to_map(self):', this.level);
     this.levelUp();
@@ -433,25 +582,28 @@ class Combinator extends CombinatorBase {
     props.forEach(prop => {
       let noteName = prop.notes.filter(item => item.key === 'name');
       let name = noteName.length > 0 ? noteName[0].value : prop.name;
-      if (prop.type === 'array' && prop.itemType !== '') {
-        emitter.emitln(`result['${name}'] = []`, this.level);
-        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
-        this.levelUp();
-        emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
-        this.levelUp();
-        if (!this.config.type[_type(prop.itemType)] && !this.thirdPackageNamespace[_type(prop.itemType)]) {
-          emitter.emitln(`result['${name}'].append(k.to_map() if k else None)`, this.level);
-        } else {
-          emitter.emitln(`result['${name}'].append(k)`, this.level);
+      if (prop.type.lexeme) {
+        let emt = new Emitter(emitter.config);
+        const propInfo = {
+          name: prop.name,
+          fieldName: name,
+          type: prop.type,
+        };
+        if (prop.type.lexeme === 'array') {
+          propInfo.parentType = 'array';
+          this.emitComplexToMap(emt, propInfo, null, 0);
+        } else if (prop.type.lexeme === 'map') {
+          propInfo.parentType = 'map';
+          this.emitComplexToMap(emt, propInfo, null, 0);
         }
-        this.levelDown();
-        this.levelDown();
-        emitter.emitln('else:', this.level);
-        this.levelUp();
-        emitter.emitln(`result['${name}'] = None`, this.level);
-        this.levelDown();
+        if (emt.needSave === true) {
+          emitter.emit(emt.output);
+        } else {
+          emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
+        }
+        
       } else {
-        if (!this.config.type[_type(prop.type)] && !this.thirdPackageNamespace[_type(prop.type)]) {
+        if (!this.config.type[_type(prop.type)]) {
           emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
           this.levelUp();
           emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}.to_map()`, this.level);
@@ -465,9 +617,137 @@ class Combinator extends CombinatorBase {
         }
       }
     });
+
     emitter.emitln('return result', this.level);
     this.levelDown();
     emitter.emitln();
+  }
+
+  emitComplexFromMap(emitter, prop, carrier, depth) {
+    const name = prop.name;
+    const fieldName = prop.fieldName;
+    const type = prop.type;
+    const parentType = prop.parentType;
+
+    if (type.lexeme) {
+      if (type.lexeme === 'array') {
+        if (depth > 0) {
+          const propInfo = {
+            name: `k${depth}`,
+            fieldName: fieldName,
+            type: type.itemType,
+            parentType: type.lexeme
+          };
+
+          emitter.emitln(`l${depth} = []`, this.level);
+          emitter.emitln(`for k${depth} in ${name}:`, this.level);
+          this.levelUp();
+          this.emitComplexFromMap(emitter, propInfo, `l${depth}`, depth+1);
+          this.levelDown();
+          if (parentType === 'array') {
+            emitter.emitln(`${carrier}.append(l${depth})`, this.level);
+          } else if (parentType === 'map') {
+            const num = depth-1>0 ? depth-1 : '';
+            emitter.emitln(`${carrier}['k${num}'] = l${depth}`, this.level);
+          }
+        } else {
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))} = []`, this.level);
+          emitter.emitln(`if map.get('${fieldName}') is not None:`, this.level);
+          this.levelUp();
+          emitter.emitln(`for k in map.get('${fieldName}'):`, this.level);
+          this.levelUp();
+          if (type.itemType.lexeme) {
+            const propInfo = {
+              name: 'k',
+              fieldName: fieldName,
+              type: type.itemType,
+              parentType: type.lexeme
+            };
+            this.emitComplexFromMap(emitter, propInfo ,`self.${_avoidKeywords(_toSnakeCase(name))}`, depth+1);
+          } else {
+            if (!this.config.typeMap[type.itemType]) {
+              emitter.emitln(`temp_model = ${type.itemType}()`, this.level);
+              emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))}.append(temp_model.from_map(k))`, this.level);
+              emitter.needSave = true;
+            } else {
+              emitter.needSave = false;
+            }
+          }
+          this.levelDown();
+          this.levelDown();
+          emitter.emitln('else:', this.level);
+          this.levelUp();
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))} = None`, this.level);
+          this.levelDown();
+        }
+      } else if (type.lexeme === 'map') {
+        if (depth > 0) {
+          const propInfo = {
+            name: `v${depth}`,
+            fieldName: fieldName,
+            type: type.valType,
+            parentType: type.lexeme
+          };
+
+          emitter.emitln(`d${depth} = {}`, this.level);
+          emitter.emitln(`for k${depth} ,v${depth} in ${name}.items():`, this.level);
+          this.levelUp();
+          this.emitComplexFromMap(emitter, propInfo, `d${depth}`, depth+1);
+          this.levelDown();
+          if (parentType === 'array') {
+            emitter.emitln(`${carrier}.append(d${depth})`, this.level);
+          } else if (parentType === 'map') {
+            const num = depth-1>0 ? depth-1 : '';
+            emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
+          }
+        } else {
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))} = {}`, this.level);
+          emitter.emitln(`if map.get('${fieldName}') is not None:`, this.level);
+          this.levelUp();
+          emitter.emitln(`for k, v in map.get('${fieldName}').items():`, this.level);
+          this.levelUp();
+          if (type.valType.lexeme) {
+            const propInfo = {
+              name: 'v',
+              fieldName: fieldName,
+              type: type.valType,
+              parentType: type.lexeme
+            };
+            this.emitComplexFromMap(emitter, propInfo, `self.${_avoidKeywords(_toSnakeCase(name))}`, depth+1);
+          } else {
+            if (!this.config.typeMap[type.valType]) {
+              emitter.emitln(`temp_model = ${type.valType}()`, this.level);
+              emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))}[k] = temp_model.from_map(v)`, this.level);
+              emitter.needSave = true;
+            } else {
+              emitter.needSave = false;
+            }
+          }
+          this.levelDown();
+          this.levelDown();
+          emitter.emitln('else:', this.level);
+          this.levelUp();
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))} = None`, this.level);
+          this.levelDown();
+        }
+      }
+    } else {
+      if (depth > 1) {
+        if (!this.config.typeMap[type]) {
+          const num = depth-1>0 ? depth-1 : '';
+          if (parentType === 'array') {
+            emitter.emitln(`temp_model = ${type}()`, this.level);
+            emitter.emitln(`l${num}.append(temp_model.from_map(${name}))`, this.level);
+          } else if (parentType === 'map') {
+            emitter.emitln(`temp_model = ${type}()`, this.level);
+            emitter.emitln(`d${num}[k${num}] = temp_model.from_map(${name})`, this.level);
+          }
+          emitter.needSave = true;
+        } else {
+          emitter.needSave = false;
+        }
+      }
+    }
   }
 
   emitFromMap(emitter, modelName, props, notes) {
@@ -476,28 +756,28 @@ class Combinator extends CombinatorBase {
     props.forEach(prop => {
       let noteName = prop.notes.filter(item => item.key === 'name');
       let name = noteName.length > 0 ? noteName[0].value : prop.name;
-      if (prop.type === 'array' && prop.itemType !== '') {
-        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = []`, this.level);
-        emitter.emitln(`if map.get('${name}') is not None:`, this.level);
-        this.levelUp();
-        emitter.emitln(`for k in map.get('${name}'):`, this.level);
-        this.levelUp();
-        if (!this.config.type[_type(prop.itemType)] && !this.thirdPackageNamespace[_type(prop.itemType)]) {
-          let type = _type(prop.itemType);
-          emitter.emitln(`temp_model = ${type}()`, this.level);
-          emitter.emitln('temp_model = temp_model.from_map(k)', this.level);
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))}.append(temp_model)`, this.level);
-        } else {
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))}.append(k)`, this.level);
+
+      if (prop.type.lexeme) {
+        let emt = new Emitter(emitter.config);
+        const propInfo = {
+          name: prop.name,
+          fieldName: name,
+          type: prop.type,
+        };
+        if (prop.type.lexeme === 'array') {
+          propInfo.parentType = 'array';
+          this.emitComplexFromMap(emt, propInfo, null, 0);
+        } else if (prop.type.lexeme === 'map') {
+          propInfo.parentType = 'map';
+          this.emitComplexFromMap(emt, propInfo, null, 0);
         }
-        this.levelDown();
-        this.levelDown();
-        emitter.emitln('else:', this.level);
-        this.levelUp();
-        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = None`, this.level);
-        this.levelDown();
+        if (emt.needSave === true) {
+          emitter.emit(emt.output);
+        } else {
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = map.get('${name}')`, this.level);
+        }
       } else {
-        if (!_isBasicType(prop.type) && !this.config.typeMap[prop.type] && !this.thirdPackageNamespace[_type(prop.type)]) {
+        if (!this.config.typeMap[prop.type]) {
           let type = _type(prop.type);
           emitter.emitln(`if map.get('${name}') is not None:`, this.level);
           this.levelUp();
@@ -584,7 +864,7 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`# ${d}`, this.level);
         });
       }
-      const fieldType = prop.type.lexeme ? prop.type.lexeme : _type(prop.type);
+      const fieldType = _type(prop.type.lexeme ? prop.type.lexeme : prop.type);
       if (this.config.type[fieldType] === 'custom') {
         emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
       } else {

@@ -96,39 +96,8 @@ class ModelResolver extends BaseResolver {
       const prop = new PropItem();
       prop.belong = object.index;
       prop.name = node.fieldName.lexeme;
-      if (node.fieldValue.fieldType) {
-        prop.type = node.fieldValue.fieldType;
-      } else if (node.fieldValue.type && node.fieldValue.type === 'modelBody') {
-        prop.type = this.combinator.addModelInclude([object.name, node.fieldName.lexeme].join('.'));
-      }
-      if (node.fieldValue && node.fieldValue.fieldItemType) {
-        if (node.fieldValue.fieldItemType.type) {
-          if (node.fieldValue.fieldItemType.type === 'modelBody') {
-            prop.itemType = this.combinator.addModelInclude(node.fieldValue.itemType);
-          } else if (node.fieldValue.fieldItemType.type === 'map') {
-            prop.itemType = `map[${node.fieldValue.fieldItemType.keyType.lexeme},${node.fieldValue.fieldItemType.valueType.lexeme}]`;
-          } else {
-            prop.itemType = node.fieldValue.fieldItemType.fieldType;
-          }
-        } else if (node.fieldValue.fieldItemType.idType === 'model') {
-          
-          prop.itemType = this.combinator.addModelInclude(node.fieldValue.fieldItemType.lexeme);
-        } else if (_isBasicType(node.fieldValue.fieldItemType.lexeme)) {
-          prop.itemType = node.fieldValue.fieldItemType.lexeme;
-        } else if (node.type === 'modelField') {
-          if (node.fieldValue && node.fieldValue.fieldItemType && !_isBasicType(node.fieldValue.fieldItemType.lexeme)) {
-            prop.itemType = this.combinator.addModelInclude(node.fieldValue.fieldItemType.lexeme);
-          }
-        }
-      } else if (node.fieldValue && node.fieldValue.fieldType) {
-        if (node.fieldValue.fieldType.type === 'moduleModel') {
-          let tmp = [];
-          node.fieldValue.fieldType.path.forEach(item => {
-            tmp.push(item.lexeme);
-          });
-          prop.type = this.combinator.addModelInclude(tmp.join('.'));
-        }
-      }
+      prop.type = this.resolveType(node.fieldValue, node);
+      
       prop.modify.push(Modify.public());
       if (node.required) {
         prop.addNote(new NoteItem('required', true));
