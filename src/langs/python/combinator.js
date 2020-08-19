@@ -351,20 +351,20 @@ class Combinator extends CombinatorBase {
     this.levelDown();
   }
 
-  emitComplexValidate(emitter, name, fieldType, haveValidate, depth, type) {
+  emitComplexValidate(emitter, name, fieldType, depth) {
     if (fieldType.lexeme) {
       if (fieldType.lexeme === 'array') {
         if (depth > 0) {
           emitter.emitln(`for k${depth} in ${name}:`, this.level);
           this.levelUp();
-          this.emitComplexValidate(emitter, `k${depth}`, fieldType.itemType, haveValidate, depth+1);
+          this.emitComplexValidate(emitter, `k${depth}`, fieldType.itemType, depth+1);
           this.levelDown();
         } else {
           emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
           this.levelUp();
           emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
           this.levelUp();
-          this.emitComplexValidate(emitter, 'k', fieldType.itemType, haveValidate, depth+1);
+          this.emitComplexValidate(emitter, 'k', fieldType.itemType, depth+1);
           this.levelDown();
           this.levelDown();
         }
@@ -372,14 +372,14 @@ class Combinator extends CombinatorBase {
         if (depth > 0) {
           emitter.emitln(`for v${depth} in ${name}.values():`, this.level);
           this.levelUp();
-          this.emitComplexValidate(emitter, `v${depth}`, fieldType.valType, haveValidate, depth+1);
+          this.emitComplexValidate(emitter, `v${depth}`, fieldType.valType, depth+1);
           this.levelDown();
         } else {
           emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
           this.levelUp();
           emitter.emitln(`for v in self.${_avoidKeywords(_toSnakeCase(name))}.values():`, this.level);
           this.levelUp();
-          this.emitComplexValidate(emitter, 'v', fieldType.valType, haveValidate, depth+1);
+          this.emitComplexValidate(emitter, 'v', fieldType.valType, depth+1);
           this.levelDown();
           this.levelDown();
         }
@@ -416,24 +416,20 @@ class Combinator extends CombinatorBase {
         this.levelUp();
         if (maxLength.length > 0) {
           emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maxLength[0].value})`, this.level);
-          haveValidate = true;
         }
         if (pattern.length > 0) {
           emitter.emitln(`self.validate_pattern(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', '${pattern[0].value}')`, this.level);
-          haveValidate = true;
         }
         this.levelDown();
+        haveValidate = true;
       }
       
       
       if (prop.type.lexeme) {
         let emt = new Emitter(emitter.config);
-        if (prop.type.lexeme === 'array') {
-          this.emitComplexValidate(emt, prop.name, prop.type, haveValidate, 0, 'array');
-        } else if (prop.type.lexeme === 'map') {
-          this.emitComplexValidate(emt, prop.name, prop.type, haveValidate, 0, 'map');
-        }
+        this.emitComplexValidate(emt, prop.name, prop.type, 0);
         if (emt.needSave === true) {
+          haveValidate = true;
           emitter.emit(emt.output);
         }
       } else {
