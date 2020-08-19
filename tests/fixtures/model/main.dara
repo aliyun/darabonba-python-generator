@@ -16,6 +16,12 @@ model MyModel = {
   readable: readable,
   existModel: M,
   classEndTime?: string(description='结束时间', example='2018-10-10T10:10:00Z', pattern='\\\\d{4}[-]\\\\d{1,2}[-]\\\\d{1,2}(\\\\s\\\\d{2}:\\\\d{2}(:\\\\d{2})?)?', name='class_end_time'),
-  maxLength?: string(description='最大长度', example='10000', maxLength='10', name='max_length'),
+  maxLength?: string(description='最大长度', example='10000', maxLength='10', name='max-length'),
+  test3: [[string]](description='test3 desc', name='test3'),
+  arrayArrayModel: [[M]],
+  arrayMapModel: [ map[string]M ],
 
+  mapModel: map[string]M,
+  submodelMap: map[string]MyModel.submodel
 };
+

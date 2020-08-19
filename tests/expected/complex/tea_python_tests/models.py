@@ -37,12 +37,7 @@ class ComplexRequest(TeaModel):
         result = {}
         result['accessKey'] = self.access_key
         result['Body'] = self.body
-        result['Strs'] = []
-        if self.strs is not None:
-            for k in self.strs:
-                result['Strs'].append(k)
-        else:
-            result['Strs'] = None
+        result['Strs'] = self.strs
         if self.header is not None:
             result['header'] = self.header.to_map()
         else:
@@ -63,12 +58,7 @@ class ComplexRequest(TeaModel):
     def from_map(self, map={}):
         self.access_key = map.get('accessKey')
         self.body = map.get('Body')
-        self.strs = []
-        if map.get('Strs') is not None:
-            for k in map.get('Strs'):
-                self.strs.append(k)
-        else:
-            self.strs = None
+        self.strs = map.get('Strs')
         if map.get('header') is not None:
             temp_model = ComplexRequestHeader()
             self.header = temp_model.from_map(map['header'])
@@ -84,8 +74,7 @@ class ComplexRequest(TeaModel):
         if map.get('Part') is not None:
             for k in map.get('Part'):
                 temp_model = ComplexRequestPart()
-                temp_model = temp_model.from_map(k)
-                self.part.append(temp_model)
+                self.part.append(temp_model.from_map(k))
         else:
             self.part = None
         return self
@@ -123,23 +112,13 @@ class ComplexRequestConfigs(TeaModel):
     def to_map(self):
         result = {}
         result['key'] = self.key
-        result['value'] = []
-        if self.value is not None:
-            for k in self.value:
-                result['value'].append(k)
-        else:
-            result['value'] = None
+        result['value'] = self.value
         result['extra'] = self.extra
         return result
 
     def from_map(self, map={}):
         self.key = map.get('key')
-        self.value = []
-        if map.get('value') is not None:
-            for k in map.get('value'):
-                self.value.append(k)
-        else:
-            self.value = None
+        self.value = map.get('value')
         self.extra = map.get('extra')
         return self
 
