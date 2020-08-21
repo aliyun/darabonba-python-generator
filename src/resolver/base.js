@@ -220,7 +220,7 @@ class BaseResolver {
           tmp.push(item.lexeme);
         });
         return this.combinator.addModelInclude(tmp.join('.'));
-      } else if (typeNode.type === 'subModel_or_moduleModel') {
+      } else if (typeNode.type === 'subModel') {
         let tmp = [];
         typeNode.path.forEach(item => {
           tmp.push(item.lexeme);
