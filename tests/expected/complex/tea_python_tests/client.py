@@ -40,6 +40,10 @@ class Client(SourceClient):
                     "test": "ok"
                 }
                 version = "/" + "2019-01-08" + "" + str(self._pathname) + ""
+                module_model_map_val = {}
+                module_map_val = {}
+                model_map_val = {}
+                sub_model_map_val = {}
                 _request.protocol = self._protocol
                 _request.port = 80
                 _request.method = "GET"

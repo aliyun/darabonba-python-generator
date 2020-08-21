@@ -385,7 +385,7 @@ class Combinator extends CombinatorBase {
         }
       }
     } else {
-      if (!this.config.typeMap[fieldType]) {
+      if (!this.config.typeMap[fieldType] && !this.thirdPackageNamespace[fieldType]) {
         emitter.emitln(`if ${name}:`, this.level);
         this.levelUp();
         emitter.emitln(`${name}.validate()`, this.level);
@@ -433,7 +433,7 @@ class Combinator extends CombinatorBase {
           emitter.emit(emt.output);
         }
       } else {
-        if (!this.config.typeMap[prop.type]) {
+        if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
           emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
           this.levelUp();
           emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))}.validate()`, this.level);
@@ -491,7 +491,7 @@ class Combinator extends CombinatorBase {
             };
             this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth+1);
           } else {
-            if (!this.config.typeMap[type.itemType]) {
+            if (!this.config.typeMap[type.itemType] && !this.thirdPackageNamespace[type.itemType]) {
               emitter.emitln(`result['${fieldName}'].append(k.to_map() if k else None)`, this.level);
               emitter.needSave = true;
             } else {
@@ -539,7 +539,7 @@ class Combinator extends CombinatorBase {
             };
             this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth+1);
           } else {
-            if (!this.config.typeMap[type.valType]) {
+            if (!this.config.typeMap[type.valType] && !this.thirdPackageNamespace[type.valType]) {
               emitter.emitln(`result['${fieldName}'][k] = v.to_map()`, this.level);
               emitter.needSave = true;
             } else {
@@ -556,7 +556,7 @@ class Combinator extends CombinatorBase {
       }
     } else {
       if (depth > 1) {
-        if (!this.config.typeMap[type]) {
+        if (!this.config.typeMap[type] && !this.thirdPackageNamespace[type]) {
           const num = depth-1>0 ? depth-1 : '';
           if (parentType === 'array') {
             emitter.emitln(`l${num}.append(k${num}.to_map() if k${num} else None)`, this.level);
@@ -599,7 +599,7 @@ class Combinator extends CombinatorBase {
         }
         
       } else {
-        if (!this.config.type[_type(prop.type)]) {
+        if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
           emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
           this.levelUp();
           emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}.to_map()`, this.level);
@@ -661,7 +661,7 @@ class Combinator extends CombinatorBase {
             };
             this.emitComplexFromMap(emitter, propInfo ,`self.${_avoidKeywords(_toSnakeCase(name))}`, depth+1);
           } else {
-            if (!this.config.typeMap[type.itemType]) {
+            if (!this.config.typeMap[type.itemType] && !this.thirdPackageNamespace[type.itemType]) {
               emitter.emitln(`temp_model = ${type.itemType}()`, this.level);
               emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))}.append(temp_model.from_map(k))`, this.level);
               emitter.needSave = true;
@@ -711,7 +711,7 @@ class Combinator extends CombinatorBase {
             };
             this.emitComplexFromMap(emitter, propInfo, `self.${_avoidKeywords(_toSnakeCase(name))}`, depth+1);
           } else {
-            if (!this.config.typeMap[type.valType]) {
+            if (!this.config.typeMap[type.valType] && !this.thirdPackageNamespace[type.valType]) {
               emitter.emitln(`temp_model = ${type.valType}()`, this.level);
               emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))}[k] = temp_model.from_map(v)`, this.level);
               emitter.needSave = true;
@@ -729,7 +729,7 @@ class Combinator extends CombinatorBase {
       }
     } else {
       if (depth > 1) {
-        if (!this.config.typeMap[type]) {
+        if (!this.config.typeMap[type] && !this.thirdPackageNamespace[type]) {
           const num = depth-1>0 ? depth-1 : '';
           if (parentType === 'array') {
             emitter.emitln(`temp_model = ${type}()`, this.level);
@@ -773,7 +773,7 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = map.get('${name}')`, this.level);
         }
       } else {
-        if (!this.config.typeMap[prop.type]) {
+        if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
           let type = _type(prop.type);
           emitter.emitln(`if map.get('${name}') is not None:`, this.level);
           this.levelUp();
