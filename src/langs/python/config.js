@@ -72,7 +72,8 @@ module.exports = {
     'bytes': 'bytes',
     'long': 'int',
     'array': 'list',
-    'readable': 'STREAM_CLASS',
+    'readable': 'READABLE',
+    'writable': 'WRITABLE',
     'float': 'float',
     'double': 'float',
     'int64': 'int',
@@ -101,7 +102,8 @@ module.exports = {
     'None': 'base',
     'dict': 'complex',
     'list': 'complex',
-    'STREAM_CLASS': 'custom',
+    'READABLE': 'custom',
+    'WRITABLE': 'custom'
   },
   exceptionMap: {
     'BASE': 'Tea.exceptions.TeaException',
