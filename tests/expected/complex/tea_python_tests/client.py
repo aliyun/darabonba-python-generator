@@ -135,6 +135,12 @@ class Client(SourceClient):
 
     @staticmethod
     def array_0(req):
+        temp = source_models.Config(
+
+        )
+        any_arr = [
+            temp
+        ]
         return {}
 
     @staticmethod
