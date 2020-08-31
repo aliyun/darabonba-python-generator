@@ -23,28 +23,28 @@ class MyModel(TeaModel):
                  submodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None,
                  class_end_time=None, max_length=None, test_3=None, array_array_model=None, array_map_model=None, map_model=None,
                  submodel_map=None):
-        self.stringfield = stringfield  # type: str
-        self.bytesfield = bytesfield  # type: bytes
-        self.stringarrayfield = stringarrayfield  # type: list
-        self.mapfield = mapfield  # type: dict
-        self.name = name  # type: str
+        self.stringfield = stringfield
+        self.bytesfield = bytesfield
+        self.stringarrayfield = stringarrayfield
+        self.mapfield = mapfield
+        self.name = name
         self.submodel = submodel  # type: MyModelSubmodel
-        self.subarray = subarray  # type: list
-        self.maparray = maparray  # type: list
-        self.object = object  # type: dict
-        self.numberfield = numberfield  # type: int
+        self.subarray = subarray
+        self.maparray = maparray
+        self.object = object
+        self.numberfield = numberfield
         self.readable = readable
         self.exist_model = exist_model  # type: M
         # 结束时间
-        self.class_end_time = class_end_time  # type: str
+        self.class_end_time = class_end_time
         # 最大长度
-        self.max_length = max_length  # type: str
+        self.max_length = max_length
         # test3 desc
-        self.test_3 = test_3  # type: list
-        self.array_array_model = array_array_model  # type: list
-        self.array_map_model = array_map_model  # type: list
-        self.map_model = map_model  # type: dict
-        self.submodel_map = submodel_map  # type: dict
+        self.test_3 = test_3
+        self.array_array_model = array_array_model
+        self.array_map_model = array_map_model
+        self.map_model = map_model
+        self.submodel_map = submodel_map
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')
@@ -224,7 +224,7 @@ class MyModel(TeaModel):
 
 class MyModelSubmodel(TeaModel):
     def __init__(self, stringfield=None):
-        self.stringfield = stringfield  # type: str
+        self.stringfield = stringfield
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')

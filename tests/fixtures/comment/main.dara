@@ -128,11 +128,13 @@ static function staticFunc(): void{
   * testFunc
   * @param str description: string parameter
   * @param val description: boolean parameter
-  * @return void description for return
+  * @return `test` for return
   */
-static async function testFunc(str: string, val: boolean, compleList:[[string]]): void {
+static async function testFunc(str: string, val: boolean, compleList:[[string]]): string {
     // empty comment1
     // empty comment2
+    var s = 'test';
+    return s;
 }
 
 /**

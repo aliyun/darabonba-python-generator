@@ -14,7 +14,7 @@ from Tea.exceptions import UnretryableException
 
 class Client(SourceClient):
     def __init__(self, config, _configs=None):
-        self._configs = _configs  # type: list
+        self._configs = _configs
         super(Client, self).__init__(config)
         self._configs[0] = config
 
