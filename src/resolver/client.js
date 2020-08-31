@@ -119,16 +119,10 @@ class ClientResolver extends BaseResolver {
 
   resolveInitBody(init) {
     const object = this.object;
-    const combinator = this.combinator;
 
     let constructNode = new ConstructItem();
     if (init.params && init.params.params) {
       init.params.params.forEach(param => {
-        if (param.paramType.idType && param.paramType.idType === 'model') {
-          combinator.addModelInclude(param.paramType.lexeme);
-        } else if (param.paramType.idType && param.paramType.idType === 'module') {
-          combinator.addInclude(param.paramType.lexeme);
-        }
         constructNode.addParamNode(new GrammerValue(param.paramType.lexeme, param.defaultValue, param.paramName.lexeme));
       });
     }
@@ -163,24 +157,11 @@ class ClientResolver extends BaseResolver {
     ast.params.params.forEach(p => {
       var param = new GrammerValue();
       if (p.paramType && p.paramType.lexeme && p.paramType.lexeme.indexOf('$') > -1) {
-        param.type = this.combinator.addInclude(p.paramType.lexeme);
+        param.type = p.paramType.lexeme;
       } else if (p.paramType.type && p.paramType.type === 'array') {
         param.type = 'array';
         param.itemType = p.paramType.subType.lexeme;
-      } else if (p.paramType.type === 'moduleModel') {
-        let tmp = [];
-        p.paramType.path.forEach(item => {
-          tmp.push(item.lexeme);
-        });
-        param.type = this.combinator.addModelInclude(tmp.join('.'));
       } else if (p.type === 'param' && p.paramType.lexeme) {
-        if (!_isBasicType(p.paramType.lexeme)) {
-          if (p.paramType.idType && p.paramType.idType === 'module') {
-            this.combinator.addInclude(p.paramType.lexeme);
-          } else {
-            this.combinator.addModelInclude(p.paramType.lexeme);
-          }
-        }
         param.type = p.paramType.lexeme;
       } else if (p.type === 'param' && p.paramType.type === 'map') {
         param.type = 'map';
@@ -436,7 +417,7 @@ class ClientResolver extends BaseResolver {
         }
 
         // response = Tea.doAction
-        const doActionBehavior = new BehaviorDoAction(new GrammerVar(this.config.response, this.combinator.addInclude('$Response')), doActionParams);
+        const doActionBehavior = new BehaviorDoAction(new GrammerVar(this.config.response, '$Response'), doActionParams);
 
         if (body.stmts) {
           body.stmts.stmts.forEach(stmt => {
