@@ -3,7 +3,6 @@
 import time
 
 from Tea.request import TeaRequest
-from Tea.response import TeaResponse
 from Tea.exceptions import TeaException
 from Tea.core import TeaCore
 from Tea.exceptions import UnretryableException

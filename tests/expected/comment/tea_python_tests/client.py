@@ -7,7 +7,6 @@ from tea_python_tests import models as main_models
 from Tea.request import TeaRequest
 from Tea.exceptions import TeaException
 from Tea.core import TeaCore
-from Tea.response import TeaResponse
 from Tea.exceptions import UnretryableException
 
 

@@ -3,12 +3,11 @@
 import time
 
 from Source.source_client import SourceClient
-from tea_python_tests import models as main_models
 from Source import models as source_models
 from Tea.request import TeaRequest
 from Tea.exceptions import TeaException
 from Tea.core import TeaCore
-from Tea.response import TeaResponse
+from tea_python_tests import models as main_models
 from Tea.exceptions import UnretryableException
 
 
