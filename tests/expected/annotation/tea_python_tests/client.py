@@ -17,7 +17,7 @@ class Client(object):
         """
         Init Func
         """
-        self._a = _a  # type: str
+        self._a = _a
 
     def test_api(self):
         """

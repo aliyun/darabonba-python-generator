@@ -860,8 +860,8 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`# ${d}`, this.level);
         });
       }
-      const fieldType = _type(prop.type.lexeme ? prop.type.lexeme : prop.type);
-      if (this.config.type[fieldType] === 'custom') {
+      const fieldType = prop.type.lexeme ? prop.type.lexeme : prop.type;
+      if (this.config.typeMap[fieldType] || this.thirdPackageNamespace[fieldType]) {
         emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
       } else {
         emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}  # type: ${fieldType}`, this.level);
@@ -971,7 +971,7 @@ class Combinator extends CombinatorBase {
                 const rtype = ['base', 'complex'].indexOf(this.config.type[_type(func.return[0].type)]) !== -1 ? _type(func.return[0].type) : null;
                 tmp[tagIndex] = '@return:';
                 emitter.emitln();
-                if (rtype) {
+                if (rtype && rtype !== 'None') {
                   emitter.emitln(`@rtype: ${rtype}`, this.level);
                 }
                 emitter.emitln(tmp.join(' '), this.level);

@@ -20,9 +20,9 @@ class Client(object):
         Init Func
         """
         # type's comment
-        self._a = _a  # type: list
-        self._comple_list = _comple_list  # type: list
-        self._endpoint_map = _endpoint_map  # type: dict
+        self._a = _a
+        self._comple_list = _comple_list
+        self._endpoint_map = _endpoint_map
         # string declate comment
         str = "sss"
         # new model instance comment
@@ -152,12 +152,13 @@ class Client(object):
         @type val: bool
         @param val: description: boolean parameter
 
-        @rtype: None
-        @return: void description for return
+        @rtype: str
+        @return: `test` for return
         """
         # empty comment1
         # empty comment2
-        pass
+        s = "test"
+        return s
 
     @staticmethod
     def test_func_params(comple_list, map_test, read, any_test, test_1):
@@ -176,7 +177,6 @@ class Client(object):
 
         @param test_1: Model parameter
 
-        @rtype: None
         @return: void description for return
         """
         pass
