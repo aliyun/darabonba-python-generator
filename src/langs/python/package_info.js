@@ -31,21 +31,25 @@ class PackageInfo extends BasePackageInfo {
     }
     const checkParams = ['name', 'desc', 'github'];
     checkParams.forEach(key => {
-      if (packageInfo[key] === undefined) {
+      if (typeof packageInfo[key] === 'undefined') {
         debug.stack('need config packageInfo.' + key, packageInfo);
       }
     });
 
-    let require = [];
+    let requires = [];
     requirePackage.forEach(packageItem => {
-      require.push(packageItem.split(':').join('=='));
+      let requireItem;
+      let packages = packageItem.split(':');
+      let version = packages[1];
+      requireItem = `${packages[0]}>=${version}, <${parseInt(version[0])+1}.0.0`;
+      requires.push(requireItem);
     });
     const date = new Date();
     const params = {
       email: '',
       author: '',
       package: this.config.package,
-      require: JSON.stringify(require),
+      require: JSON.stringify(requires),
       namespace: this.config.package.split('.').join('\\\\'),
       date: ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear(),
       ...packageInfo
