@@ -1,5 +1,19 @@
 # ChangeLog
 
+## 1.0.8 - 2020-09-02
+
+* Improve annotation.
+  * Specify model type.
+  * Add `returnType`.
+* Improve model:
+  * Support all complex types.
+  * Fix non-model object call validate.
+* Add `async`, `await` keywords.
+* Fix the error when expected to be an array type.
+* Fix model.py not import third-party packages.
+* Fix import unused modules.
+* Support specify the latest version of dependency.
+
 ## 1.0.7 - 2020-08-11
 
 * Fix the syntax of calling static methods.

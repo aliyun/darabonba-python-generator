@@ -38,10 +38,9 @@ class PackageInfo extends BasePackageInfo {
 
     let requires = [];
     requirePackage.forEach(packageItem => {
-      let requireItem;
       let packages = packageItem.split(':');
       let version = packages[1];
-      requireItem = `${packages[0]}>=${version}, <${parseInt(version[0])+1}.0.0`;
+      const requireItem = `${packages[0]}>=${version}, <${parseInt(version.split('.')[0])+1}.0.0`;
       requires.push(requireItem);
     });
     const date = new Date();
