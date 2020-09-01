@@ -48,7 +48,14 @@ describe('Python Generator', function () {
     {
       python: {
         package: 'tea_python_tests',
-        clientName: 'client'
+        clientName: 'client',
+        packageInfo: {
+          name: 'tea_python_tests',
+          desc: 'Generate setup.py',
+          github: 'https://github.com/',
+          author: 'Alibaba',
+          email: 'sdk-team@alibabacloud.com'
+        }
       }
     });
   });

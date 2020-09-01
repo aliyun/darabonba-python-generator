@@ -7,5 +7,8 @@
     "package": "Import",
     "clientName": "client",
     "modelDirName": "Models"
+  },
+  "releases": {
+    "python": "import:1.1.2"
   }
 }
