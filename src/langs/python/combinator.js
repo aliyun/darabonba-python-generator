@@ -861,10 +861,10 @@ class Combinator extends CombinatorBase {
         });
       }
       const fieldType = prop.type.lexeme ? prop.type.lexeme : prop.type;
-      if (this.config.typeMap[fieldType] || this.thirdPackageNamespace[fieldType]) {
+      if (this.config.type[_type(fieldType)] === 'custom' || this.thirdPackageNamespace[fieldType]) {
         emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
       } else {
-        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}  # type: ${fieldType}`, this.level);
+        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}  # type: ${_type(fieldType)}`, this.level);
       }
     });
 
