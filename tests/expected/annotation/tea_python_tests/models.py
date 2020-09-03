@@ -9,7 +9,7 @@ class Test(TeaModel):
     """
     def __init__(self, test=None):
         # Alichange app id 
-        self.test = test
+        self.test = test                # type: str
 
     def validate(self):
         self.validate_required(self.test, 'test')

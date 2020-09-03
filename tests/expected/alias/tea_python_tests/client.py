@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
+from Alias.alias_client import AliasClient
+
 from Import.client import Client as ImportClient
 from Source.client import Client as SourceClient
-from Alias.alias_client import AliasClient
 from alias_source.source_client import SourceClient as AliasSourceSourceClient
 
 

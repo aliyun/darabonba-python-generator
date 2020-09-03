@@ -3,11 +3,11 @@
 # This file is auto-generated, don't edit it. Thanks.
 import time
 
-from tea_python_tests import models as main_models
 from Tea.request import TeaRequest
-from Tea.exceptions import TeaException
+from Tea.exceptions import TeaException, UnretryableException
 from Tea.core import TeaCore
-from Tea.exceptions import UnretryableException
+
+from tea_python_tests import models as main_models
 
 
 class Client(object):
@@ -19,9 +19,9 @@ class Client(object):
         Init Func
         """
         # type's comment
-        self._a = _a
-        self._comple_list = _comple_list
-        self._endpoint_map = _endpoint_map
+        self._a = _a                    # type: list
+        self._comple_list = _comple_list  # type: list
+        self._endpoint_map = _endpoint_map  # type: dict
         # string declate comment
         str = "sss"
         # new model instance comment
