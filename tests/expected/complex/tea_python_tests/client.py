@@ -3,17 +3,17 @@
 import time
 
 from Source.source_client import SourceClient
-from Source import models as source_models
 from Tea.request import TeaRequest
-from Tea.exceptions import TeaException
+from Tea.exceptions import TeaException, UnretryableException
 from Tea.core import TeaCore
+
+from Source import models as source_models
 from tea_python_tests import models as main_models
-from Tea.exceptions import UnretryableException
 
 
 class Client(SourceClient):
     def __init__(self, config, _configs=None):
-        self._configs = _configs
+        self._configs = _configs        # type: list
         super(Client, self).__init__(config)
         self._configs[0] = config
 

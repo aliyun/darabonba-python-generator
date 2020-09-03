@@ -5,8 +5,8 @@ from Source import models as source_models
 
 class Client(object):
     def __init__(self, _id=None, _str=None):
-        self._id = _id
-        self._str = _str
+        self._id = _id                  # type: list
+        self._str = _str                # type: str
 
     @staticmethod
     def sample(client):

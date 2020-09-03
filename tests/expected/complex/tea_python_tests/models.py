@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
+from typing import BinaryIO, List, Dict
 
 
 class ComplexRequest(TeaModel):
     def __init__(self, access_key=None, body=None, strs=None, header=None, num=None, configs=None, part=None):
-        self.access_key = access_key
+        self.access_key = access_key    # type: str
         # Body
-        self.body = body
+        self.body = body                # type: BinaryIO
         # Strs
-        self.strs = strs
+        self.strs = strs                # type: List[str]
         # header
-        self.header = header  # type: ComplexRequestHeader
-        self.num = num
-        self.configs = configs  # type: ComplexRequestConfigs
+        self.header = header            # type: ComplexRequestHeader
+        self.num = num                  # type: int
+        self.configs = configs          # type: ComplexRequestConfigs
         # Part
-        self.part = part
+        self.part = part                # type: List[ComplexRequestPart]
 
     def validate(self):
         self.validate_required(self.access_key, 'access_key')
@@ -83,7 +84,7 @@ class ComplexRequest(TeaModel):
 class ComplexRequestHeader(TeaModel):
     def __init__(self, content=None):
         # Body
-        self.content = content
+        self.content = content          # type: str
 
     def validate(self):
         self.validate_required(self.content, 'content')
@@ -100,9 +101,9 @@ class ComplexRequestHeader(TeaModel):
 
 class ComplexRequestConfigs(TeaModel):
     def __init__(self, key=None, value=None, extra=None):
-        self.key = key
-        self.value = value
-        self.extra = extra
+        self.key = key                  # type: str
+        self.value = value              # type: List[str]
+        self.extra = extra              # type: Dict[str, str]
 
     def validate(self):
         self.validate_required(self.key, 'key')
@@ -126,7 +127,7 @@ class ComplexRequestConfigs(TeaModel):
 class ComplexRequestPart(TeaModel):
     def __init__(self, part_number=None):
         # PartNumber
-        self.part_number = part_number
+        self.part_number = part_number  # type: str
 
     def validate(self):
         pass

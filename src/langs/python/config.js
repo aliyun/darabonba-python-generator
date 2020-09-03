@@ -7,7 +7,6 @@ module.exports = {
   indent: '    ',
   ext: '.py',
   keywords: [
-    'nonlocal',
     'async',
     'await',
     'and',
@@ -61,6 +60,13 @@ module.exports = {
     'LESS_EQ': '<=',
     'REVERSE': 'not ',
     'CONCAT': '+'
+  },
+  typeHints: {
+    'READABLE': 'BinaryIO',
+    'WRITABLE': 'BinaryIO',
+    'any': 'Any',
+    'dict': 'Dict',
+    'list': 'List'
   },
   typeMap: {
     'string': 'str',
