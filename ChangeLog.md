@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 1.0.9 - 2020-09-09
+
+* Support type hints.
+* Support local installation of python package.
+
 ## 1.0.8 - 2020-09-02
 
 * Improve annotation.
