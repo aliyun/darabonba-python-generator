@@ -25,28 +25,33 @@ from setuptools import setup, find_packages
 """
 setup module for tea_python_tests.
 
-Created on 03/09/2020
+Created on 09/09/2020
 
 @author: Alibaba
 """
 
 PACKAGE = "tea_python_tests"
-NAME = "tea_python_tests"
+NAME = "tea_python_tests" or "alibabacloud-package"
 DESCRIPTION = "Generate setup.py"
 AUTHOR = "Alibaba"
 AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/"
-
-TOPDIR = os.path.dirname(__file__) or "."
-VERSION = __import__(PACKAGE).__version__
 REQUIRES = []
 
-if sys.version_info[0] == 2:
-    with open("README.md") as fp:
-        LONG_DESCRIPTION = fp.read()
-else:
-    with open("README.md", encoding='utf-8') as fp:
-        LONG_DESCRIPTION = fp.read()
+try:
+    VERSION = __import__(PACKAGE).__version__
+except AttributeError:
+    VERSION = '1.0.0'
+
+LONG_DESCRIPTION = ''
+if os.path.exists('./README.md'):
+    if sys.version_info[0] == 2:
+        with open("README.md") as fp:
+            LONG_DESCRIPTION = fp.read()
+    else:
+        with open("README.md", encoding='utf-8') as fp:
+            LONG_DESCRIPTION = fp.read()
+
 
 setup(
     name=NAME,

@@ -31,22 +31,27 @@ Created on ${date}
 """
 
 PACKAGE = "${package}"
-NAME = "${name}"
+NAME = "${name}" or "alibabacloud-package"
 DESCRIPTION = "${desc}"
 AUTHOR = "${author}"
 AUTHOR_EMAIL = "${email}"
 URL = "${github}"
-
-TOPDIR = os.path.dirname(__file__) or "."
-VERSION = __import__(PACKAGE).__version__
 REQUIRES = ${require}
 
-if sys.version_info[0] == 2:
-    with open("README.md") as fp:
-        LONG_DESCRIPTION = fp.read()
-else:
-    with open("README.md", encoding='utf-8') as fp:
-        LONG_DESCRIPTION = fp.read()
+try:
+    VERSION = __import__(PACKAGE).__version__
+except AttributeError:
+    VERSION = '1.0.0'
+
+LONG_DESCRIPTION = ''
+if os.path.exists('./README.md'):
+    if sys.version_info[0] == 2:
+        with open("README.md") as fp:
+            LONG_DESCRIPTION = fp.read()
+    else:
+        with open("README.md", encoding='utf-8') as fp:
+            LONG_DESCRIPTION = fp.read()
+
 
 setup(
     name=NAME,
