@@ -203,6 +203,18 @@ class Combinator extends CombinatorBase {
     }
   }
 
+  checkSyntax(content, emitter) {
+    let contentLine = content.split(emitter.eol);
+    contentLine.forEach((l, index) => {
+      const symbol = ['+', '-', '=', '*', '/'];
+      l = l.replace(/(\s*$)/g, '');
+      if (symbol.indexOf(l[l.length-1]) > -1) {
+        contentLine[index] = `${l}\\`;
+      }
+    });
+    return contentLine.join(emitter.eol);
+  }
+
   combineClient(object) {
     this.config.emitType = 'client';
     this.includeList = object.includeList;
@@ -224,8 +236,7 @@ class Combinator extends CombinatorBase {
     /******************************** emit body ********************************/
     emitter = new Emitter(this.config);
     this.emitClass(emitter, object);
-    outputParts.body = emitter.output;
-
+    outputParts.body = this.checkSyntax(emitter.output, emitter);
     /******************************** emit head *******************************/
     emitter = new Emitter(this.config);
     emitter.emitln('# -*- coding: utf-8 -*-');
@@ -234,7 +245,7 @@ class Combinator extends CombinatorBase {
     }
     this.emitInclude(emitter);
     outputParts.head = emitter.output;
-
+    
     /***************************** combine output ******************************/
     const config = _deepClone(this.config);
     config.filename = this.config.clientName;
