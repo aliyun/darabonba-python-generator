@@ -1625,6 +1625,32 @@ class Combinator extends CombinatorBase {
     }
   }
 
+  behaviorStrFormat (emitter, behavior) {
+    let quote = '\'';
+    if (behavior.tmp.indexOf('\'') !== -1 && behavior.tmp.indexOf('"') !== -1) {
+      quote = '\'\'\'';
+    } else if (behavior.tmp.indexOf('\'') !== -1) {
+      quote = '"';
+    }
+
+    if (behavior.item.length > 1) {
+      emitter.emit(`${quote}${behavior.tmp}${quote} % (`);
+    } else {
+      emitter.emit(`${quote}${behavior.tmp}${quote} % `);
+    }
+
+    behavior.item.forEach((gram, index) => {
+      this.grammerValue(emitter, gram);
+      if (index + 1 < behavior.item.length) {
+        emitter.emit(', ');
+      }
+    });
+
+    if (behavior.item.length > 1) {
+      emitter.emit(')');
+    }
+  }
+
   behaviorTypeInstance(emitter, behavior) {
 
   }

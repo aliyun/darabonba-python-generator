@@ -38,7 +38,7 @@ class Client(SourceClient):
                 map_val = {
                     "test": "ok"
                 }
-                version = "/" + "2019-01-08" + "" + str(self._pathname) + ""
+                version = '/%s%s' % ("2019-01-08", self._pathname)
                 module_model_map_val = {}
                 module_map_val = {}
                 model_map_val = {}
@@ -46,7 +46,7 @@ class Client(SourceClient):
                 _request.protocol = self._protocol
                 _request.port = 80
                 _request.method = "GET"
-                _request.pathname = "/" + str(self._pathname) + ""
+                _request.pathname = '/%s' % self._pathname
                 _request.query = SourceClient.query(TeaCore.merge({
                     "date": "2019"
                 }, request.header,
@@ -149,7 +149,7 @@ class Client(SourceClient):
         ]
 
     def template_string(self):
-        return "/" + str(self._protocol) + ""
+        return '/%s' % self._protocol
 
     def empty_model(self):
         main_models.ComplexRequest()
@@ -237,3 +237,9 @@ class Client(SourceClient):
     @staticmethod
     def map_assign(request, name):
         request.configs.extra["name"] = name
+
+    @staticmethod
+    def str_fmt():
+        s = "strtest"
+        s_1 = " % 1" + str(s) + ""
+        s_2 = ''' "hello" 'world' %s''' % s
