@@ -32,6 +32,7 @@ const {
   BehaviorTimeNow,
   BehaviorDoAction,
   BehaviorSetMapItem,
+  BehaviorStrFormat
 } = require('../langs/common/items');
 
 const {
@@ -539,21 +540,41 @@ class ClientResolver extends BaseResolver {
       ]);
       valGrammer.value = call;
     } else if (object.type === 'template_string') {
-      valGrammer.type = 'expr';
-      let expr = [];
-      let n = 0;
+      valGrammer.type = 'behavior';
+      let tmpStr = '';
+      let formatType = '%';
+      let exprItem = [];
       object.elements.forEach(ele => {
-        if (n !== 0) {
-          expr.push(new GrammerExpr(null, Symbol.concat()));
+        if (ele.type === 'element') {
+          if (ele.value.string.indexOf('%') !== -1) {
+            formatType = 'concat';
+            exprItem = [];
+            return;
+          }
+          tmpStr += ele.value.string;
+        } else if (ele.type === 'expr') {
+          tmpStr += '%s';
+          exprItem.push(this.renderGrammerValue(null, ele.expr));
         }
-        if (ele.type !== 'element') {
-          expr.push(this.renderGrammerValue(null, ele.expr));
-        } else {
-          expr.push(new GrammerValue('string', ele.value.string));
-        }
-        n++;
       });
-      valGrammer.value = expr;
+      valGrammer.value = new BehaviorStrFormat(tmpStr, exprItem);
+      if (formatType === 'concat') {
+        valGrammer.type = 'expr';
+        let expr = [];
+        let n = 0;
+        object.elements.forEach(ele => {
+          if (n !== 0) {
+            expr.push(new GrammerExpr(null, Symbol.concat()));
+          }
+          if (ele.type !== 'element') {
+            expr.push(this.renderGrammerValue(null, ele.expr));
+          } else {
+            expr.push(new GrammerValue('string', ele.value.string));
+          }
+          n++;
+        });
+        valGrammer.value = expr;
+      }
     } else if (object.type === 'null') {
       valGrammer.type = 'null';
       valGrammer.value = 'null';

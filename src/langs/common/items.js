@@ -495,6 +495,15 @@ class BehaviorToMap extends Behavior {
   }
 }
 
+class BehaviorStrFormat extends Behavior {
+  constructor(tmp, item) {
+    super();
+    this.name = 'behaviorStrFormat';
+    this.tmp = tmp;
+    this.item = item;
+  }
+}
+
 module.exports = {
   Counter,
 
@@ -531,5 +540,6 @@ module.exports = {
   BehaviorTimeNow,
   BehaviorToModel,
   BehaviorDoAction,
-  BehaviorSetMapItem
+  BehaviorSetMapItem,
+  BehaviorStrFormat
 };
