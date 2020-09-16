@@ -243,3 +243,4 @@ class Client(SourceClient):
         s = "strtest"
         s_1 = " % 1" + str(s) + ""
         s_2 = ''' "hello" 'world' %s''' % s
+        s_3 = 'hello world'

@@ -207,4 +207,5 @@ static function strFmt(): void {
   var s = 'strtest';
   var s1 = ` % 1${s}`;
   var s2 = ` "hello" 'world' ${s}`;
+  var s3 = `hello world`;
 }

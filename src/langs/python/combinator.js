@@ -1635,8 +1635,10 @@ class Combinator extends CombinatorBase {
 
     if (behavior.item.length > 1) {
       emitter.emit(`${quote}${behavior.tmp}${quote} % (`);
-    } else {
+    } else if (behavior.item.length === 1) {
       emitter.emit(`${quote}${behavior.tmp}${quote} % `);
+    } else {
+      emitter.emit(`${quote}${behavior.tmp}${quote}`);
     }
 
     behavior.item.forEach((gram, index) => {
