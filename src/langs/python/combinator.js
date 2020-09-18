@@ -34,7 +34,8 @@ const {
   _isKeywords,
   _exception,
   _symbol,
-  _deepClone
+  _deepClone,
+  _isSnakeCase
 } = require('../../lib/helper');
 
 function _type(type) {
@@ -65,7 +66,9 @@ class Combinator extends CombinatorBase {
     }
 
     // Darafile: name (Tea Package name)
-    this.config.package = this.config.package.split('.').map(item => item.toLowerCase()).join('_');
+    if (!_isSnakeCase(this.config.package)) {
+      debug.stack('python package name is must be snake case, Example: alibabacloud_tea.');
+    }
   }
 
   addInclude(className, fromPackage) {
@@ -231,6 +234,7 @@ class Combinator extends CombinatorBase {
     // generate __init__.py
     emitter = new Emitter(this.config);
     emitter.config.filename = '__init__';
+    emitter.emitln('__version__ = "1.0.0"');
     emitter.save();
 
     /******************************** emit body ********************************/
@@ -248,7 +252,11 @@ class Combinator extends CombinatorBase {
     
     /***************************** combine output ******************************/
     const config = _deepClone(this.config);
-    config.filename = this.config.clientName;
+    if (_isSnakeCase(this.config.clientName)) {
+      config.filename = this.config.clientName;
+    } else {
+      debug.stack('python clientName is must be snake case, Example: rpc_client.');
+    }
     this.combineOutputParts(config, outputParts);
   }
 

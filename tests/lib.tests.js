@@ -17,7 +17,8 @@ const {
   _modify,
   _symbol,
   _toSnakeCase,
-  _toCamelCase
+  _toCamelCase,
+  _isSnakeCase
 } = require('../src/lib/helper');
 
 describe('debug should be ok', function () {
@@ -217,6 +218,16 @@ describe('helper tests', function () {
     }).to.be.throw('Unsupported symbol : InvalidSymbol');
 
     expect(_symbol('ASSIGN')).to.be.eql('=');
+  });
+
+  it('_isSnakeCase should be ok', function() {
+    expect(_isSnakeCase('tea_rpc')).to.be.eql(true);
+    expect(_isSnakeCase('tea')).to.be.eql(true);
+    expect(_isSnakeCase('tearpc')).to.be.eql(true);
+    expect(_isSnakeCase('teaRpc')).to.be.eql(false);
+    expect(_isSnakeCase('tea-rpc')).to.be.eql(false);
+    expect(_isSnakeCase('tea-Rpc')).to.be.eql(false);
+    expect(_isSnakeCase('tea rpc')).to.be.eql(false);
   });
 
   it('_toSnakeCase should be ok', function () {
