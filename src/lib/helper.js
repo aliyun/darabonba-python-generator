@@ -97,9 +97,14 @@ function _exception(str) {
 }
 
 function _isSnakeCase(str) {
-  if (/[^a-z_]/.test(str)) {
+  if (/[^\da-z_]/.test(str)) {
     return false;
   }
+
+  if (/\d/.test(str[0])) {
+    return false;
+  }
+
   return true;
 }
 
