@@ -37,11 +37,8 @@ AUTHOR = "${author}"
 AUTHOR_EMAIL = "${email}"
 URL = "${github}"
 REQUIRES = ${require}
+VERSION = __import__(PACKAGE).__version__
 
-try:
-    VERSION = __import__(PACKAGE).__version__
-except AttributeError:
-    VERSION = '1.0.0'
 
 LONG_DESCRIPTION = ''
 if os.path.exists('./README.md'):

@@ -96,6 +96,13 @@ function _exception(str) {
   return str;
 }
 
+function _isSnakeCase(str) {
+  if (/[^a-z_]/.test(str)) {
+    return false;
+  }
+  return true;
+}
+
 function _toCamelCase(str) {
   if (!str) {
     return '';
@@ -153,5 +160,6 @@ module.exports = {
   _symbol,
   _exception,
   _toSnakeCase,
-  _toCamelCase
+  _toCamelCase,
+  _isSnakeCase
 };
