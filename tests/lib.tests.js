@@ -224,10 +224,13 @@ describe('helper tests', function () {
     expect(_isSnakeCase('tea_rpc')).to.be.eql(true);
     expect(_isSnakeCase('tea')).to.be.eql(true);
     expect(_isSnakeCase('tearpc')).to.be.eql(true);
+    expect(_isSnakeCase('tearpc01')).to.be.eql(true);
+    expect(_isSnakeCase('_tearpc')).to.be.eql(true);
     expect(_isSnakeCase('teaRpc')).to.be.eql(false);
     expect(_isSnakeCase('tea-rpc')).to.be.eql(false);
     expect(_isSnakeCase('tea-Rpc')).to.be.eql(false);
     expect(_isSnakeCase('tea rpc')).to.be.eql(false);
+    expect(_isSnakeCase('01tearpc')).to.be.eql(false);
   });
 
   it('_toSnakeCase should be ok', function () {
