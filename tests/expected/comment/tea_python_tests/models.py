@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
-from typing import List
+try:
+    from typing import List
+except ImportError:
+    pass
 
 
 class Test1(TeaModel):

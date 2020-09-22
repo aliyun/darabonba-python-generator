@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
-from typing import List, Dict, Any, BinaryIO
+try:
+    from typing import List, Dict, Any, BinaryIO
+except ImportError:
+    pass
 
 
 class M(TeaModel):
@@ -68,9 +71,9 @@ class MyModel(TeaModel):
         self.validate_required(self.exist_model, 'exist_model')
         if self.exist_model:
             self.exist_model.validate()
-        if self.class_end_time:
+        if self.class_end_time is not None:
             self.validate_pattern(self.class_end_time, 'class_end_time', '\\d{4}[-]\\d{1,2}[-]\\d{1,2}(\\s\\d{2}:\\d{2}(:\\d{2})?)?')
-        if self.max_length:
+        if self.max_length is not None:
             self.validate_max_length(self.max_length, 'max_length', 10)
         self.validate_required(self.test_3, 'test_3')
         self.validate_required(self.array_array_model, 'array_array_model')

@@ -443,7 +443,7 @@ class Combinator extends CombinatorBase {
         haveValidate = true;
       }
       if (maxLength.length > 0 || pattern.length > 0) {
-        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
+        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
         this.levelUp();
         if (maxLength.length > 0) {
           emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maxLength[0].value})`, this.level);
@@ -1079,9 +1079,12 @@ class Combinator extends CombinatorBase {
       }
     });
     Object.keys(from).forEach(key => {
-      fromList.push({ from: key, import: from[key] });
+      let tc = false;
+      if (key === 'typing') {
+        tc = true;
+      }
+      fromList.push({ from: key, import: from[key], try: tc });
     });
-
     if (importList.length) {
       importList.forEach(include => {
         this.emitIncludeRow(emitter, include);
@@ -1109,19 +1112,40 @@ class Combinator extends CombinatorBase {
   }
 
   emitIncludeRow(emitter, include) {
-    if (include.from) {
-      emitter.emit(`from ${include.from} `);
-      if (include.import instanceof Array) {
-        emitter.emitln(`import ${include.import.join(', ')}`);
-      } else if (include.alias) {
-        emitter.emitln(`import ${include.import} as ${include.alias}`);
-      } else {
-        emitter.emitln(`import ${include.import}`);
+    if (include.try) {
+      emitter.emitln('try:');
+      this.levelUp();
+      if (include.from) {
+        emitter.emit(`from ${include.from} `, this.level);
+        if (include.import instanceof Array) {
+          emitter.emitln(`import ${include.import.join(', ')}`);
+        } else if (include.alias) {
+          emitter.emitln(`import ${include.import} as ${include.alias}`);
+        } else {
+          emitter.emitln(`import ${include.import}`);
+        }
+      } else if (include.import) {
+        emitter.emitln(`import ${include.import}`, this.level);
       }
-    } else if (include.import) {
-      emitter.emitln(`import ${include.import}`);
+      this.levelDown();
+      emitter.emitln('except ImportError:');
+      this.levelUp();
+      emitter.emitln('pass', this.level);
+      this.levelDown();
+    } else {
+      if (include.from) {
+        emitter.emit(`from ${include.from} `, this.level);
+        if (include.import instanceof Array) {
+          emitter.emitln(`import ${include.import.join(', ')}`);
+        } else if (include.alias) {
+          emitter.emitln(`import ${include.import} as ${include.alias}`);
+        } else {
+          emitter.emitln(`import ${include.import}`);
+        }
+      } else if (include.import) {
+        emitter.emitln(`import ${include.import}`, this.level);
+      }
     }
-
   }
 
   grammerCall(emitter, gram) {
