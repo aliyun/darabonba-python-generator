@@ -10,9 +10,7 @@ class Client(object):
 
     @staticmethod
     def sample(client):
-        runtime = source_models.RuntimeObject(
-
-        )
+        runtime = source_models.RuntimeObject()
         request = source_models.Request(
             accesskey="accesskey",
             region="region"

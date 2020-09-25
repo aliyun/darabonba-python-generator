@@ -905,7 +905,6 @@ class Combinator extends CombinatorBase {
           if (!existResult) {
             this.includeList.push({from: 'typing', import: i});
           }
-          
         });
         
         let declare_prop = `self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`;
@@ -1045,7 +1044,11 @@ class Combinator extends CombinatorBase {
                 }
                 emitter.emitln(tmp.join(' '), this.level);
               } else if (tmp[tagIndex] === '@return') {
-                const rtype = ['base', 'complex'].indexOf(this.config.type[_type(func.return[0].type)]) !== -1 ? _type(func.return[0].type) : null;
+                let rtype = null;
+                if (func.return[0] && ['base', 'complex'].indexOf(this.config.type[_type(func.return[0].type)]) !== -1) {
+                  rtype = _type(func.return[0].type);
+                }
+
                 tmp[tagIndex] = '@return:';
                 emitter.emitln();
                 if (rtype && rtype !== 'None') {
@@ -1236,7 +1239,6 @@ class Combinator extends CombinatorBase {
   }
 
   grammerValue(emitter, gram, layer = 1, isparams = false) {
-
     if (gram.key) {
       if (!isparams) {
         emitter.emit(`"${gram.key}": `);
@@ -1331,22 +1333,24 @@ class Combinator extends CombinatorBase {
         }
       }
     } else if (gram.type === 'model_construct_params') {
-      let tmp = [];
-      emitter.emitln();
-      this.levelUp();
-      gram.value.forEach(item => {
-        let emit = new Emitter();
-        if (item instanceof AnnotationItem) {
-          this.emitAnnotation(emit, item);
-          return true;
-        }
-        this.grammerValue(emit, item, 1, true);
-        tmp.push(emit.output);
-      });
-      this.levelDown();
-      emitter.emit(tmp.join(',' + emitter.eol));
-      emitter.emitln();
-      emitter.emit('', this.level);
+      if (gram.value.length > 0) {
+        let tmp = [];
+        emitter.emitln();
+        this.levelUp();
+        gram.value.forEach(item => {
+          let emit = new Emitter();
+          if (item instanceof AnnotationItem) {
+            this.emitAnnotation(emit, item);
+            return true;
+          }
+          this.grammerValue(emit, item, 1, true);
+          tmp.push(emit.output);
+        });
+        this.levelDown();
+        emitter.emit(tmp.join(',' + emitter.eol));
+        emitter.emitln();
+        emitter.emit('', this.level);
+      }
     } else if (gram.type === 'string') {
       emitter.emit(`"${gram.value}"`);
     } else if (gram.type === 'param') {
