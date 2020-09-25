@@ -57,9 +57,7 @@ class Client(SourceClient):
                 if True and True:
                     return
                 elif True or False:
-                    return source_models.RuntimeObject(
-
-                    )
+                    return source_models.RuntimeObject()
                 client.print(request.to_map(), "1")
                 client.print_async(request.to_map(), "1")
                 self.hello(request.to_map(), [
@@ -80,9 +78,7 @@ class Client(SourceClient):
         request.validate()
         _request = TeaRequest()
         name = "complex"
-        config = source_models.Config(
-
-        )
+        config = source_models.Config()
         client = SourceClient(config)
         _request.protocol = "HTTP"
         _request.port = 80
@@ -134,9 +130,7 @@ class Client(SourceClient):
 
     @staticmethod
     def array_0(req):
-        temp = source_models.Config(
-
-        )
+        temp = source_models.Config()
         any_arr = [
             temp
         ]
