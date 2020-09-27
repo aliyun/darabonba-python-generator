@@ -435,21 +435,35 @@ class Combinator extends CombinatorBase {
     this.levelUp();
     let haveValidate = false;
     props.forEach(prop => {
+      
       let required = prop.notes.filter(item => item.key === 'required');
       let maxLength = prop.notes.filter(item => item.key === 'maxLength');
       let pattern = prop.notes.filter(item => item.key === 'pattern');
+      let maximum = prop.notes.filter(item => item.key === 'maximum');
+      let minimum = prop.notes.filter(item => item.key === 'minimum');
+
       if (required.length > 0) {
         emitter.emitln(`self.validate_required(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}')`, this.level);
         haveValidate = true;
       }
-      if (maxLength.length > 0 || pattern.length > 0) {
+      if (maxLength.length > 0 || pattern.length > 0 || maximum.length > 0 || minimum.length > 0) {
         emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
         this.levelUp();
+
         if (maxLength.length > 0) {
           emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maxLength[0].value})`, this.level);
         }
+
         if (pattern.length > 0) {
           emitter.emitln(`self.validate_pattern(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', '${pattern[0].value}')`, this.level);
+        }
+
+        if (maximum.length > 0) {
+          emitter.emitln(`self.validate_maximum(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maximum[0].value})`, this.level);
+        }
+
+        if (minimum.length > 0) {
+          emitter.emitln(`self.validate_minimum(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${minimum[0].value})`, this.level);
         }
         this.levelDown();
         haveValidate = true;
