@@ -25,8 +25,8 @@ class M(TeaModel):
 class MyModel(TeaModel):
     def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None,
                  submodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None,
-                 class_end_time=None, max_length=None, test_3=None, array_array_model=None, array_map_model=None, map_model=None,
-                 submodel_map=None):
+                 class_end_time=None, max_length=None, min_length=None, maximum=None, minimum=None, test_3=None,
+                 array_array_model=None, array_map_model=None, map_model=None, submodel_map=None):
         self.stringfield = stringfield  # type: str
         self.bytesfield = bytesfield    # type: bytes
         self.stringarrayfield = stringarrayfield  # type: List[str]
@@ -43,6 +43,12 @@ class MyModel(TeaModel):
         self.class_end_time = class_end_time  # type: str
         # 最大长度
         self.max_length = max_length    # type: str
+        # 最小长度
+        self.min_length = min_length    # type: str
+        # 校验最大值
+        self.maximum = maximum          # type: int
+        # 校验最小值
+        self.minimum = minimum          # type: int
         # test3 desc
         self.test_3 = test_3            # type: List[List[str]]
         self.array_array_model = array_array_model  # type: List[List[M]]
@@ -75,6 +81,10 @@ class MyModel(TeaModel):
             self.validate_pattern(self.class_end_time, 'class_end_time', '\\d{4}[-]\\d{1,2}[-]\\d{1,2}(\\s\\d{2}:\\d{2}(:\\d{2})?)?')
         if self.max_length is not None:
             self.validate_max_length(self.max_length, 'max_length', 10)
+        if self.maximum is not None:
+            self.validate_maximum(self.maximum, 'maximum', 99000000)
+        if self.minimum is not None:
+            self.validate_minimum(self.minimum, 'minimum', 0)
         self.validate_required(self.test_3, 'test_3')
         self.validate_required(self.array_array_model, 'array_array_model')
         if self.array_array_model:
@@ -126,6 +136,9 @@ class MyModel(TeaModel):
             result['existModel'] = None
         result['class_end_time'] = self.class_end_time
         result['max-length'] = self.max_length
+        result['min-length'] = self.min_length
+        result['maximum'] = self.maximum
+        result['minimum'] = self.minimum
         result['test3'] = self.test_3
         result['arrayArrayModel'] = []
         if self.array_array_model is not None:
@@ -188,6 +201,9 @@ class MyModel(TeaModel):
             self.exist_model = None
         self.class_end_time = map.get('class_end_time')
         self.max_length = map.get('max-length')
+        self.min_length = map.get('min-length')
+        self.maximum = map.get('maximum')
+        self.minimum = map.get('minimum')
         self.test_3 = map.get('test3')
         self.array_array_model = []
         if map.get('arrayArrayModel') is not None:
