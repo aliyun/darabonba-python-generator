@@ -80,7 +80,8 @@ class Generator {
     const langConfig = require(`./langs/${this.lang}/config`);
 
     const config = {
-      package: 'DarabonbaSDK',
+      package: 'darabonba_sdk',
+      clientName: langConfig.client.defaultName,
       include: [],
       parent: [],
       pkgDir: '',
@@ -93,13 +94,21 @@ class Generator {
       meta,
     );
     if (meta[this.lang]) {
+      if (!meta[this.lang].package) {
+        debug.warning('Not found package in Darafile, default package name is "darabonba_sdk".');
+      }
+
+      if (!meta[this.lang].clientName) {
+        debug.warning('Not found clientName in Darafile, default clientName is "client".');
+      }
+
       Object.assign(config,
         meta[this.lang],
       );
+    } else {
+      debug.warning('Not found python config in Darafile, default config will be used.');
     }
-    if (!config.clientName) {
-      config.clientName = config.client.defaultName;
-    }
+
     this.config = config;
   }
 
@@ -135,16 +144,23 @@ class Generator {
         // init package name,client name,modelDir name
         let packageName, clientName, modelDir;
         if (daraMeta[this.lang]) {
-          packageName = daraMeta[this.lang].package ? daraMeta[this.lang].package : daraMeta.name;
+          if (daraMeta[this.lang].package) {
+            packageName = daraMeta[this.lang].package;
+          } else {
+            debug.warning(`Not found package in ${daraMeta.name} Darafile, default package name is "${daraMeta.name}".`);
+            packageName = daraMeta.name;
+          }
+
           clientName = daraMeta[this.lang].clientName
             ? daraMeta[this.lang].clientName
-            : this.config.clientName.defaultName;
+            : this.config.clientName;
+
           modelDir = daraMeta[this.lang].modelDirName
             ? daraMeta[this.lang].modelDirName
             : this.config.model.dir;
         } else {
           packageName = daraMeta.name;
-          clientName = this.config.clientName.defaultName;
+          clientName = this.config.clientName;
           modelDir = this.config.model.dir;
         }
 
