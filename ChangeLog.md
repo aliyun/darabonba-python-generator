@@ -1,5 +1,16 @@
 # ChangeLog
 
+## 1.1.0 - 2020-10-13
+
+* Fix long description content type error in setup.py.
+* support validate maximum and minimum values.
+* Fix the exception when tmplate string has no placeholder.
+* Improve the default value of clientName&package.
+  * Added warning about irregular configuration.
+  * Verify naming conventions.
+* Added syntax check.
+  * End with operator when line feed.
+
 ## 1.0.9 - 2020-09-09
 
 * Support type hints.

@@ -209,7 +209,7 @@ class Combinator extends CombinatorBase {
   checkSyntax(content, emitter) {
     let contentLine = content.split(emitter.eol);
     contentLine.forEach((l, index) => {
-      const symbol = ['+', '-', '=', '*', '/'];
+      const symbol = ['+', '-', '=', '*', '/', '%'];
       l = l.replace(/(\s*$)/g, '');
       if (symbol.indexOf(l[l.length-1]) > -1) {
         contentLine[index] = `${l}\\`;
