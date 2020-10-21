@@ -25,7 +25,7 @@ from setuptools import setup, find_packages
 """
 setup module for tea_python_tests.
 
-Created on 09/09/2020
+Created on 21/10/2020
 
 @author: Alibaba
 """
@@ -37,11 +37,8 @@ AUTHOR = "Alibaba"
 AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/"
 REQUIRES = ["source>=0.0.1, <1.0.0","import>=1.1.2, <2.0.0"]
+VERSION = __import__(PACKAGE).__version__
 
-try:
-    VERSION = __import__(PACKAGE).__version__
-except AttributeError:
-    VERSION = '1.0.0'
 
 LONG_DESCRIPTION = ''
 if os.path.exists('./README.md'):
@@ -58,6 +55,7 @@ setup(
     version=VERSION,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     license="Apache License 2.0",

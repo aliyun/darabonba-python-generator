@@ -1213,11 +1213,11 @@ class Combinator extends CombinatorBase {
         } else if (path.type === 'prop_static') {
           pre += `.${_avoidKeywords(_toSnakeCase(pathName))}`;
         } else if (path.type === 'map') {
-          pre += `.get('${pathName}')`;
+          pre += path.isVar ? `.get(${_avoidKeywords(_toSnakeCase(pathName))})` : `.get('${pathName}')`;
         } else if (path.type === 'map_set') {
           pre += `['${pathName}']`;
         } else if (path.type === 'list') {
-          pre += `[${pathName}]`;
+          pre += path.isVar ? `.get(${_avoidKeywords(_toSnakeCase(pathName))})` : `[${pathName}]`;
         } else {
           debug.stack(gram);
         }
