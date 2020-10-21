@@ -157,8 +157,9 @@ static function arrayAccess2(): string {
   return config;
 }
 
-static function arrayAccess3(request: ComplexRequest): string {
+static function arrayAccess3(request: ComplexRequest, index: number): string {
   var configVal = request.configs.value[0];
+  var val = request.configs.value[index];
   return configVal;
 }
 
@@ -181,12 +182,13 @@ static function arrayAssign3(request: ComplexRequest, config: string): void {
 }
 
 static function mapAccess(request: ComplexRequest): string {
-   var configInfo = request.configs.extra['name'];
+  var configInfo = request.configs.extra['name'];
   return configInfo;
 }
 
-static function mapAccess2(request: Source.Request): string {
-   var configInfo = request.configs.extra['name'];
+static function mapAccess2(request: Source.Request, key: string): string {
+  var configInfo = request.configs.extra['name'];
+  var configValue = request.configs.extra[key];
   return configInfo;
 }
 

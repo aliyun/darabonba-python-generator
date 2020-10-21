@@ -708,6 +708,8 @@ class ClientResolver extends BaseResolver {
       let accessIndex;
       if (object.accessKey.type === 'number') {
         accessIndex = object.accessKey.value.value;
+      } else if (object.accessKey.type === 'variable') {
+        accessIndex = object.accessKey.id.lexeme;
       } else {
         debug.stack(object);
       }
@@ -727,7 +729,7 @@ class ClientResolver extends BaseResolver {
           }
         });
       }
-      call.addPath({ type: 'list', name: accessIndex });
+      call.addPath({ type: 'list', name: accessIndex, isVar: object.accessKey.type === 'variable' });
       valGrammer.value = call;
     } else if (object.type === 'map_access') {
       valGrammer.type = 'call';
@@ -754,7 +756,7 @@ class ClientResolver extends BaseResolver {
           }
         });
       }
-      call.addPath({ type: 'map', name: accessKey });
+      call.addPath({ type: 'map', name: accessKey, isVar: object.accessKey.type === 'variable'});
       valGrammer.value = call;
     } else {
       debug.stack('unimpelemented : ' + object.type, object);

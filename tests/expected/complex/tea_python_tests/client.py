@@ -179,8 +179,9 @@ class Client(SourceClient):
         return config
 
     @staticmethod
-    def array_access_3(request):
+    def array_access_3(request, index):
         config_val = request.configs.value[0]
+        val = request.configs.value.get(index)
         return config_val
 
     @staticmethod
@@ -215,8 +216,9 @@ class Client(SourceClient):
         return config_info
 
     @staticmethod
-    def map_access_2(request):
+    def map_access_2(request, key):
         config_info = request.configs.extra.get('name')
+        config_value = request.configs.extra.get(key)
         return config_info
 
     @staticmethod
