@@ -181,7 +181,7 @@ class Client(SourceClient):
     @staticmethod
     def array_access_3(request, index):
         config_val = request.configs.value[0]
-        val = request.configs.value.get(index)
+        val = request.configs.value[index]
         return config_val
 
     @staticmethod
