@@ -1217,7 +1217,7 @@ class Combinator extends CombinatorBase {
         } else if (path.type === 'map_set') {
           pre += `['${pathName}']`;
         } else if (path.type === 'list') {
-          pre += path.isVar ? `.get(${_avoidKeywords(_toSnakeCase(pathName))})` : `[${pathName}]`;
+          pre += `[${pathName}]`;
         } else {
           debug.stack(gram);
         }
