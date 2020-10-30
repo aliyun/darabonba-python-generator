@@ -58,9 +58,9 @@ class Client(SourceClient):
                     return
                 elif True or False:
                     return source_models.RuntimeObject()
-                client.print(request.to_map(), "1")
-                client.print_async(request.to_map(), "1")
-                self.hello(request.to_map(), [
+                client.print(TeaCore.to_map(request), "1")
+                client.print_async(TeaCore.to_map(request), "1")
+                self.hello(TeaCore.to_map(request), [
                     "1",
                     "2"
                 ])
@@ -113,11 +113,11 @@ class Client(SourceClient):
             accesskey=request.access_key,
             region=resp.status_message
         )
-        self.array_0(request.to_map())
+        self.array_0(TeaCore.to_map(request))
         req.accesskey = "accesskey"
         req.accesskey = request.access_key
         SourceClient.parse(main_models.ComplexRequest())
-        SourceClient.array(request.to_map(), "1")
+        SourceClient.array(TeaCore.to_map(request), "1")
         SourceClient.async_func()
         return main_models.ComplexRequest().from_map(TeaCore.merge(_request.query))
 

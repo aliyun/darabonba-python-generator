@@ -1173,8 +1173,14 @@ class Combinator extends CombinatorBase {
       let tmp = [];
       gram.params.forEach(p => {
         let emit = new Emitter();
-        if (p.value instanceof BehaviorToMap && gram.type === 'sys_func' && gram.path[1].name === 'isUnset') {
-          this.grammer(emit, p.value.grammer, false, false);
+        if (p.value instanceof BehaviorToMap) {
+          if (gram.path[1].name === 'isUnset') {
+            this.grammer(emit, p.value.grammer, false, false);
+          } else {
+            emit.emit(`${this.addInclude('$Core')}.${this.config.tea.core.toMap}(`);
+            this.grammer(emit, p.value.grammer, false, false);
+            emit.emit(')');
+          }
         } else {
           this.grammer(emit, p, false, false);
         }
