@@ -545,10 +545,6 @@ class Combinator extends CombinatorBase {
           }
           this.levelDown();
           this.levelDown();
-          emitter.emitln('else:', this.level);
-          this.levelUp();
-          emitter.emitln(`result['${fieldName}'] = None`, this.level);
-          this.levelDown();
         }
       } else if (type.lexeme === 'map') {
         if (depth > 0) {
@@ -593,10 +589,6 @@ class Combinator extends CombinatorBase {
           }
           this.levelDown();
           this.levelDown();
-          emitter.emitln('else:', this.level);
-          this.levelUp();
-          emitter.emitln(`result['${fieldName}'] = None`, this.level);
-          this.levelDown();
         }
       }
     } else {
@@ -640,22 +632,21 @@ class Combinator extends CombinatorBase {
         if (emt.needSave === true) {
           emitter.emit(emt.output);
         } else {
+          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
+          this.levelUp();
           emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
+          this.levelDown();
         }
 
       } else {
+        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
+        this.levelUp();
         if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
-          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
-          this.levelUp();
           emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}.to_map()`, this.level);
-          this.levelDown();
-          emitter.emitln('else:', this.level);
-          this.levelUp();
-          emitter.emitln(`result['${name}'] = None`, this.level);
-          this.levelDown();
         } else {
           emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
         }
+        this.levelDown();
       }
     });
 
@@ -716,10 +707,6 @@ class Combinator extends CombinatorBase {
           }
           this.levelDown();
           this.levelDown();
-          emitter.emitln('else:', this.level);
-          this.levelUp();
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))} = None`, this.level);
-          this.levelDown();
         }
       } else if (type.lexeme === 'map') {
         if (depth > 0) {
@@ -766,10 +753,6 @@ class Combinator extends CombinatorBase {
           }
           this.levelDown();
           this.levelDown();
-          emitter.emitln('else:', this.level);
-          this.levelUp();
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))} = None`, this.level);
-          this.levelDown();
         }
       }
     } else {
@@ -815,23 +798,22 @@ class Combinator extends CombinatorBase {
         if (emt.needSave === true) {
           emitter.emit(emt.output);
         } else {
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = map.get('${name}')`, this.level);
-        }
-      } else {
-        if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
-          let type = _type(prop.type);
           emitter.emitln(`if map.get('${name}') is not None:`, this.level);
           this.levelUp();
+          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = map.get('${name}')`, this.level);
+          this.levelDown();
+        }
+      } else {
+        emitter.emitln(`if map.get('${name}') is not None:`, this.level);
+        this.levelUp();
+        if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
+          let type = _type(prop.type);
           emitter.emitln(`temp_model = ${type}()`, this.level);
           emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = temp_model.from_map(map['${name}'])`, this.level);
-          this.levelDown();
-          emitter.emitln('else:', this.level);
-          this.levelUp();
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = None`, this.level);
-          this.levelDown();
         } else {
           emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = map.get('${name}')`, this.level);
         }
+        this.levelDown();
       }
     });
     emitter.emitln('return self', this.level);

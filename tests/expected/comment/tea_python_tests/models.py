@@ -37,21 +37,33 @@ class Test1(TeaModel):
 
     def to_map(self):
         result = {}
-        result['test'] = self.test
-        result['test2'] = self.test_2
-        result['test3'] = self.test_3
-        result['test5'] = self.test_5
-        result['sts'] = self.sts
-        result['asts'] = self.a_sts
+        if self.test is not None:
+            result['test'] = self.test
+        if self.test_2 is not None:
+            result['test2'] = self.test_2
+        if self.test_3 is not None:
+            result['test3'] = self.test_3
+        if self.test_5 is not None:
+            result['test5'] = self.test_5
+        if self.sts is not None:
+            result['sts'] = self.sts
+        if self.a_sts is not None:
+            result['asts'] = self.a_sts
         return result
 
     def from_map(self, map={}):
-        self.test = map.get('test')
-        self.test_2 = map.get('test2')
-        self.test_3 = map.get('test3')
-        self.test_5 = map.get('test5')
-        self.sts = map.get('sts')
-        self.a_sts = map.get('asts')
+        if map.get('test') is not None:
+            self.test = map.get('test')
+        if map.get('test2') is not None:
+            self.test_2 = map.get('test2')
+        if map.get('test3') is not None:
+            self.test_3 = map.get('test3')
+        if map.get('test5') is not None:
+            self.test_5 = map.get('test5')
+        if map.get('sts') is not None:
+            self.sts = map.get('sts')
+        if map.get('asts') is not None:
+            self.a_sts = map.get('asts')
         return self
 
 
@@ -73,13 +85,17 @@ class Test2(TeaModel):
 
     def to_map(self):
         result = {}
-        result['test'] = self.test
-        result['test2'] = self.test_2
+        if self.test is not None:
+            result['test'] = self.test
+        if self.test_2 is not None:
+            result['test2'] = self.test_2
         return result
 
     def from_map(self, map={}):
-        self.test = map.get('test')
-        self.test_2 = map.get('test2')
+        if map.get('test') is not None:
+            self.test = map.get('test')
+        if map.get('test2') is not None:
+            self.test_2 = map.get('test2')
         return self
 
 
@@ -103,11 +119,15 @@ class Test3(TeaModel):
 
     def to_map(self):
         result = {}
-        result['test'] = self.test
-        result['test1'] = self.test_1
+        if self.test is not None:
+            result['test'] = self.test
+        if self.test_1 is not None:
+            result['test1'] = self.test_1
         return result
 
     def from_map(self, map={}):
-        self.test = map.get('test')
-        self.test_1 = map.get('test1')
+        if map.get('test') is not None:
+            self.test = map.get('test')
+        if map.get('test1') is not None:
+            self.test_1 = map.get('test1')
         return self

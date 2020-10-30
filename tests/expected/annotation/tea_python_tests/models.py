@@ -16,9 +16,11 @@ class Test(TeaModel):
 
     def to_map(self):
         result = {}
-        result['test'] = self.test
+        if self.test is not None:
+            result['test'] = self.test
         return result
 
     def from_map(self, map={}):
-        self.test = map.get('test')
+        if map.get('test') is not None:
+            self.test = map.get('test')
         return self

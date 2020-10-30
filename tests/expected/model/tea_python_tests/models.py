@@ -111,35 +111,44 @@ class MyModel(TeaModel):
 
     def to_map(self):
         result = {}
-        result['stringfield'] = self.stringfield
-        result['bytesfield'] = self.bytesfield
-        result['stringarrayfield'] = self.stringarrayfield
-        result['mapfield'] = self.mapfield
-        result['realName'] = self.name
+        if self.stringfield is not None:
+            result['stringfield'] = self.stringfield
+        if self.bytesfield is not None:
+            result['bytesfield'] = self.bytesfield
+        if self.stringarrayfield is not None:
+            result['stringarrayfield'] = self.stringarrayfield
+        if self.mapfield is not None:
+            result['mapfield'] = self.mapfield
+        if self.name is not None:
+            result['realName'] = self.name
         if self.submodel is not None:
             result['submodel'] = self.submodel.to_map()
-        else:
-            result['submodel'] = None
         result['subarray'] = []
         if self.subarray is not None:
             for k in self.subarray:
                 result['subarray'].append(k.to_map() if k else None)
-        else:
-            result['subarray'] = None
-        result['maparray'] = self.maparray
-        result['object'] = self.object
-        result['numberfield'] = self.numberfield
-        result['readable'] = self.readable
+        if self.maparray is not None:
+            result['maparray'] = self.maparray
+        if self.object is not None:
+            result['object'] = self.object
+        if self.numberfield is not None:
+            result['numberfield'] = self.numberfield
+        if self.readable is not None:
+            result['readable'] = self.readable
         if self.exist_model is not None:
             result['existModel'] = self.exist_model.to_map()
-        else:
-            result['existModel'] = None
-        result['class_end_time'] = self.class_end_time
-        result['max-length'] = self.max_length
-        result['min-length'] = self.min_length
-        result['maximum'] = self.maximum
-        result['minimum'] = self.minimum
-        result['test3'] = self.test_3
+        if self.class_end_time is not None:
+            result['class_end_time'] = self.class_end_time
+        if self.max_length is not None:
+            result['max-length'] = self.max_length
+        if self.min_length is not None:
+            result['min-length'] = self.min_length
+        if self.maximum is not None:
+            result['maximum'] = self.maximum
+        if self.minimum is not None:
+            result['minimum'] = self.minimum
+        if self.test_3 is not None:
+            result['test3'] = self.test_3
         result['arrayArrayModel'] = []
         if self.array_array_model is not None:
             for k in self.array_array_model:
@@ -147,8 +156,6 @@ class MyModel(TeaModel):
                 for k1 in k:
                     l1.append(k1.to_map() if k1 else None)
                 result['arrayArrayModel'].append(l1)
-        else:
-            result['arrayArrayModel'] = None
         result['arrayMapModel'] = []
         if self.array_map_model is not None:
             for k in self.array_map_model:
@@ -156,55 +163,58 @@ class MyModel(TeaModel):
                 for k1 ,v1 in k.items():
                     d1[k1] = v1.to_map()
                 result['arrayMapModel'].append(d1)
-        else:
-            result['arrayMapModel'] = None
         result['mapModel'] = {}
         if self.map_model is not None:
             for k, v in self.map_model.items():
                 result['mapModel'][k] = v.to_map()
-        else:
-            result['mapModel'] = None
         result['submodelMap'] = {}
         if self.submodel_map is not None:
             for k, v in self.submodel_map.items():
                 result['submodelMap'][k] = v.to_map()
-        else:
-            result['submodelMap'] = None
         return result
 
     def from_map(self, map={}):
-        self.stringfield = map.get('stringfield')
-        self.bytesfield = map.get('bytesfield')
-        self.stringarrayfield = map.get('stringarrayfield')
-        self.mapfield = map.get('mapfield')
-        self.name = map.get('realName')
+        if map.get('stringfield') is not None:
+            self.stringfield = map.get('stringfield')
+        if map.get('bytesfield') is not None:
+            self.bytesfield = map.get('bytesfield')
+        if map.get('stringarrayfield') is not None:
+            self.stringarrayfield = map.get('stringarrayfield')
+        if map.get('mapfield') is not None:
+            self.mapfield = map.get('mapfield')
+        if map.get('realName') is not None:
+            self.name = map.get('realName')
         if map.get('submodel') is not None:
             temp_model = MyModelSubmodel()
             self.submodel = temp_model.from_map(map['submodel'])
-        else:
-            self.submodel = None
         self.subarray = []
         if map.get('subarray') is not None:
             for k in map.get('subarray'):
                 temp_model = M()
                 self.subarray.append(temp_model.from_map(k))
-        else:
-            self.subarray = None
-        self.maparray = map.get('maparray')
-        self.object = map.get('object')
-        self.numberfield = map.get('numberfield')
-        self.readable = map.get('readable')
+        if map.get('maparray') is not None:
+            self.maparray = map.get('maparray')
+        if map.get('object') is not None:
+            self.object = map.get('object')
+        if map.get('numberfield') is not None:
+            self.numberfield = map.get('numberfield')
+        if map.get('readable') is not None:
+            self.readable = map.get('readable')
         if map.get('existModel') is not None:
             temp_model = M()
             self.exist_model = temp_model.from_map(map['existModel'])
-        else:
-            self.exist_model = None
-        self.class_end_time = map.get('class_end_time')
-        self.max_length = map.get('max-length')
-        self.min_length = map.get('min-length')
-        self.maximum = map.get('maximum')
-        self.minimum = map.get('minimum')
-        self.test_3 = map.get('test3')
+        if map.get('class_end_time') is not None:
+            self.class_end_time = map.get('class_end_time')
+        if map.get('max-length') is not None:
+            self.max_length = map.get('max-length')
+        if map.get('min-length') is not None:
+            self.min_length = map.get('min-length')
+        if map.get('maximum') is not None:
+            self.maximum = map.get('maximum')
+        if map.get('minimum') is not None:
+            self.minimum = map.get('minimum')
+        if map.get('test3') is not None:
+            self.test_3 = map.get('test3')
         self.array_array_model = []
         if map.get('arrayArrayModel') is not None:
             for k in map.get('arrayArrayModel'):
@@ -213,8 +223,6 @@ class MyModel(TeaModel):
                     temp_model = M()
                     l1.append(temp_model.from_map(k1))
                 self.array_array_model.append(l1)
-        else:
-            self.array_array_model = None
         self.array_map_model = []
         if map.get('arrayMapModel') is not None:
             for k in map.get('arrayMapModel'):
@@ -223,22 +231,16 @@ class MyModel(TeaModel):
                     temp_model = M()
                     d1[k1] = temp_model.from_map(v1)
                 self.array_map_model.append(d1)
-        else:
-            self.array_map_model = None
         self.map_model = {}
         if map.get('mapModel') is not None:
             for k, v in map.get('mapModel').items():
                 temp_model = M()
                 self.map_model[k] = temp_model.from_map(v)
-        else:
-            self.map_model = None
         self.submodel_map = {}
         if map.get('submodelMap') is not None:
             for k, v in map.get('submodelMap').items():
                 temp_model = MyModelSubmodel()
                 self.submodel_map[k] = temp_model.from_map(v)
-        else:
-            self.submodel_map = None
         return self
 
 
@@ -251,11 +253,13 @@ class MyModelSubmodel(TeaModel):
 
     def to_map(self):
         result = {}
-        result['stringfield'] = self.stringfield
+        if self.stringfield is not None:
+            result['stringfield'] = self.stringfield
         return result
 
     def from_map(self, map={}):
-        self.stringfield = map.get('stringfield')
+        if map.get('stringfield') is not None:
+            self.stringfield = map.get('stringfield')
         return self
 
 
