@@ -132,7 +132,9 @@ module.exports = {
       getBackoffTime: 'get_backoff_time',
       isRetryable: 'is_retryable',
       toModel: 'toModel',
-      merge: 'merge'
+      merge: 'merge',
+      toMap: 'to_map',
+      fromMap: 'from_map'
     },
     model: {
       name: 'Tea.model.TeaModel'
