@@ -39,48 +39,44 @@ class ComplexRequest(TeaModel):
 
     def to_map(self):
         result = {}
-        result['accessKey'] = self.access_key
-        result['Body'] = self.body
-        result['Strs'] = self.strs
+        if self.access_key is not None:
+            result['accessKey'] = self.access_key
+        if self.body is not None:
+            result['Body'] = self.body
+        if self.strs is not None:
+            result['Strs'] = self.strs
         if self.header is not None:
             result['header'] = self.header.to_map()
-        else:
-            result['header'] = None
-        result['Num'] = self.num
+        if self.num is not None:
+            result['Num'] = self.num
         if self.configs is not None:
             result['configs'] = self.configs.to_map()
-        else:
-            result['configs'] = None
         result['Part'] = []
         if self.part is not None:
             for k in self.part:
                 result['Part'].append(k.to_map() if k else None)
-        else:
-            result['Part'] = None
         return result
 
     def from_map(self, map={}):
-        self.access_key = map.get('accessKey')
-        self.body = map.get('Body')
-        self.strs = map.get('Strs')
+        if map.get('accessKey') is not None:
+            self.access_key = map.get('accessKey')
+        if map.get('Body') is not None:
+            self.body = map.get('Body')
+        if map.get('Strs') is not None:
+            self.strs = map.get('Strs')
         if map.get('header') is not None:
             temp_model = ComplexRequestHeader()
             self.header = temp_model.from_map(map['header'])
-        else:
-            self.header = None
-        self.num = map.get('Num')
+        if map.get('Num') is not None:
+            self.num = map.get('Num')
         if map.get('configs') is not None:
             temp_model = ComplexRequestConfigs()
             self.configs = temp_model.from_map(map['configs'])
-        else:
-            self.configs = None
         self.part = []
         if map.get('Part') is not None:
             for k in map.get('Part'):
                 temp_model = ComplexRequestPart()
                 self.part.append(temp_model.from_map(k))
-        else:
-            self.part = None
         return self
 
 
@@ -94,11 +90,13 @@ class ComplexRequestHeader(TeaModel):
 
     def to_map(self):
         result = {}
-        result['Content'] = self.content
+        if self.content is not None:
+            result['Content'] = self.content
         return result
 
     def from_map(self, map={}):
-        self.content = map.get('Content')
+        if map.get('Content') is not None:
+            self.content = map.get('Content')
         return self
 
 
@@ -115,15 +113,21 @@ class ComplexRequestConfigs(TeaModel):
 
     def to_map(self):
         result = {}
-        result['key'] = self.key
-        result['value'] = self.value
-        result['extra'] = self.extra
+        if self.key is not None:
+            result['key'] = self.key
+        if self.value is not None:
+            result['value'] = self.value
+        if self.extra is not None:
+            result['extra'] = self.extra
         return result
 
     def from_map(self, map={}):
-        self.key = map.get('key')
-        self.value = map.get('value')
-        self.extra = map.get('extra')
+        if map.get('key') is not None:
+            self.key = map.get('key')
+        if map.get('value') is not None:
+            self.value = map.get('value')
+        if map.get('extra') is not None:
+            self.extra = map.get('extra')
         return self
 
 
@@ -137,11 +141,13 @@ class ComplexRequestPart(TeaModel):
 
     def to_map(self):
         result = {}
-        result['PartNumber'] = self.part_number
+        if self.part_number is not None:
+            result['PartNumber'] = self.part_number
         return result
 
     def from_map(self, map={}):
-        self.part_number = map.get('PartNumber')
+        if map.get('PartNumber') is not None:
+            self.part_number = map.get('PartNumber')
         return self
 
 
