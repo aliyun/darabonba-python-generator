@@ -23,15 +23,15 @@ class Client(object):
         self._comple_list = _comple_list  # type: list
         self._endpoint_map = _endpoint_map  # type: dict
         # string declate comment
-        str = "sss"
+        str = 'sss'
         # new model instance comment
         model_instance = main_models.Test1(
-            test="test",
-            test_2="test2"
+            test='test',
+            test_2='test2'
         )
         array = [
             # array string comment
-            "string",
+            'string',
             # array number comment
             300
         ]
@@ -60,8 +60,8 @@ class Client(object):
                 _request = TeaRequest()
                 # new model instance comment
                 model_instance = main_models.Test1(
-                    test="test",
-                    test_2="test2"
+                    test='test',
+                    test_2='test2'
                 )
                 # number declare comment
                 num = 123
@@ -70,12 +70,12 @@ class Client(object):
                 _last_request = _request
                 _response = TeaCore.do_action(_request, _runtime)
                 # static async function call
-                self.test_func("test", True, [
+                self.test_func('test', True, [
                     [
-                        "str"
+                        'str'
                     ],
                     [
-                        "str1"
+                        'str1'
                     ]
                 ])
                 # return comment
@@ -93,7 +93,7 @@ class Client(object):
         """
         _runtime = {
             # runtime retry comment
-            "retry": True,
+            'retry': True,
             # runtime back comment one
             # runtime back comment two
         }
@@ -156,7 +156,7 @@ class Client(object):
         """
         # empty comment1
         # empty comment2
-        s = "test"
+        s = 'test'
         return s
 
     @staticmethod

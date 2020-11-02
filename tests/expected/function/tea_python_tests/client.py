@@ -15,15 +15,15 @@ class Client(object):
     def hello_map():
         m = {}
         return TeaCore.merge({
-            "key": "value",
-            "key-1": "value-1"
+            'key': 'value',
+            'key-1': 'value-1'
         }, m)
 
     @staticmethod
     def hello_array_map():
         return [
             {
-                "key": "value"
+                'key': 'value'
             }
         ]
 
@@ -40,4 +40,4 @@ class Client(object):
         raise Tea.exceptions.TeaException('Un-implemented')
 
     def a_params(self):
-        self.hello_params("a", "b")
+        self.hello_params('a', 'b')

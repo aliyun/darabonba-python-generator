@@ -12,7 +12,7 @@ class Client(object):
     def sample(client):
         runtime = source_models.RuntimeObject()
         request = source_models.Request(
-            accesskey="accesskey",
-            region="region"
+            accesskey='accesskey',
+            region='region'
         )
         client.print(runtime)

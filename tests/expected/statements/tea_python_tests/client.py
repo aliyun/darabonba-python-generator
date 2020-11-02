@@ -11,13 +11,13 @@ class Client(object):
 
     def hello(self):
         _request = TeaRequest()
-        _request.method = "GET"
-        _request.pathname = "/"
+        _request.method = 'GET'
+        _request.pathname = '/'
         _request.headers = {
-            "host": "www.test.com"
+            'host': 'www.test.com'
         }
         if True:
-            _request.headers["host"] = "www.test2.com"
+            _request.headers['host'] = 'www.test2.com'
         _last_request = _request
         _response = TeaCore.do_action(_request)
         if True:
@@ -27,7 +27,7 @@ class Client(object):
         self.hello_if()
         not False
         a = None
-        a = "string"
+        a = 'string'
         return
 
     @staticmethod
@@ -57,6 +57,6 @@ class Client(object):
 
     @staticmethod
     def hello_declare():
-        hello = "world"
+        hello = 'world'
         hello_null = None
-        hello = "hehe"
+        hello = 'hehe'

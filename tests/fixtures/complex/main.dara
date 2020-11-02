@@ -210,4 +210,8 @@ static function strFmt(): void {
   var s1 = ` % 1${s}`;
   var s2 = ` "hello" 'world' ${s}`;
   var s3 = `hello world`;
+  var s4 = `{
+    "json": "json val",
+    "key": "value"
+  }`;
 }
