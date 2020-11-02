@@ -20,7 +20,7 @@ class Client(SourceClient):
     def complex_1(self, request, client):
         request.validate()
         _runtime = {
-            "timeouted": "retry"
+            'timeouted': 'retry'
         }
         _last_request = None
         _last_exception = None
@@ -34,21 +34,21 @@ class Client(SourceClient):
             _retry_times = _retry_times + 1
             try:
                 _request = TeaRequest()
-                name = "complex"
+                name = 'complex'
                 map_val = {
-                    "test": "ok"
+                    'test': 'ok'
                 }
-                version = '/%s%s' % ("2019-01-08", self._pathname)
+                version = '/%s%s' % ('2019-01-08', self._pathname)
                 module_model_map_val = {}
                 module_map_val = {}
                 model_map_val = {}
                 sub_model_map_val = {}
                 _request.protocol = self._protocol
                 _request.port = 80
-                _request.method = "GET"
+                _request.method = 'GET'
                 _request.pathname = '/%s' % self._pathname
                 _request.query = SourceClient.query(TeaCore.merge({
-                    "date": "2019"
+                    'date': '2019'
                 }, request.header,
                     map_val))
                 _request.body = SourceClient.body()
@@ -58,11 +58,11 @@ class Client(SourceClient):
                     return
                 elif True or False:
                     return source_models.RuntimeObject()
-                client.print(TeaCore.to_map(request), "1")
-                client.print_async(TeaCore.to_map(request), "1")
+                client.print(TeaCore.to_map(request), '1')
+                client.print_async(TeaCore.to_map(request), '1')
                 self.hello(TeaCore.to_map(request), [
-                    "1",
-                    "2"
+                    '1',
+                    '2'
                 ])
                 self.hello(None, None)
                 return main_models.RuntimeObject().from_map({})
@@ -77,17 +77,17 @@ class Client(SourceClient):
     def complex_2(self, request, str, val):
         request.validate()
         _request = TeaRequest()
-        name = "complex"
+        name = 'complex'
         config = source_models.Config()
         client = SourceClient(config)
-        _request.protocol = "HTTP"
+        _request.protocol = 'HTTP'
         _request.port = 80
-        _request.method = "GET"
-        _request.pathname = "/"
+        _request.method = 'GET'
+        _request.pathname = '/'
         _request.query = SourceClient.query({
-            "date": "2019",
-            "version": "2019-01-08",
-            "protocol": _request.protocol
+            'date': '2019',
+            'version': '2019-01-08',
+            'protocol': _request.protocol
         })
         _request.body = SourceClient.body()
         _last_request = _request
@@ -96,16 +96,16 @@ class Client(SourceClient):
     def complex_3(self, request):
         request.validate()
         _request = TeaRequest()
-        name = "complex"
+        name = 'complex'
         _request.protocol = self.template_string()
         _request.port = 80
-        _request.method = "GET"
-        _request.pathname = "/"
+        _request.method = 'GET'
+        _request.pathname = '/'
         _request.query = SourceClient.query({
-            "date": "2019"
+            'date': '2019'
         })
         _request.body = SourceClient.body()
-        _request.headers["host"] = "hello"
+        _request.headers['host'] = 'hello'
         _last_request = _request
         _response = TeaCore.do_action(_request)
         resp = _response
@@ -114,10 +114,10 @@ class Client(SourceClient):
             region=resp.status_message
         )
         self.array_0(TeaCore.to_map(request))
-        req.accesskey = "accesskey"
+        req.accesskey = 'accesskey'
         req.accesskey = request.access_key
         SourceClient.parse(main_models.ComplexRequest())
-        SourceClient.array(TeaCore.to_map(request), "1")
+        SourceClient.array(TeaCore.to_map(request), '1')
         SourceClient.async_func()
         return main_models.ComplexRequest().from_map(TeaCore.merge(_request.query))
 
@@ -139,7 +139,7 @@ class Client(SourceClient):
     @staticmethod
     def array_1():
         return [
-            "1"
+            '1'
         ]
 
     def template_string(self):
@@ -148,20 +148,20 @@ class Client(SourceClient):
     def empty_model(self):
         main_models.ComplexRequest()
         main_models.ComplexRequestHeader()
-        status = ""
+        status = ''
         try:
-            status = "failed"
+            status = 'failed'
         except Exception as e:
-            status = "catch exception"
+            status = 'catch exception'
         finally:
-            status = "ok"
+            status = 'ok'
 
     @staticmethod
     def array_access():
         configs = [
-            "a",
-            "b",
-            "c"
+            'a',
+            'b',
+            'c'
         ]
         config = configs[0]
         return config
@@ -169,10 +169,10 @@ class Client(SourceClient):
     @staticmethod
     def array_access_2():
         data = {
-            "configs": [
-                "a",
-                "b",
-                "c"
+            'configs': [
+                'a',
+                'b',
+                'c'
             ]
         }
         config = data['configs'][0]
@@ -187,9 +187,9 @@ class Client(SourceClient):
     @staticmethod
     def array_assign(config):
         configs = [
-            "a",
-            "b",
-            "c"
+            'a',
+            'b',
+            'c'
         ]
         configs[3] = config
         return configs
@@ -197,10 +197,10 @@ class Client(SourceClient):
     @staticmethod
     def array_assign_2(config):
         data = {
-            "configs": [
-                "a",
-                "b",
-                "c"
+            'configs': [
+                'a',
+                'b',
+                'c'
             ]
         }
         data['configs'][3] = config
@@ -224,19 +224,23 @@ class Client(SourceClient):
     @staticmethod
     def map_access_3():
         data = {
-            "configs": {
-                "value": "string"
+            'configs': {
+                'value': 'string'
             }
         }
         return data['configs'].get('value')
 
     @staticmethod
     def map_assign(request, name):
-        request.configs.extra["name"] = name
+        request.configs.extra['name'] = name
 
     @staticmethod
     def str_fmt():
-        s = "strtest"
-        s_1 = " % 1" + str(s) + ""
+        s = 'strtest'
+        s_1 = ' % 1' + str(s) + ''
         s_2 = ''' "hello" 'world' %s''' % s
         s_3 = 'hello world'
+        s_4 = '''{
+    "json": "json val",
+    "key": "value"
+  }'''

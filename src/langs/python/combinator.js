@@ -1203,7 +1203,8 @@ class Combinator extends CombinatorBase {
         } else if (path.type === 'map') {
           pre += path.isVar ? `.get(${_avoidKeywords(_toSnakeCase(pathName))})` : `.get('${pathName}')`;
         } else if (path.type === 'map_set') {
-          pre += `['${pathName}']`;
+          const quote = this._adaptedQuotes(pathName, emitter);
+          pre += `[${quote}${pathName}${quote}]`;
         } else if (path.type === 'list') {
           pre += `[${pathName}]`;
         } else {
@@ -1243,7 +1244,8 @@ class Combinator extends CombinatorBase {
   grammerValue(emitter, gram, layer = 1, isparams = false) {
     if (gram.key) {
       if (!isparams) {
-        emitter.emit(`"${gram.key}": `);
+        const quote = this._adaptedQuotes(gram.key, emitter);
+        emitter.emit(`${quote}${gram.key}${quote}: `);
       } else {
         emitter.emit(`${_toSnakeCase(gram.key)}=`, this.level);
       }
@@ -1354,7 +1356,8 @@ class Combinator extends CombinatorBase {
         emitter.emit('', this.level);
       }
     } else if (gram.type === 'string') {
-      emitter.emit(`"${gram.value}"`);
+      const quote = this._adaptedQuotes(gram.value, emitter);
+      emitter.emit(`${quote}${gram.value}${quote}`);
     } else if (gram.type === 'param') {
       emitter.emit(`${_convertStaticParam(_toSnakeCase(gram.value))}`);
     } else if (gram.type === 'call') {
@@ -1607,7 +1610,9 @@ class Combinator extends CombinatorBase {
   behaviorSetMapItem(emitter, behavior) {
     let emit = new Emitter();
     this.grammerCall(emit, behavior.call);
-    emitter.emit(`${emit.output}["${behavior.key}"] = `, this.level);
+    
+    const quote = this._adaptedQuotes(behavior.key, emitter);
+    emitter.emit(`${emit.output}[${quote}${behavior.key}${quote}] = `, this.level);
     this.grammerValue(emitter, behavior.value);
     emitter.emitln('');
   }
@@ -1663,13 +1668,19 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  behaviorStrFormat (emitter, behavior) {
+  _adaptedQuotes(str, emit) {
+    const line = str.split(emit.eol);
     let quote = '\'';
-    if (behavior.tmp.indexOf('\'') !== -1 && behavior.tmp.indexOf('"') !== -1) {
+    if (str.indexOf('\'') !== -1 && str.indexOf('"') !== -1 || line.length > 1) {
       quote = '\'\'\'';
-    } else if (behavior.tmp.indexOf('\'') !== -1) {
+    } else if (str.indexOf('\'') !== -1) {
       quote = '"';
     }
+    return quote;
+  }
+
+  behaviorStrFormat (emitter, behavior) {
+    const quote = this._adaptedQuotes(behavior.tmp, emitter);
 
     if (behavior.item.length > 1) {
       emitter.emit(`${quote}${behavior.tmp}${quote} % (`);

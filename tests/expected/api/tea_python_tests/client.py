@@ -13,10 +13,10 @@ class Client(object):
 
     def hello(self):
         _request = TeaRequest()
-        _request.method = "GET"
-        _request.pathname = "/"
+        _request.method = 'GET'
+        _request.pathname = '/'
         _request.headers = {
-            "host": "www.test.com"
+            'host': 'www.test.com'
         }
         _last_request = _request
         _response = TeaCore.do_action(_request)
@@ -36,10 +36,10 @@ class Client(object):
             _retry_times = _retry_times + 1
             try:
                 _request = TeaRequest()
-                _request.method = "GET"
-                _request.pathname = "/"
+                _request.method = 'GET'
+                _request.pathname = '/'
                 _request.headers = {
-                    "host": "www.test.com"
+                    'host': 'www.test.com'
                 }
                 _last_request = _request
                 _response = TeaCore.do_action(_request, _runtime)
