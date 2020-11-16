@@ -34,6 +34,9 @@ class Client(SourceClient):
             _retry_times = _retry_times + 1
             try:
                 _request = TeaRequest()
+                # to map test.
+                req = source_models.Request()
+                m = self.call_to_map(TeaCore.to_map(req))
                 name = 'complex'
                 map_val = {
                     'test': 'ok'
@@ -244,3 +247,7 @@ class Client(SourceClient):
     "json": "json val",
     "key": "value"
   }'''
+
+    @staticmethod
+    def call_to_map(m):
+        return m

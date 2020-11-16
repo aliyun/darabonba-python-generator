@@ -38,6 +38,10 @@ async function hello(request: object, strs: [ string ]): [ string ] {
 static async function print(reqeust: $Request, reqs: [ ComplexRequest ], response: $Response, val: map[string]string): Source.Request {}
 
 api complex1(request: ComplexRequest, client: Source): Source.RuntimeObject {
+  // to map test.
+  var req = new Source.Request{};
+  var m = callToMap(req);
+  
   var name = 'complex';
   var mapVal = {test="ok"};
   var version = `/${__module.version}${@pathname}`;
@@ -214,4 +218,8 @@ static function strFmt(): void {
     "json": "json val",
     "key": "value"
   }`;
+}
+
+static function callToMap(m:map[string]any): map[string]any{
+  return m;
 }

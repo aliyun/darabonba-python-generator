@@ -107,6 +107,7 @@ class Combinator extends CombinatorBase {
       });
 
       if (needAlias === true) {
+        className = className.replace(/[^a-zA-Z0-9_]/, '')
         // import classname as classname
         if (/^[A-Z]+$/.test(importName[0])) {
           alias = className + importName;
@@ -159,12 +160,9 @@ class Combinator extends CombinatorBase {
       // is third package
       importName = 'models';
       fromName = this.thirdPackageNamespace[accessPath[0]];
-      alias = _toSnakeCase(accessPath[0]) + '_models';
-      if (alias) {
-        resultName = alias + '.' + accessPath.slice(1).map(item => _upperFirst(item)).join('');
-      } else {
-        resultName = fromName.split('.').join('_') + '_models' + '.' + accessPath.slice(1).map(item => _upperFirst(item)).join('');
-      }
+      const className = accessPath[0].replace(/[^a-zA-Z0-9_]/, '')
+      alias = _toSnakeCase(className) + '_models';
+      resultName = alias + '.' + accessPath.slice(1).map(item => _upperFirst(item)).join('');
     } else {
       // self model
       fromName = this.config.package;

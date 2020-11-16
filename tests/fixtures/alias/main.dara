@@ -2,10 +2,13 @@ import Source;
 import Import;
 import Alias;
 import AliasSource;
+import Alias-Symbol
 
 static async function emptyModel(): void {
   Import.test();
   Source.test();
   Alias.test();
   AliasSource.test();
+  Alias-Symbol.test();
+  var model = new Alias-Symbol.testModel{};
 }
