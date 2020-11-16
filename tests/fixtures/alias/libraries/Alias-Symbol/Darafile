@@ -1,0 +1,11 @@
+{
+  "scope": "alibabacloud",
+  "name": "Alias-Symbol",
+  "version": "0.0.1",
+  "main": "./main.dara",
+  "python": {
+    "package": "alias_symbol",
+    "clientName": "client",
+    "modelDirName": "Models"
+  }
+}
