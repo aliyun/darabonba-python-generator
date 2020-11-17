@@ -234,7 +234,12 @@ class Combinator extends CombinatorBase {
     emitter.config.filename = '__init__';
     emitter.emitln('__version__ = "1.0.0"');
     emitter.save();
-
+    /******************************** emit foot ********************************/
+    if (this.config.exec) {
+      emitter = new Emitter(this.config);
+      this.emitExec(emitter);
+      outputParts.foot = emitter.output;
+    }
     /******************************** emit body ********************************/
     emitter = new Emitter(this.config);
     this.emitClass(emitter, object);
@@ -255,6 +260,7 @@ class Combinator extends CombinatorBase {
     } else {
       debug.stack('python clientName is must be snake case, Example: rpc_client.');
     }
+    
     this.combineOutputParts(config, outputParts);
   }
 
@@ -1143,6 +1149,16 @@ class Combinator extends CombinatorBase {
         emitter.emitln(`import ${include.import}`, this.level);
       }
     }
+  }
+
+  emitExec(emitter) {
+    this.includeList.push({import: 'sys'});
+    emitter.emitln();
+    emitter.emitln();
+    emitter.emitln('if __name__ == \'__main__\':');
+    this.levelUp();
+    emitter.emitln(`${this.getClassName(this.config.clientName)}.main(sys.argv[1:])`, this.level);
+    this.levelDown();
   }
 
   grammerCall(emitter, gram) {
