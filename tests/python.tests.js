@@ -215,4 +215,17 @@ describe('Python Generator', function () {
       }
     });
   });
+
+  it('exec should ok', function () {
+    check('exec', [
+      'tea_python_tests/exec_client.py'
+    ],
+    {
+      exec: true,
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'exec_client'
+      }
+    });
+  });
 });
