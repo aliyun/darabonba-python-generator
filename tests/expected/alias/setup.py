@@ -25,7 +25,7 @@ from setuptools import setup, find_packages
 """
 setup module for tea_python_tests.
 
-Created on 21/10/2020
+Created on 23/11/2020
 
 @author: Alibaba
 """
@@ -36,7 +36,10 @@ DESCRIPTION = "Generate setup.py"
 AUTHOR = "Alibaba"
 AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/"
-REQUIRES = ["source>=0.0.1, <1.0.0","import>=1.1.2, <2.0.0"]
+REQUIRES = [
+    "source>=0.0.1, <1.0.0",
+    "import>=1.1.2, <2.0.0"
+]
 VERSION = __import__(PACKAGE).__version__
 
 
