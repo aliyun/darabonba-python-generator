@@ -1,5 +1,14 @@
 # ChangeLog
 
+## 1.1.1 - 2020-11-23
+
+* Support for defining multi-line string.
+* Support executable option.
+* Fix aliases that don`t conform to python syntax.
+* Fix the bug that `None` call the `to_map()`.
+* Fix can't get variable value from dict & list.
+* Fix to_map&from_map using uninitialized parameters.
+
 ## 1.1.0 - 2020-10-13
 
 * Fix long description content type error in setup.py.
