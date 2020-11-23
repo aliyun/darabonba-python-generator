@@ -48,7 +48,7 @@ class PackageInfo extends BasePackageInfo {
       email: '',
       author: '',
       package: this.config.package,
-      require: JSON.stringify(requires),
+      require: JSON.stringify(requires, null, 4),
       namespace: this.config.package.split('.').join('\\\\'),
       date: ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear(),
       ...packageInfo
