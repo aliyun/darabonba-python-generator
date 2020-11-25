@@ -37,7 +37,7 @@ class Client(object):
         """
         interface mode
         """
-        raise Tea.exceptions.TeaException('Un-implemented')
+        raise Exception('Un-implemented')
 
     def a_params(self):
         self.hello_params('a', 'b')

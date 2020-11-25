@@ -3,8 +3,8 @@
 import time
 
 from Tea.request import TeaRequest
-from Tea.exceptions import TeaException, UnretryableException
 from Tea.core import TeaCore
+from Tea.exceptions import UnretryableException
 
 
 class Client(object):

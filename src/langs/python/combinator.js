@@ -41,17 +41,19 @@ const {
 function _type(type) {
   const config = _config();
   let t = type instanceof Object ? type.lexeme : type;
-  if (config.typeMap[t]) {
-    return config.typeMap[t];
-  }
-  if (t.indexOf('map[') === 0) {
-    return 'dict';
-  }
-  if (!_isBasicType(t)) {
-    return t;
-  }
-  if (t[0] === '$') {
-    t = t.replace('$', 'Tea');
+  if (t) {
+    if (config.typeMap[t]) {
+      return config.typeMap[t];
+    }
+    if (t.indexOf('map[') === 0) {
+      return 'dict';
+    }
+    if (!_isBasicType(t)) {
+      return t;
+    }
+    if (t[0] === '$') {
+      t = t.replace('$', 'Tea');
+    }
   }
   return t;
 }
@@ -107,7 +109,7 @@ class Combinator extends CombinatorBase {
       });
 
       if (needAlias === true) {
-        className = className.replace(/[^a-zA-Z0-9_]/, '')
+        className = className.replace(/[^a-zA-Z0-9_]/, '');
         // import classname as classname
         if (/^[A-Z]+$/.test(importName[0])) {
           alias = className + importName;
@@ -160,7 +162,7 @@ class Combinator extends CombinatorBase {
       // is third package
       importName = 'models';
       fromName = this.thirdPackageNamespace[accessPath[0]];
-      const className = accessPath[0].replace(/[^a-zA-Z0-9_]/, '')
+      const className = accessPath[0].replace(/[^a-zA-Z0-9_]/, '');
       alias = _toSnakeCase(className) + '_models';
       resultName = alias + '.' + accessPath.slice(1).map(item => _upperFirst(item)).join('');
     } else {
@@ -205,6 +207,19 @@ class Combinator extends CombinatorBase {
   }
 
   checkSyntax(content, emitter) {
+    const includeList = this.includeList;
+    includeList.forEach(i => {
+      let importName = i.import;
+      if (i.alias) {
+        importName = i.alias;
+      }
+
+      const re = new RegExp(importName);
+      if (!re.test(content) && importName !== 'sys') {
+        this.includeList.splice(this.includeList.indexOf(i), 1);
+      }
+    });
+    
     let contentLine = content.split(emitter.eol);
     contentLine.forEach((l, index) => {
       const symbol = ['+', '-', '=', '*', '/', '%'];
@@ -375,7 +390,23 @@ class Combinator extends CombinatorBase {
       if (node instanceof FuncItem) {
         this.emitFunc(emitter, node);
       } else if (node instanceof ConstructItem) {
-        this.emitConstruct(emitter, node, parent, propItems);
+        if (this.config.emitType === 'model') {
+          this.emitConstruct(emitter, node, parent, propItems);
+        } else if (this.config.emitType === 'client') {
+          if (propItems.length > 0) {
+            // emit @type
+            propItems.forEach(p => {
+              if (p instanceof AnnotationItem) {
+                this.emitAnnotation(emitter, p);
+              } else if (p instanceof PropItem) {
+                const type = this.getTypeHints(p.type);
+                emitter.emitln(`${_avoidKeywords(_toSnakeCase(p.name))} = None  # type: ${type}`, this.level);
+              }
+            });
+            emitter.emitln();
+          }
+          this.emitConstruct(emitter, node, parent, []);
+        }
       }
     });
     if (this.config.emitType === 'model') {
@@ -895,18 +926,7 @@ class Combinator extends CombinatorBase {
       if (this.thirdPackageNamespace[fieldType]) {
         emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
       } else {
-        let [typeHints, imports] = this.getTypeHints(prop.type);
-        imports.forEach(i => {
-          let existResult = this.includeList.some(item => {
-            if (item.import === i && item.from === 'typing') {
-              return true;
-            }
-          });
-          if (!existResult) {
-            this.includeList.push({from: 'typing', import: i});
-          }
-        });
-        
+        let typeHints = this.getTypeHints(prop.type);
         let declare_prop = `self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`;
         if (declare_prop.length < 30) {
           const space = ' '.repeat(30 - declare_prop.length);
@@ -916,7 +936,6 @@ class Combinator extends CombinatorBase {
         emitter.emitln(declare_prop, this.level);
       }
     });
-
     if (construct.body.length > 0) {
       construct.body.forEach(gram => {
         this.grammer(emitter, gram);
@@ -931,18 +950,35 @@ class Combinator extends CombinatorBase {
   }
 
   getTypeHints(fieldType) {
+    if (fieldType) {
+      let [typeHints, imports] = this.typeHint(fieldType);
+      imports.forEach(i => {
+        let existResult = this.includeList.some(item => {
+          if (item.import === i && item.from === 'typing') {
+            return true;
+          }
+        });
+        if (!existResult) {
+          this.includeList.push({from: 'typing', import: i});
+        }
+      });
+      return typeHints;
+    }
+  }
+
+  typeHint(fieldType) {
     let importType = [];
     const typeHints = this.config.typeHints[_type(fieldType.lexeme?fieldType.lexeme:fieldType)];
 
     if (fieldType.lexeme) {
       importType.push(typeHints);
       if (fieldType.lexeme === 'array') {
-        let [itemType, imports] = this.getTypeHints(fieldType.itemType);
+        let [itemType, imports] = this.typeHint(fieldType.itemType);
         importType.push.apply(importType, imports);
         return [`List[${itemType}]`, importType];
       } else if (fieldType.lexeme === 'map') {
-        let [keyType, keyImports] = this.getTypeHints(fieldType.keyType);
-        let [valueType, valueImports] = this.getTypeHints(fieldType.valType);
+        let [keyType, keyImports] = this.typeHint(fieldType.keyType);
+        let [valueType, valueImports] = this.typeHint(fieldType.valType);
         importType.push.apply(importType, keyImports);
         importType.push.apply(importType, valueImports);
         return [`Dict[${keyType}, ${valueType}]`, importType];
@@ -1027,13 +1063,12 @@ class Combinator extends CombinatorBase {
               if (tmp[tagIndex] === '@param') {
                 const param = tmp[tagIndex + 1];
                 tmp[tagIndex + 1] = _toSnakeCase(_avoidKeywords(param)) + ':';
-                let type = func.params.map(p => {
+                let type = func.params.filter(p => {
                   if (param === p.key) {
                     return p.type;
                   }
                 });
-
-                type = ['base', 'complex'].indexOf(this.config.type[_type(type.join(''))]) !== -1 ? _type(type.join('')) : null;
+                type = type[0] ? this.getTypeHints(type[0].type) : null;
 
                 emitter.emitln();
                 if (type) {
@@ -1045,10 +1080,7 @@ class Combinator extends CombinatorBase {
                 emitter.emitln(tmp.join(' '), this.level);
               } else if (tmp[tagIndex] === '@return') {
                 let rtype = null;
-                if (func.return[0] && ['base', 'complex'].indexOf(this.config.type[_type(func.return[0].type)]) !== -1) {
-                  rtype = _type(func.return[0].type);
-                }
-
+                rtype = func.return[0] ? this.getTypeHints(func.return[0]) : null;
                 tmp[tagIndex] = '@return:';
                 emitter.emitln();
                 if (rtype && rtype !== 'None') {

@@ -3,19 +3,21 @@
 import time
 
 from Tea.request import TeaRequest
-from Tea.exceptions import TeaException, UnretryableException
 from Tea.core import TeaCore
+from Tea.exceptions import UnretryableException
 
 
 class Client(object):
     """
     top annotation
     """
-    def __init__(self, _a=None):
+    _a = None  # type: str
+
+    def __init__(self):
         """
         Init Func
         """
-        self._a = _a                    # type: str
+        pass
 
     def test_api(self):
         """

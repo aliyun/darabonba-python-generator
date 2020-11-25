@@ -4,16 +4,21 @@ import time
 
 from Source.source_client import SourceClient
 from Tea.request import TeaRequest
-from Tea.exceptions import TeaException, UnretryableException
 from Tea.core import TeaCore
+from Tea.exceptions import UnretryableException
+try:
+    from typing import List
+except ImportError:
+    pass
 
 from Source import models as source_models
 from tea_python_tests import models as main_models
 
 
 class Client(SourceClient):
-    def __init__(self, config, _configs=None):
-        self._configs = _configs        # type: list
+    _configs = None  # type: List[source_models.Config]
+
+    def __init__(self, config):
         super(Client, self).__init__(config)
         self._configs[0] = config
 
@@ -68,8 +73,8 @@ class Client(SourceClient):
                     '2'
                 ])
                 self.hello(None, None)
-                return main_models.RuntimeObject().from_map({})
                 self.complex_3(None)
+                return main_models.RuntimeObject().from_map({})
             except Exception as e:
                 if TeaCore.is_retryable(e):
                     _last_exception = e
@@ -129,7 +134,7 @@ class Client(SourceClient):
 
     @staticmethod
     def print(reqeust, reqs, response, val):
-        pass
+        return main_models.Request().from_map({})
 
     @staticmethod
     def array_0(req):

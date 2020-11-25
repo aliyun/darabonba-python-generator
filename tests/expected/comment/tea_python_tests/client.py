@@ -4,8 +4,12 @@
 import time
 
 from Tea.request import TeaRequest
-from Tea.exceptions import TeaException, UnretryableException
 from Tea.core import TeaCore
+from Tea.exceptions import UnretryableException
+try:
+    from typing import List, Dict, BinaryIO, Any
+except ImportError:
+    pass
 
 from tea_python_tests import models as main_models
 
@@ -14,14 +18,15 @@ class Client(object):
     """
     top annotation
     """
-    def __init__(self, _a=None, _comple_list=None, _endpoint_map=None):
+    # type's comment
+    _a = None  # type: List[str]
+    _comple_list = None  # type: List[List[str]]
+    _endpoint_map = None  # type: Dict[str, str]
+
+    def __init__(self):
         """
         Init Func
         """
-        # type's comment
-        self._a = _a                    # type: list
-        self._comple_list = _comple_list  # type: list
-        self._endpoint_map = _endpoint_map  # type: dict
         # string declate comment
         str = 'sss'
         # new model instance comment
@@ -164,16 +169,19 @@ class Client(object):
         """
         testFuncComment
 
-        @type comple_list: list
+        @type comple_list: List[List[str]]
         @param comple_list: list parameter
 
-        @type map_test: dict
+        @type map_test: Dict[str, str]
         @param map_test: dict parameter
 
+        @type read: BinaryIO
         @param read: readable parameter
 
+        @type any_test: Any
         @param any_test: any parameter
 
+        @type test_1: main_models.Test1
         @param test_1: Model parameter
 
         @return: void description for return

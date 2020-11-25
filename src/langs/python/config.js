@@ -112,7 +112,7 @@ module.exports = {
     'WRITABLE': 'custom'
   },
   exceptionMap: {
-    'BASE': 'Tea.exceptions.TeaException',
+    'BASE': 'Exception',
   },
   model: {
     dir: 'models',
