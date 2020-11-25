@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
+try:
+    from typing import List
+except ImportError:
+    pass
+
 from Source import models as source_models
 
 
 class Client(object):
-    def __init__(self, _id=None, _str=None):
-        self._id = _id                  # type: list
-        self._str = _str                # type: str
+    _id = None  # type: List[str]
+    _str = None  # type: str
+
+    def __init__(self):
+        pass
 
     @staticmethod
     def sample(client):

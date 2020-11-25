@@ -138,26 +138,7 @@ class BaseResolver {
     }).forEach(item => {
       const prop = new PropItem();
       prop.name = item.vid.lexeme.replace('@', '_');
-      const type = item.value.lexeme ? item.value.lexeme : item.value.type;
-      prop.type = type;
-      if (type === 'array') {
-        prop.itemType = item.value.subType;
-        if (!_isBasicType(item.value.subType.lexeme) && item.value.subType.lexeme) {
-          this.combinator.addModelInclude(item.value.subType.lexeme);
-        }
-      } else {
-        if (!_isBasicType(type)) {
-          if (item.value.idType && item.value.idType === 'module') {
-            this.combinator.addInclude(type);
-          } else if (item.value && item.value.returnType) {
-            if (!_isBasicType(item.value.returnType.lexeme)) {
-              this.combinator.addModelInclude(type);
-            }
-          } else {
-            debug.stack(item);
-          }
-        }
-      }
+      prop.type = this.resolveType(item.value, item);
       prop.addModify(Modify.protected());
       if (item.tokenRange) {
         let comments = this.getFrontComments(item.tokenRange[0]);

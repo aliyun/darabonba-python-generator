@@ -124,7 +124,7 @@ class ClientResolver extends BaseResolver {
     let constructNode = new ConstructItem();
     if (init.params && init.params.params) {
       init.params.params.forEach(param => {
-        constructNode.addParamNode(new GrammerValue(param.paramType.lexeme, param.defaultValue, param.paramName.lexeme));
+        constructNode.addParamNode(new GrammerValue(this.resolveType(param.paramType, param), param.defaultValue, param.paramName.lexeme));
       });
     }
     if (init.annotation) {
@@ -157,18 +157,7 @@ class ClientResolver extends BaseResolver {
 
     ast.params.params.forEach(p => {
       var param = new GrammerValue();
-      if (p.paramType && p.paramType.lexeme && p.paramType.lexeme.indexOf('$') > -1) {
-        param.type = p.paramType.lexeme;
-      } else if (p.paramType.type && p.paramType.type === 'array') {
-        param.type = 'array';
-        param.itemType = p.paramType.subType.lexeme;
-      } else if (p.type === 'param' && p.paramType.lexeme) {
-        param.type = p.paramType.lexeme;
-      } else if (p.type === 'param' && p.paramType.type === 'map') {
-        param.type = 'map';
-        this.keyItem = p.paramType.keyType.lexeme;
-        param.itemType = p.paramType.valueType.lexeme;
-      }
+      param.type = this.resolveType(p.paramType, p);
       param.key = p.paramName.lexeme;
       if (p.needValidate) {
         func.addBodyNode(new GrammerCall('method', [
@@ -179,40 +168,7 @@ class ClientResolver extends BaseResolver {
       func.params.push(param);
     });
 
-    if (ast.returnType && ast.returnType.idType && ast.returnType.idType === 'model') {
-      func.return.push(new GrammerReturnType(this.combinator.addModelInclude(ast.returnType.lexeme)));
-    } else if (ast.returnType && ast.returnType.type) {
-      if (ast.returnType.type === 'moduleModel') {
-        let tmp = [];
-        ast.returnType.path.forEach(p => {
-          tmp.push(p.lexeme);
-        });
-        let type = tmp.join('.');
-        func.return.push(new GrammerReturnType(this.combinator.addModelInclude(type)));
-      } else if (ast.returnType.type === 'array') {
-        let subType = '';
-        if (ast.returnType.subType.lexeme) {
-          subType = ast.returnType.subType.lexeme;
-        } else if (ast.returnType.subType.type === 'map') {
-          subType = 'map';
-        }
-        func.return.push(new GrammerReturnType('array', false, null, subType));
-      } else if (ast.returnType.type === 'map') {
-        if (ast.returnType.valueType.lexeme && _isBasicType(ast.returnType.valueType.lexeme)) {
-          func.return.push(
-            new GrammerReturnType('map', false, ast.returnType.keyType.lexeme, ast.returnType.valueType.lexeme)
-          );
-        }
-      }
-    } else if (ast.returnType && ast.returnType.lexeme) {
-      if (ast.returnType.idType && ast.returnType.idType === 'module') {
-        func.return.push(new GrammerReturnType(this.combinator.addInclude(ast.returnType.lexeme)));
-      } else if (_isBasicType(ast.returnType.lexeme)) {
-        func.return.push(new GrammerReturnType(ast.returnType.lexeme));
-      }
-    } else {
-      debug.stack('Unsupported ast.returnType', ast.returnType);
-    }
+    func.return.push(this.resolveType(ast.returnType));
 
     if (ast.runtimeBody) {
       this.runtimeMode(func, ast, body);
@@ -783,6 +739,8 @@ class ClientResolver extends BaseResolver {
         type = stmt.expectedType.lexeme;
       } else if (stmt.expr.inferred) {
         type = stmt.expr.inferred.name;
+      } else {
+        debug.stack(stmt);
       }
       let expectedType = stmt.expectedType ? stmt.expectedType : null;
       let variate = new GrammerVar(stmt.id.lexeme, type);

@@ -1,1 +1,1 @@
-static async function main(args: [string]): void {}
+static function main(args: [string]): void {}

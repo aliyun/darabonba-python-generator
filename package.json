@@ -18,20 +18,20 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "codecov": "^3.7.2",
-    "eslint": "^7.7.0",
+    "codecov": "^3.8.1",
+    "eslint": "^7.14.0",
     "expect.js": "^0.3.1",
     "has-flag": "^4.0.0",
     "mm": "^3.2.0",
-    "mocha": "^8.1.1",
+    "mocha": "^8.2.1",
     "mocha-sinon": "^2.1.2",
     "nyc": "^15.1.0",
-    "sinon": "^9.0.3"
+    "sinon": "^9.2.1"
   },
   "author": "Alibaba Cloud OpenAPI Team",
   "license": "Apache-2.0",
   "dependencies": {
-    "@darabonba/parser": "^1.2.4",
+    "@darabonba/parser": "^1.2.7",
     "enum": "^3.0.4"
   }
 }

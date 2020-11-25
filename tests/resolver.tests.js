@@ -83,12 +83,7 @@ describe('client resolver should be ok', function () {
     }), {});
     const code = new ClientResolver({}, combinator, {});
     const funcItem = new FuncItem();
-    expect(function () {
-      code.resolveFunc(funcItem, {
-        params: { params: [] }
-      }, {}, {});
-    }).to.be.throw('Unsupported ast.returnType');
-
+    
     mm(code.combinator, 'addInclude', function (className) {
       return className;
     });
