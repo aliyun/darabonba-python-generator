@@ -576,23 +576,33 @@ class ClientResolver extends BaseResolver {
 
       if (object.left) {
         let isStatic = object.isStatic ? true : false;
-        let callType = isStatic ? '_static' : '';
+        let isAsync = object.isAsync ? true : false;
+        let asyncTag = '';
+        let staticTag = '';
+        if (isStatic) {
+          staticTag = '_static';
+        }
+        if (isAsync) {
+          asyncTag = '_async';
+        }
+        const callType = staticTag + asyncTag;
+
         if (object.left.type === 'method_call') {
-          call.addPath({ type: 'parent', name: '' });
-          call.addPath({ type: 'call' + callType, name: object.left.id.lexeme });
+          call.addPath({ type: 'parent' + asyncTag, name: '' });
+          call.addPath({ type: 'call', name: object.left.id.lexeme });
         } else if (object.left.type === 'instance_call') {
           if (object.left && object.left.id && object.left.id.lexeme) {
             if (object.left.id.type === 'variable') {
               call.addPath({ type: 'object' + callType, name: object.left.id.lexeme });
             } else if (typeof object.left.id.type === 'undefined' && object.left.id.lexeme.indexOf('@') > -1) {
-              call.addPath({ type: 'parent', name: object.left.id.lexeme.replace('@', '_') });
+              call.addPath({ type: 'parent' + asyncTag, name: object.left.id.lexeme.replace('@', '_') });
             } else {
               debug.stack('Unsupported object.left.id.type : ' + object.left.id.type, object);
             }
           }
         } else if (object.left.type === 'static_call') {
           if (object.left.id.type === 'module') {
-            call.addPath({ type: 'object_static', name: this.combinator.addInclude(object.left.id.lexeme) });
+            call.addPath({ type: 'object' + callType, name: this.combinator.addInclude(object.left.id.lexeme) });
             isStatic = true;
           } else {
             // call.addPath({ type: 'call_static', name: object.left.id.lexeme });
@@ -605,7 +615,7 @@ class ClientResolver extends BaseResolver {
         if (object.left.propertyPath) {
           object.left.propertyPath.forEach(p => {
             call.addPath({
-              type: 'call' + callType,
+              type: 'call',
               name: p.lexeme
             });
           });
@@ -621,7 +631,7 @@ class ClientResolver extends BaseResolver {
 
       valGrammer.value = call;
     } else if (object.type === 'construct') {
-      valGrammer.type = 'instance';
+      valGrammer.type = 'module_instance';
       const objectName = this.combinator.addInclude(object.aliasId.lexeme);
       valGrammer.value = new GrammerNewObject(objectName);
       object.args.forEach(item => {

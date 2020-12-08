@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
-try:
-    from typing import List, Dict, Any, BinaryIO
-except ImportError:
-    pass
+from typing import List, Dict, Any, BinaryIO
 
 
 class M(TeaModel):

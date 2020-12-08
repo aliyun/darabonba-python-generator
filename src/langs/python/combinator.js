@@ -35,7 +35,8 @@ const {
   _exception,
   _symbol,
   _deepClone,
-  _isSnakeCase
+  _isSnakeCase,
+  _getPyVariable
 } = require('../../lib/helper');
 
 function _type(type) {
@@ -116,6 +117,15 @@ class Combinator extends CombinatorBase {
         } else {
           alias = _toSnakeCase(className) + '_' + importName;
         }
+      }
+      // include Aio Client(Module)
+      let existResult = this.includeList.some(item => item.import === `Aio${importName}` && item.from === fromName);
+      if (!existResult) {
+        this.includeList.push({
+          'from': fromName,
+          'import': `Aio${importName}`,
+          'alias': alias ? `Aio${alias}` : '',
+        });
       }
     }
 
@@ -199,7 +209,6 @@ class Combinator extends CombinatorBase {
     const [clientObjectItem] = objectArr.filter(obj => obj.type === 'client');
     this.combineClient(clientObjectItem);
     this.includeList = [];
-    this.includeModelList = [];
     const models = objectArr.filter(obj => obj.type === 'model');
     if (models.length > 0) {
       this.combineModel(models);
@@ -234,7 +243,6 @@ class Combinator extends CombinatorBase {
   combineClient(object) {
     this.config.emitType = 'client';
     this.includeList = object.includeList;
-    this.includeModelList = object.includeModelList;
     if (this.config.packageInfo) {
       const packageInfo = new PackageInfo(this.config);
       packageInfo.emit(this.config.packageInfo, this.requirePackage);
@@ -258,6 +266,10 @@ class Combinator extends CombinatorBase {
     /******************************** emit body ********************************/
     emitter = new Emitter(this.config);
     this.emitClass(emitter, object);
+    emitter.emitln().emitln();
+
+    // emit aio client
+    this.emitClass(emitter, object, true);
     outputParts.body = this.checkSyntax(emitter.output, emitter);
     /******************************** emit head *******************************/
     emitter = new Emitter(this.config);
@@ -355,22 +367,35 @@ class Combinator extends CombinatorBase {
     return _toCamelCase(className);
   }
 
-  emitClass(emitter, object) {
+  emitClass(emitter, object, aio=false) {
     var parent = '';
-    if (object.extends.length > 0) {
-      let tmp = [];
-      if (!(object.extends instanceof Array)) {
-        object.extends = [object.extends];
-      }
-      object.extends.forEach(baseClass => {
-        tmp.push(baseClass);
-      });
-      parent = '(' + tmp.join(', ') + ')';
-    } else {
-      parent = '(object)';
-    }
     let className = this.getClassName(object.name);
-    emitter.emitln(`class ${className}${parent}:`, this.level);
+    
+    let tmp = [];
+    if (!(object.extends instanceof Array)) {
+      object.extends = [object.extends];
+    }
+
+    if (aio) {
+      tmp.push(className);
+    }
+    object.extends.forEach(baseClass => {
+      if (aio) {
+        tmp.push(`Aio${baseClass}`);
+      } else {
+        tmp.push(baseClass);
+      }
+    });
+    if (tmp.length > 0) {
+      parent = '(' + tmp.join(', ') + ')';
+    }
+  
+    if (aio) {
+      emitter.emitln(`class Aio${className}${parent}:`, this.level);
+    } else {
+      emitter.emitln(`class ${className}${parent}:`, this.level);
+    }
+    
     this.levelUp();
     if (object.annotations.length > 0) {
       this.emitAnnotations(emitter, object.annotations);
@@ -385,13 +410,14 @@ class Combinator extends CombinatorBase {
     if (object.body.filter(node => node instanceof ConstructItem).length === 0) {
       object.body.unshift(new ConstructItem());
     }
+
     // emit body nodes : PropItem | FuncItem | ConstructItem | AnnotationItem
     object.body.forEach(node => {
       if (node instanceof FuncItem) {
-        this.emitFunc(emitter, node);
+        this.emitFunc(emitter, node, aio);
       } else if (node instanceof ConstructItem) {
         if (this.config.emitType === 'model') {
-          this.emitConstruct(emitter, node, parent, propItems);
+          this.emitConstruct(emitter, node, propItems, false);
         } else if (this.config.emitType === 'client') {
           if (propItems.length > 0) {
             // emit @type
@@ -400,15 +426,16 @@ class Combinator extends CombinatorBase {
                 this.emitAnnotation(emitter, p);
               } else if (p instanceof PropItem) {
                 const type = this.getTypeHints(p.type);
-                emitter.emitln(`${_avoidKeywords(_toSnakeCase(p.name))} = None  # type: ${type}`, this.level);
+                emitter.emitln(`${_getPyVariable(p.name)} = None  # type: ${type}`, this.level);
               }
             });
             emitter.emitln();
           }
-          this.emitConstruct(emitter, node, parent, []);
+          this.emitConstruct(emitter, node, [], aio, true);
         }
       }
     });
+    
     if (this.config.emitType === 'model') {
       this.emitValidate(emitter, props, notes);
       this.emitToMap(emitter, props, notes);
@@ -426,9 +453,9 @@ class Combinator extends CombinatorBase {
           this.emitComplexValidate(emitter, `k${depth}`, fieldType.itemType, depth + 1);
           this.levelDown();
         } else {
-          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
+          emitter.emitln(`if self.${_getPyVariable(name)}:`, this.level);
           this.levelUp();
-          emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
+          emitter.emitln(`for k in self.${_getPyVariable(name)}:`, this.level);
           this.levelUp();
           this.emitComplexValidate(emitter, 'k', fieldType.itemType, depth + 1);
           this.levelDown();
@@ -441,9 +468,9 @@ class Combinator extends CombinatorBase {
           this.emitComplexValidate(emitter, `v${depth}`, fieldType.valType, depth + 1);
           this.levelDown();
         } else {
-          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
+          emitter.emitln(`if self.${_getPyVariable(name)}:`, this.level);
           this.levelUp();
-          emitter.emitln(`for v in self.${_avoidKeywords(_toSnakeCase(name))}.values():`, this.level);
+          emitter.emitln(`for v in self.${_getPyVariable(name)}.values():`, this.level);
           this.levelUp();
           this.emitComplexValidate(emitter, 'v', fieldType.valType, depth + 1);
           this.levelDown();
@@ -478,27 +505,27 @@ class Combinator extends CombinatorBase {
       let minimum = prop.notes.filter(item => item.key === 'minimum');
 
       if (required.length > 0) {
-        emitter.emitln(`self.validate_required(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}')`, this.level);
+        emitter.emitln(`self.validate_required(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}')`, this.level);
         haveValidate = true;
       }
       if (maxLength.length > 0 || pattern.length > 0 || maximum.length > 0 || minimum.length > 0) {
-        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
+        emitter.emitln(`if self.${_getPyVariable(prop.name)} is not None:`, this.level);
         this.levelUp();
 
         if (maxLength.length > 0) {
-          emitter.emitln(`self.validate_max_length(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maxLength[0].value})`, this.level);
+          emitter.emitln(`self.validate_max_length(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}', ${maxLength[0].value})`, this.level);
         }
 
         if (pattern.length > 0) {
-          emitter.emitln(`self.validate_pattern(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', '${pattern[0].value}')`, this.level);
+          emitter.emitln(`self.validate_pattern(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}', '${pattern[0].value}')`, this.level);
         }
 
         if (maximum.length > 0) {
-          emitter.emitln(`self.validate_maximum(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${maximum[0].value})`, this.level);
+          emitter.emitln(`self.validate_maximum(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}', ${maximum[0].value})`, this.level);
         }
 
         if (minimum.length > 0) {
-          emitter.emitln(`self.validate_minimum(self.${_avoidKeywords(_toSnakeCase(prop.name))}, '${_avoidKeywords(_toSnakeCase(prop.name))}', ${minimum[0].value})`, this.level);
+          emitter.emitln(`self.validate_minimum(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}', ${minimum[0].value})`, this.level);
         }
         this.levelDown();
         haveValidate = true;
@@ -514,9 +541,9 @@ class Combinator extends CombinatorBase {
         }
       } else {
         if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
-          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))}:`, this.level);
+          emitter.emitln(`if self.${_getPyVariable(prop.name)}:`, this.level);
           this.levelUp();
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))}.validate()`, this.level);
+          emitter.emitln(`self.${_getPyVariable(prop.name)}.validate()`, this.level);
           this.levelDown();
           haveValidate = true;
         }
@@ -558,9 +585,9 @@ class Combinator extends CombinatorBase {
           }
         } else {
           emitter.emitln(`result['${fieldName}'] = []`, this.level);
-          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))} is not None:`, this.level);
+          emitter.emitln(`if self.${_getPyVariable(name)} is not None:`, this.level);
           this.levelUp();
-          emitter.emitln(`for k in self.${_avoidKeywords(_toSnakeCase(name))}:`, this.level);
+          emitter.emitln(`for k in self.${_getPyVariable(name)}:`, this.level);
           this.levelUp();
           if (type.itemType.lexeme) {
             const propInfo = {
@@ -602,9 +629,9 @@ class Combinator extends CombinatorBase {
           }
         } else {
           emitter.emitln(`result['${fieldName}'] = {}`, this.level);
-          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(name))} is not None:`, this.level);
+          emitter.emitln(`if self.${_getPyVariable(name)} is not None:`, this.level);
           this.levelUp();
-          emitter.emitln(`for k, v in self.${_avoidKeywords(_toSnakeCase(name))}.items():`, this.level);
+          emitter.emitln(`for k, v in self.${_getPyVariable(name)}.items():`, this.level);
           this.levelUp();
           if (type.valType.lexeme) {
             const propInfo = {
@@ -667,19 +694,19 @@ class Combinator extends CombinatorBase {
         if (emt.needSave === true) {
           emitter.emit(emt.output);
         } else {
-          emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
+          emitter.emitln(`if self.${_getPyVariable(prop.name)} is not None:`, this.level);
           this.levelUp();
-          emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_getPyVariable(prop.name)}`, this.level);
           this.levelDown();
         }
 
       } else {
-        emitter.emitln(`if self.${_avoidKeywords(_toSnakeCase(prop.name))} is not None:`, this.level);
+        emitter.emitln(`if self.${_getPyVariable(prop.name)} is not None:`, this.level);
         this.levelUp();
         if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
-          emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}.to_map()`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_getPyVariable(prop.name)}.to_map()`, this.level);
         } else {
-          emitter.emitln(`result['${name}'] = self.${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_getPyVariable(prop.name)}`, this.level);
         }
         this.levelDown();
       }
@@ -718,7 +745,7 @@ class Combinator extends CombinatorBase {
             emitter.emitln(`${carrier}['k${num}'] = l${depth}`, this.level);
           }
         } else {
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))} = []`, this.level);
+          emitter.emitln(`self.${_getPyVariable(name)} = []`, this.level);
           emitter.emitln(`if map.get('${fieldName}') is not None:`, this.level);
           this.levelUp();
           emitter.emitln(`for k in map.get('${fieldName}'):`, this.level);
@@ -730,11 +757,11 @@ class Combinator extends CombinatorBase {
               type: type.itemType,
               parentType: type.lexeme
             };
-            this.emitComplexFromMap(emitter, propInfo, `self.${_avoidKeywords(_toSnakeCase(name))}`, depth + 1);
+            this.emitComplexFromMap(emitter, propInfo, `self.${_getPyVariable(name)}`, depth + 1);
           } else {
             if (!this.config.typeMap[type.itemType] && !this.thirdPackageNamespace[type.itemType]) {
               emitter.emitln(`temp_model = ${type.itemType}()`, this.level);
-              emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))}.append(temp_model.from_map(k))`, this.level);
+              emitter.emitln(`self.${_getPyVariable(name)}.append(temp_model.from_map(k))`, this.level);
               emitter.needSave = true;
             } else {
               emitter.needSave = false;
@@ -764,7 +791,7 @@ class Combinator extends CombinatorBase {
             emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
           }
         } else {
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))} = {}`, this.level);
+          emitter.emitln(`self.${_getPyVariable(name)} = {}`, this.level);
           emitter.emitln(`if map.get('${fieldName}') is not None:`, this.level);
           this.levelUp();
           emitter.emitln(`for k, v in map.get('${fieldName}').items():`, this.level);
@@ -776,11 +803,11 @@ class Combinator extends CombinatorBase {
               type: type.valType,
               parentType: type.lexeme
             };
-            this.emitComplexFromMap(emitter, propInfo, `self.${_avoidKeywords(_toSnakeCase(name))}`, depth + 1);
+            this.emitComplexFromMap(emitter, propInfo, `self.${_getPyVariable(name)}`, depth + 1);
           } else {
             if (!this.config.typeMap[type.valType] && !this.thirdPackageNamespace[type.valType]) {
               emitter.emitln(`temp_model = ${type.valType}()`, this.level);
-              emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(name))}[k] = temp_model.from_map(v)`, this.level);
+              emitter.emitln(`self.${_getPyVariable(name)}[k] = temp_model.from_map(v)`, this.level);
               emitter.needSave = true;
             } else {
               emitter.needSave = false;
@@ -835,7 +862,7 @@ class Combinator extends CombinatorBase {
         } else {
           emitter.emitln(`if map.get('${name}') is not None:`, this.level);
           this.levelUp();
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = map.get('${name}')`, this.level);
+          emitter.emitln(`self.${_getPyVariable(prop.name)} = map.get('${name}')`, this.level);
           this.levelDown();
         }
       } else {
@@ -844,9 +871,9 @@ class Combinator extends CombinatorBase {
         if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
           let type = _type(prop.type);
           emitter.emitln(`temp_model = ${type}()`, this.level);
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = temp_model.from_map(map['${name}'])`, this.level);
+          emitter.emitln(`self.${_getPyVariable(prop.name)} = temp_model.from_map(map['${name}'])`, this.level);
         } else {
-          emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = map.get('${name}')`, this.level);
+          emitter.emitln(`self.${_getPyVariable(prop.name)} = map.get('${name}')`, this.level);
         }
         this.levelDown();
       }
@@ -857,14 +884,14 @@ class Combinator extends CombinatorBase {
 
   emitNotes(emitter, notes) {}
 
-  emitConstruct(emitter, construct, parent, props) {
+  emitConstruct(emitter, construct, props, aio=false, isModule=false) {
     if (construct.params.length + props.length > 0) {
       let constructParams = [];
       construct.params.forEach(param => {
         if (param.value !== null && param.value !== 'null') {
-          constructParams.push(`${_avoidKeywords(_toSnakeCase(param.key))}=${param.value}`);
+          constructParams.push(`${_getPyVariable(param.key)}=${param.value}`);
         } else {
-          constructParams.push(`${_avoidKeywords(_toSnakeCase(param.key))}`);
+          constructParams.push(`${_getPyVariable(param.key)}`);
         }
       });
       emitter.emit('def __init__(self', this.level);
@@ -880,7 +907,7 @@ class Combinator extends CombinatorBase {
         let curr_length = 0;
         props.forEach((prop) => {
           if (prop instanceof PropItem) {
-            let str = ` ${_avoidKeywords(_toSnakeCase(prop.name))}=None`;
+            let str = ` ${_getPyVariable(prop.name)}=None`;
             if (curr_length + str.length >= max_length) {
               str = emitter.eol + emitter.indent(this.level + 3) + str;
               curr_length = 0;
@@ -924,10 +951,17 @@ class Combinator extends CombinatorBase {
       }
       const fieldType = prop.type.lexeme ? prop.type.lexeme : prop.type;
       if (this.thirdPackageNamespace[fieldType]) {
-        emitter.emitln(`self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`, this.level);
+        emitter.emitln(`self.${_getPyVariable(prop.name)} = ${_getPyVariable(prop.name)}`, this.level);
       } else {
-        let typeHints = this.getTypeHints(prop.type);
-        let declare_prop = `self.${_avoidKeywords(_toSnakeCase(prop.name))} = ${_avoidKeywords(_toSnakeCase(prop.name))}`;
+        let typeHints;
+        if (!isModule && prop.type.objectType === 'module') {
+          const type = this.getTypeHints(prop.type, ['Union']);
+          typeHints = `Union[${type}, Aio${type}]`;
+        } else {
+          typeHints = this.getTypeHints(prop.type);
+        }
+        
+        let declare_prop = `self.${_getPyVariable(prop.name)} = ${_getPyVariable(prop.name)}`;
         if (declare_prop.length < 30) {
           const space = ' '.repeat(30 - declare_prop.length);
           declare_prop += space;
@@ -938,7 +972,7 @@ class Combinator extends CombinatorBase {
     });
     if (construct.body.length > 0) {
       construct.body.forEach(gram => {
-        this.grammer(emitter, gram);
+        this.grammer(emitter, gram, true, true, aio);
       });
     }
 
@@ -949,10 +983,11 @@ class Combinator extends CombinatorBase {
     //emitter.emitln();
   }
 
-  getTypeHints(fieldType) {
+  getTypeHints(fieldType, manualImport=[]) {
     if (fieldType) {
       let [typeHints, imports] = this.typeHint(fieldType);
-      imports.forEach(i => {
+      const importList = imports.concat(manualImport);
+      importList.forEach(i => {
         let existResult = this.includeList.some(item => {
           if (item.import === i && item.from === 'typing') {
             return true;
@@ -1010,16 +1045,23 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  emitFunc(emitter, func) {
+  emitFunc(emitter, func, aio=false) {
     emitter.emitln();
+    this.func_async = func.modify.indexOf('ASYNC') > -1;
     this.func_static = func.modify.indexOf('STATIC') > -1;
     this.func_self = this.func_static ? this.getClassName(this.config.clientName) : 'self';
     if (this.func_static) {
       emitter.emitln('@staticmethod', this.level);
     }
+
+    if (aio && this.func_async) {
+      emitter.emit('async ', this.level);
+    } else {
+      emitter.emit('', this.level);
+    }
     if (func.params.length > 0) {
       let selfVar = this.func_static ? '' : 'self, ';
-      emitter.emit(`def ${_avoidKeywords(_toSnakeCase(func.name))}(${selfVar}`, this.level);
+      emitter.emit(`def ${_getPyVariable(func.name)}(${selfVar}`);
       if (func.params.length > 0) {
         let params = [];
         func.params.forEach(p => {
@@ -1029,13 +1071,13 @@ class Combinator extends CombinatorBase {
       }
     } else {
       let selfVar = this.func_static ? '' : 'self';
-      emitter.emit(`def ${_avoidKeywords(_toSnakeCase(func.name))}(${selfVar}`, this.level);
+      emitter.emit(`def ${_getPyVariable(func.name)}(${selfVar}`);
     }
     emitter.emitln('):');
     this.levelUp();
     this.emitFuncComment(emitter, func);
     func.body.forEach(gram => {
-      this.grammer(emitter, gram);
+      this.grammer(emitter, gram, true, true, aio);
     });
     if (func.body.filter(i => !(i instanceof AnnotationItem)).length === 0) {
       emitter.emitln('pass', this.level);
@@ -1104,8 +1146,20 @@ class Combinator extends CombinatorBase {
     let importList = this.includeList.filter(node => !node.from && node.import);
     let aliasList = this.includeList.filter(node => node.from && node.alias);
     let list = this.includeList.filter(node => node.from && !node.alias);
+    let aliasImport = {};
+    let aliasImportList = [];
     let from = {};
     let fromList = [];
+
+    aliasList.forEach(item => {
+      const importStmt = `${item.import} as ${item.alias}`;
+      if (!aliasImport[item.from]) {
+        aliasImport[item.from] = [importStmt];
+      } else {
+        aliasImport[item.from].push(importStmt);
+      }
+    });
+
     list.forEach(item => {
       if (!from[item.from]) {
         from[item.from] = [item.import];
@@ -1113,13 +1167,15 @@ class Combinator extends CombinatorBase {
         from[item.from].push(item.import);
       }
     });
+
     Object.keys(from).forEach(key => {
-      let tc = false;
-      if (key === 'typing') {
-        tc = true;
-      }
-      fromList.push({ from: key, import: from[key], try: tc });
+      fromList.push({ from: key, import: from[key] });
     });
+    
+    Object.keys(aliasImport).forEach(key => {
+      aliasImportList.push({ from: key, import: aliasImport[key], multiln: true});
+    });
+
     if (importList.length) {
       importList.forEach(include => {
         this.emitIncludeRow(emitter, include);
@@ -1134,8 +1190,8 @@ class Combinator extends CombinatorBase {
       emitter.emitln();
     }
 
-    if (aliasList.length) {
-      aliasList.forEach(include => {
+    if (aliasImportList.length) {
+      aliasImportList.forEach(include => {
         this.emitIncludeRow(emitter, include);
       });
       emitter.emitln();
@@ -1147,39 +1203,25 @@ class Combinator extends CombinatorBase {
   }
 
   emitIncludeRow(emitter, include) {
-    if (include.try) {
-      emitter.emitln('try:');
-      this.levelUp();
-      if (include.from) {
-        emitter.emit(`from ${include.from} `, this.level);
-        if (include.import instanceof Array) {
-          emitter.emitln(`import ${include.import.join(', ')}`);
-        } else if (include.alias) {
-          emitter.emitln(`import ${include.import} as ${include.alias}`);
-        } else {
-          emitter.emitln(`import ${include.import}`);
-        }
-      } else if (include.import) {
-        emitter.emitln(`import ${include.import}`, this.level);
+    if (include.from) {
+      emitter.emit(`from ${include.from} `, this.level);
+      if (include.import instanceof Array && include.import.length > 1 && include.multiln) {
+        emitter.emitln('import (');
+        this.levelUp();
+        include.import.forEach(importStmt => {
+          emitter.emitln(`${importStmt},`, this.level);
+        });
+        this.levelDown();
+        emitter.emitln(')');
+      } else if (include.import instanceof Array) {
+        emitter.emitln(`import ${include.import.join(', ')}`);
+      } else if (include.alias) {
+        emitter.emitln(`import ${include.import} as ${include.alias}`);
+      } else {
+        emitter.emitln(`import ${include.import}`);
       }
-      this.levelDown();
-      emitter.emitln('except ImportError:');
-      this.levelUp();
-      emitter.emitln('pass', this.level);
-      this.levelDown();
-    } else {
-      if (include.from) {
-        emitter.emit(`from ${include.from} `, this.level);
-        if (include.import instanceof Array) {
-          emitter.emitln(`import ${include.import.join(', ')}`);
-        } else if (include.alias) {
-          emitter.emitln(`import ${include.import} as ${include.alias}`);
-        } else {
-          emitter.emitln(`import ${include.import}`);
-        }
-      } else if (include.import) {
-        emitter.emitln(`import ${include.import}`, this.level);
-      }
+    } else if (include.import) {
+      emitter.emitln(`import ${include.import}`, this.level);
     }
   }
 
@@ -1193,7 +1235,7 @@ class Combinator extends CombinatorBase {
     this.levelDown();
   }
 
-  grammerCall(emitter, gram) {
+  grammerCall(emitter, gram, aio=false) {
     // path : 'parent', 'object', 'object_static', 'call', 'call_static', 'prop', 'prop_static', 'map', 'list'
     var pre = '';
     let params = '';
@@ -1203,21 +1245,21 @@ class Combinator extends CombinatorBase {
         let emit = new Emitter();
         if (p.value instanceof BehaviorToMap) {
           if (gram.path[1].name === 'isUnset') {
-            this.grammer(emit, p.value.grammer, false, false);
+            this.grammer(emit, p.value.grammer, false, false, aio);
           } else {
             emit.emit(`${this.addInclude('$Core')}.${this.config.tea.core.toMap}(`);
-            this.grammer(emit, p.value.grammer, false, false);
+            this.grammer(emit, p.value.grammer, false, false, aio);
             emit.emit(')');
           }
         } else {
-          this.grammer(emit, p, false, false);
+          this.grammer(emit, p, false, false, aio);
         }
         tmp.push(emit.output);
       });
       params = tmp.join(', ');
     }
     if (gram.type === 'super') {
-      pre = `super(${this.getClassName(this.config.clientName)}, self).__init__(${params})`;
+      pre = `super().__init__(${params})`;
     } else {
       gram.path.forEach((path, i) => {
         let pathName = path.name;
@@ -1229,25 +1271,39 @@ class Combinator extends CombinatorBase {
           }
         }
 
-        if (path.type === 'parent') {
-          pre += this.func_self;
+        if (path.type === 'parent' || path.type === 'parent_async') {
+          if (aio && path.type === 'parent_async') {
+            pre += `await ${this.func_self}`;
+          } else {
+            pre += this.func_self;
+          }
           if (path.name) {
-            pre += `.${_avoidKeywords(_toSnakeCase(path.name))}`;
+            pre += `.${_getPyVariable(path.name)}`;
           }
         } else if (path.type === 'object') {
-          pre += `${_avoidKeywords(_toSnakeCase(_convertStaticParam(pathName)))}`;
+          pre += `${_getPyVariable(_convertStaticParam(pathName))}`;
+        }else if (path.type === 'object_async') {
+          if (aio) {
+            pre += `await ${_getPyVariable(_convertStaticParam(pathName))}`;
+          } else {
+            pre += `${_getPyVariable(_convertStaticParam(pathName))}`;
+          }
         } else if (path.type === 'object_static') {
           pre += `${_convertStaticParam(pathName)}`;
-        } else if (path.type === 'call') {
-          pre += `.${_avoidKeywords(_toSnakeCase(pathName))}(${params})`;
-        } else if (path.type === 'call_static') {
-          pre += `.${_avoidKeywords(_toSnakeCase(pathName))}(${params})`;
+        } else if (path.type === 'object_static_async') {
+          if (aio) {
+            pre += `await Aio${_convertStaticParam(pathName)}`;
+          } else {
+            pre += `${_convertStaticParam(pathName)}`;
+          }
+        } else if (path.type === 'call' || path.type === 'call_static') {
+          pre += `.${_getPyVariable(pathName)}(${params})`;
         } else if (path.type === 'prop') {
-          pre += `.${_avoidKeywords(_toSnakeCase(pathName))}`;
+          pre += `.${_getPyVariable(pathName)}`;
         } else if (path.type === 'prop_static') {
-          pre += `.${_avoidKeywords(_toSnakeCase(pathName))}`;
+          pre += `.${_getPyVariable(pathName)}`;
         } else if (path.type === 'map') {
-          pre += path.isVar ? `.get(${_avoidKeywords(_toSnakeCase(pathName))})` : `.get('${pathName}')`;
+          pre += path.isVar ? `.get(${_getPyVariable(pathName)})` : `.get('${pathName}')`;
         } else if (path.type === 'map_set') {
           const quote = this._adaptedQuotes(pathName, emitter);
           pre += `[${quote}${pathName}${quote}]`;
@@ -1265,17 +1321,17 @@ class Combinator extends CombinatorBase {
     emitter.emit(pre);
   }
 
-  grammerExpr(emitter, gram) {
+  grammerExpr(emitter, gram, aio=false) {
     if (!gram.left && !gram.right) {
       emitter.emit(` ${_symbol(gram.opt)} `);
       return;
     }
-    this.grammer(emitter, gram.left, false, false);
+    this.grammer(emitter, gram.left, false, false, aio);
     emitter.emit(` ${_symbol(gram.opt)} `);
-    this.grammer(emitter, gram.right, false, false);
+    this.grammer(emitter, gram.right, false, false, aio);
   }
 
-  grammerVar(emitter, gram) {
+  grammerVar(emitter, gram, aio=false) {
     if (gram.varType === 'static_class') {
       const name = gram.name ? gram.name : gram.key;
       emitter.emit(`${name}()`);
@@ -1287,7 +1343,7 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  grammerValue(emitter, gram, layer = 1, isparams = false) {
+  grammerValue(emitter, gram, aio=false, layer=1, isparams=false) {
     if (gram.key) {
       if (!isparams) {
         const quote = this._adaptedQuotes(gram.key, emitter);
@@ -1297,7 +1353,7 @@ class Combinator extends CombinatorBase {
       }
     }
     if (gram instanceof GrammerCall) {
-      this.grammerCall(emitter, gram);
+      this.grammerCall(emitter, gram, aio);
     } else if (gram.type === 'array') {
       if (gram.needCast) {
         if (gram.value.length > 0) {
@@ -1317,7 +1373,7 @@ class Combinator extends CombinatorBase {
                 this.emitAnnotation(emitter, v, 0);
                 continue;
               }
-              this.grammerValue(emitter, v, layer + 1);
+              this.grammerValue(emitter, v, aio, layer + 1);
               if (i < expandParams.length - 1) {
                 emitter.emitln(',');
               } else {
@@ -1336,7 +1392,7 @@ class Combinator extends CombinatorBase {
                 this.emitAnnotation(emitter, v, 0);
                 continue;
               }
-              this.grammerValue(emitter, v, layer + 1);
+              this.grammerValue(emitter, v, aio, layer + 1);
               if (i < notExpandParams.length - 1) {
                 emitter.emitln(',');
                 emitter.emit('', this.level + layer);
@@ -1365,7 +1421,7 @@ class Combinator extends CombinatorBase {
               this.emitAnnotation(emitter, item, 0);
               continue;
             }
-            this.grammerValue(emitter, item, layer + 1);
+            this.grammerValue(emitter, item, aio, layer + 1);
             if (i < len - 1) {
               emitter.emitln(',');
             } else {
@@ -1393,7 +1449,7 @@ class Combinator extends CombinatorBase {
             this.emitAnnotation(emit, item);
             return true;
           }
-          this.grammerValue(emit, item, 1, true);
+          this.grammerValue(emit, item, aio, 1, true);
           tmp.push(emit.output);
         });
         this.levelDown();
@@ -1407,13 +1463,13 @@ class Combinator extends CombinatorBase {
     } else if (gram.type === 'param') {
       emitter.emit(`${_convertStaticParam(_toSnakeCase(gram.value))}`);
     } else if (gram.type === 'call') {
-      this.grammerCall(emitter, gram.value);
+      this.grammerCall(emitter, gram.value, aio);
     } else if (gram.type === 'number') {
       emitter.emit(gram.value);
     } else if (gram.type === 'null') {
       emitter.emit('None');
     } else if (gram.type === 'behavior') {
-      this.grammer(emitter, gram.value);
+      this.grammer(emitter, gram.value, true, true, aio);
     } else if (gram.type === 'expr') {
       if (Array.isArray(gram.value)) {
         const isConcatString = gram.value.some(item => {
@@ -1424,34 +1480,40 @@ class Combinator extends CombinatorBase {
             const needTanslate = gramItem.opt !== 'CONCAT' && gramItem.type !== 'string';
             if (needTanslate) {
               emitter.emit('str(');
-              this.grammer(emitter, gramItem, false, false);
+              this.grammer(emitter, gramItem, false, false, aio);
               emitter.emit(')');
             } else {
-              this.grammer(emitter, gramItem, false, false);
+              this.grammer(emitter, gramItem, false, false, aio);
             }
           });
         } else {
           gram.value.forEach(gramItem => {
-            this.grammer(emitter, gramItem, false, false);
+            this.grammer(emitter, gramItem, false, false, aio);
           });
         }
       } else {
-        this.grammer(emitter, gram.value, false, false);
+        this.grammer(emitter, gram.value, false, false, aio);
       }
     } else if (gram.type === 'instance') {
-      this.grammerNewObject(emitter, gram.value);
+      this.grammerNewObject(emitter, gram.value, aio);
+    }  else if (gram.type === 'module_instance') {
+      if (aio) {
+        this.grammerNewObject(emitter, gram.value, aio, true);
+      } else {
+        this.grammerNewObject(emitter, gram.value, aio);
+      }
     } else if (gram.type === 'bool' || gram.type === 'boolean') {
       emitter.emit(gram.value ? 'True' : 'False');
     } else if (gram.type === 'var') {
-      this.grammerVar(emitter, gram.value);
+      this.grammerVar(emitter, gram.value, aio);
     } else if (gram.type === 'class') {
       emitter.emit(`${gram.value.name}`);
     } else if (gram.type === 'not') {
       emitter.emit(_symbol(Symbol.reverse()));
-      this.grammerValue(emitter, gram.value);
+      this.grammerValue(emitter, gram.value, aio);
     } else if (gram.type === '') {
       if (gram.varType) {
-        this.grammerVar(emitter, gram);
+        this.grammerVar(emitter, gram, aio);
       } else {
         debug.stack('Unsupported GrammerValue type', gram);
       }
@@ -1459,32 +1521,32 @@ class Combinator extends CombinatorBase {
       let grammerValue = new GrammerValue();
       grammerValue.type = 'array';
       grammerValue.value = gram;
-      this.grammerValue(emitter, grammerValue);
+      this.grammerValue(emitter, grammerValue, aio);
     } else {
       debug.stack('Unsupported GrammerValue type', gram);
     }
   }
 
-  grammerLoop(emitter, gram) {
+  grammerLoop(emitter, gram, aio=false) {
     if (gram.type === 'foreach') {
       emitter.emit('for ');
-      this.grammerVar(emitter, gram.item, false, false);
+      this.grammerVar(emitter, gram.item, aio);
       emitter.emit(' in ');
-      this.grammer(emitter, gram.source, false, false);
+      this.grammer(emitter, gram.source, false, false, aio);
       emitter.emitln(':');
     }
     this.levelUp();
     gram.body.forEach(node => {
-      this.grammer(emitter, node);
+      this.grammer(emitter, node, true, true, aio);
     });
     this.levelDown();
   }
 
-  grammerBreak(emitter, gram) {
+  grammerBreak(emitter, gram, aio=false) {
     emitter.emit('break');
   }
 
-  grammerCondition(emitter, gram) {
+  grammerCondition(emitter, gram, aio=false) {
     if (gram.type === 'elseif') {
       emitter.emit('elif');
     } else {
@@ -1495,7 +1557,7 @@ class Combinator extends CombinatorBase {
       emitter.emit(' ');
       let emit = new Emitter();
       gram.conditionBody.forEach(condition => {
-        this.grammer(emit, condition, false, false);
+        this.grammer(emit, condition, false, false, aio);
       });
       emitter.emit(`${emit.output}`);
     }
@@ -1503,7 +1565,7 @@ class Combinator extends CombinatorBase {
     emitter.emitln(':');
     this.levelUp();
     gram.body.forEach(node => {
-      this.grammer(emitter, node);
+      this.grammer(emitter, node, true, true, aio);
     });
     if (gram.body.filter(i => !(i instanceof AnnotationItem)).length === 0) {
       emitter.emitln('pass', this.level);
@@ -1512,12 +1574,12 @@ class Combinator extends CombinatorBase {
     this.levelDown();
     if (gram.elseItem.length && gram.elseItem.length > 0) {
       gram.elseItem.forEach(e => {
-        this.grammer(emitter, e);
+        this.grammer(emitter, e, true, true, aio);
       });
     }
   }
 
-  grammerReturn(emitter, gram) {
+  grammerReturn(emitter, gram, aio=false) {
     if (gram.type === 'null') {
       emitter.emit('return');
       return;
@@ -1525,32 +1587,32 @@ class Combinator extends CombinatorBase {
     emitter.emit('return ');
 
     if (gram.type === 'grammer') {
-      this.grammer(emitter, gram.expr, false, false);
+      this.grammer(emitter, gram.expr, false, false, aio);
     } else if (gram.type === 'string') {
       emitter.emit('\'\'');
     } else {
-      this.grammer(emitter, gram.expr, false, false);
+      this.grammer(emitter, gram.expr, false, false, aio);
     }
   }
 
-  grammerContinue(emitter, gram) {
+  grammerContinue(emitter, gram, aio=false) {
     emitter.emit('continue');
   }
 
-  grammerThrows(emitter, gram) {
+  grammerThrows(emitter, gram, aio=false) {
     if (gram.exception === null) {
       emitter.emit('raise ');
-      this.grammerValue(emitter, gram.params[0]);
+      this.grammerValue(emitter, gram.params[0], aio);
     } else {
       if (gram.params.length > 0) {
         emitter.emit(`raise ${_exception(gram.exception)}(`);
         if (gram.params.length === 1) {
-          this.grammerValue(emitter, gram.params[0]);
+          this.grammerValue(emitter, gram.params[0], aio);
         } else {
           let tmp = [];
           gram.params.forEach(p => {
             let emit = new Emitter();
-            this.grammerValue(emit, p);
+            this.grammerValue(emit, p, aio);
             tmp.push(emit.output);
           });
           emitter.emit(tmp.join(', '));
@@ -1563,56 +1625,60 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  grammerTryCatch(emitter, gram) {
+  grammerTryCatch(emitter, gram, aio=false) {
     emitter.emitln('try:');
     this.levelUp();
     gram.body.forEach(node => {
-      this.grammer(emitter, node);
+      this.grammer(emitter, node, true, true, aio);
     });
     this.levelDown();
     gram.catchBody.forEach(node => {
       assert.equal(true, node instanceof GrammerCatch);
-      this.grammerCatch(emitter, node);
+      this.grammerCatch(emitter, node, aio);
     });
 
     if (gram.finallyBody) {
-      this.grammerFinally(emitter, gram.finallyBody);
+      this.grammerFinally(emitter, gram.finallyBody, aio);
     }
   }
 
-  grammerFinally(emitter, gram) {
+  grammerFinally(emitter, gram, aio=false) {
     emitter.emitln('finally:', this.level);
     this.levelUp();
     gram.body.forEach(childGram => {
-      this.grammer(emitter, childGram);
+      this.grammer(emitter, childGram, true, true, aio);
     });
     this.levelDown();
   }
 
-  grammerCatch(emitter, gram) {
+  grammerCatch(emitter, gram, aio=false) {
     emitter.emit('except', this.level);
     if (gram.exceptions.type === 'BASE') {
       emitter.emit(' Exception as ');
-      this.grammerVar(emitter, gram.exceptions.exceptionVar);
+      this.grammerVar(emitter, gram.exceptions.exceptionVar, aio);
     } else {
       emitter.emit(` ${_exception(gram.exceptions.type)} as `);
-      this.grammerVar(emitter, gram.exceptions.exceptionVar);
+      this.grammerVar(emitter, gram.exceptions.exceptionVar, aio);
     }
 
     emitter.emitln(':');
     this.levelUp();
     gram.body.forEach(childGram => {
-      this.grammer(emitter, childGram);
+      this.grammer(emitter, childGram, true, true, aio);
     });
     this.levelDown();
   }
 
-  grammerNewObject(emitter, gram) {
+  grammerNewObject(emitter, gram, aio=false, isModule=false) {
     let objectName = gram.name;
-
-    emitter.emit(`${objectName}(`);
+    if (isModule && aio) {
+      emitter.emit(`Aio${objectName}(`);
+    } else {
+      emitter.emit(`${objectName}(`);
+    }
+    
     if (!Array.isArray(gram.params)) {
-      this.grammerValue(emitter, gram.params);
+      this.grammerValue(emitter, gram.params, aio);
     } else {
       if (gram.params.length > 0) {
         let params = [];
@@ -1629,7 +1695,7 @@ class Combinator extends CombinatorBase {
               emit.emit('\'\'');
             }
           } else {
-            this.grammerValue(emit, p.value);
+            this.grammerValue(emit, p.value, aio);
           }
           params.push(emit.output);
         });
@@ -1639,7 +1705,7 @@ class Combinator extends CombinatorBase {
     emitter.emit(')');
   }
 
-  behaviorTimeNow(emitter, behavior) {
+  behaviorTimeNow(emitter, behavior, aio=false) {
     let existResult = this.includeList.some(item => {
       if (item.import === 'time' && !item.from) {
         return true;
@@ -1653,51 +1719,58 @@ class Combinator extends CombinatorBase {
     emitter.emit('time.time()');
   }
 
-  behaviorSetMapItem(emitter, behavior) {
+  behaviorSetMapItem(emitter, behavior, aio=false) {
     let emit = new Emitter();
-    this.grammerCall(emit, behavior.call);
+    this.grammerCall(emit, behavior.call, aio);
     
     const quote = this._adaptedQuotes(behavior.key, emitter);
     emitter.emit(`${emit.output}[${quote}${behavior.key}${quote}] = `, this.level);
-    this.grammerValue(emitter, behavior.value);
+    this.grammerValue(emitter, behavior.value, aio);
     emitter.emitln('');
   }
 
-  behaviorDoAction(emitter, behavior) {
+  behaviorDoAction(emitter, behavior, aio=false) {
     emitter.emit('', this.level);
-    this.grammerVar(emitter, behavior.var);
-    emitter.emit(` = ${this.addInclude('$Core')}.${this.config.tea.core.doAction}(`);
+    this.grammerVar(emitter, behavior.var, aio);
+    if (aio) {
+      emitter.emit(` = await ${this.addInclude('$Core')}.${this.config.tea.core.asyncDoAction}(`);
+    } else {
+      emitter.emit(` = ${this.addInclude('$Core')}.${this.config.tea.core.doAction}(`);
+    }
+
     let params = [];
     behavior.params.forEach(p => {
       let emit = new Emitter();
-      this.grammerValue(emit, p);
+      this.grammerValue(emit, p, aio);
       params.push(emit.output);
     });
     emitter.emit(params.join(', '));
     emitter.emitln(')');
     behavior.body.forEach(node => {
-      this.grammer(emitter, node);
+      this.grammer(emitter, node, true, true, aio);
     });
   }
 
-  behaviorRetry(emitter, behavior) {
+  behaviorRetry(emitter, behavior, aio=false) {
     emitter.emitln(`raise TeaException(${this.config.request}, ${this.config.response})`, this.level);
   }
 
-  behaviorToModel(emitter, behavior) {
-    emitter.emit(`${this.addModelInclude(behavior.expected)}().from_map(`);
-    this.grammer(emitter, behavior.grammer, false, false);
-    emitter.emit(')');
+  behaviorToModel(emitter, behavior, aio=false) {
+    emitter.emitln(`${this.addModelInclude(behavior.expected)}().from_map(`);
+    this.levelUp();
+    this.grammer(emitter, behavior.grammer, true, true, aio);
+    this.levelDown();
+    emitter.emit(')', this.level);
   }
-
-  behaviorToMap(emitter, behavior) {
+  
+  behaviorToMap(emitter, behavior, aio=false) {
     const grammer = behavior.grammer;
     if (grammer instanceof GrammerCall) {
       grammer.path.push({
         type: 'call',
         name: 'to_map'
       });
-      this.grammerCall(emitter, grammer);
+      this.grammerCall(emitter, grammer, aio);
     } else if (grammer instanceof GrammerVar) {
       const grammerCall = new GrammerCall('method');
       grammerCall.path.push({
@@ -1708,7 +1781,7 @@ class Combinator extends CombinatorBase {
         type: 'call',
         name: 'to_map'
       });
-      this.grammerCall(emitter, grammerCall);
+      this.grammerCall(emitter, grammerCall, aio);
     } else {
       debug.stack(grammer);
     }
@@ -1725,7 +1798,7 @@ class Combinator extends CombinatorBase {
     return quote;
   }
 
-  behaviorStrFormat (emitter, behavior) {
+  behaviorStrFormat (emitter, behavior, aio=false) {
     const quote = this._adaptedQuotes(behavior.tmp, emitter);
 
     if (behavior.item.length > 1) {
@@ -1737,7 +1810,7 @@ class Combinator extends CombinatorBase {
     }
 
     behavior.item.forEach((gram, index) => {
-      this.grammerValue(emitter, gram);
+      this.grammerValue(emitter, gram, aio);
       if (index + 1 < behavior.item.length) {
         emitter.emit(', ');
       }
@@ -1748,11 +1821,11 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  behaviorTypeInstance(emitter, behavior) {
+  behaviorTypeInstance(emitter, behavior, aio=false) {
 
   }
 
-  grammerSymbol(emitter, gram) {
+  grammerSymbol(emitter, gram, aio=false) {
     emitter.emit(_symbol(gram));
   }
 }
