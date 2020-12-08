@@ -7,31 +7,16 @@ from Source import models as source_models
 
 
 class Client:
-    _id = None  # type: List[str]
-    _str = None  # type: str
+    _id: List[str] = None
+    _str: str = None
 
     def __init__(self):
         pass
 
     @staticmethod
-    def sample(client):
-        runtime = source_models.RuntimeObject()
-        request = source_models.Request(
-            accesskey='accesskey',
-            region='region'
-        )
-        client.print(runtime)
-
-
-class AioClient(Client):
-    _id = None  # type: List[str]
-    _str = None  # type: str
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def sample(client):
+    def sample(
+        client: SourceClient,
+    ) -> None:
         runtime = source_models.RuntimeObject()
         request = source_models.Request(
             accesskey='accesskey',

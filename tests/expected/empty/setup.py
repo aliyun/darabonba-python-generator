@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for tea_python_tests.
 
-Created on 08/12/2020
+Created on 09/12/2020
 
 @author: Alibaba
 """
@@ -53,7 +53,7 @@ setup(
     author_email=AUTHOR_EMAIL,
     license="Apache License 2.0",
     url=URL,
-    keywords=["tea_python_tests"],
+    keywords=["tea","python","tests"],
     packages=find_packages(exclude=["tests*"]),
     include_package_data=True,
     platforms="any",

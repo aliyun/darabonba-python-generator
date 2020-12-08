@@ -11,7 +11,7 @@ class Client:
     """
     top annotation
     """
-    _a = None  # type: str
+    _a: str = None
 
     def __init__(self):
         """
@@ -19,7 +19,7 @@ class Client:
         """
         pass
 
-    def test_api(self):
+    def test_api(self) -> None:
         """
         testAPI
         """
@@ -46,27 +46,7 @@ class Client:
                 raise e
         raise UnretryableException(_last_request, _last_exception)
 
-    @staticmethod
-    def test_func():
-        """
-        testFunc
-        """
-        pass
-
-
-class AioClient(Client):
-    """
-    top annotation
-    """
-    _a = None  # type: str
-
-    def __init__(self):
-        """
-        Init Func
-        """
-        pass
-
-    async def test_api(self):
+    async def test_api_async(self) -> None:
         """
         testAPI
         """
@@ -94,7 +74,14 @@ class AioClient(Client):
         raise UnretryableException(_last_request, _last_exception)
 
     @staticmethod
-    async def test_func():
+    def test_func() -> None:
+        """
+        testFunc
+        """
+        pass
+
+    @staticmethod
+    async def test_func_async() -> None:
         """
         testFunc
         """

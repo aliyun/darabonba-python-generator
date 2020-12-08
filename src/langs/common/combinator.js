@@ -19,7 +19,7 @@ const {
   _lowerFirst,
 } = require('../../lib/helper.js');
 
-class BaseConbinator {
+class BaseCombinator {
   constructor(config = {}, imports = {}) {
     this.level = 0;
     this.eol = '';
@@ -136,7 +136,7 @@ class BaseConbinator {
     }
   }
 
-  grammer(emit, gram, eol = true, newLine = true, aio=false) {
+  grammer(emit, gram, eol = true, newLine = true) {
     if (gram instanceof AnnotationItem) {
       this.emitAnnotation(emit, gram);
       return;
@@ -152,7 +152,7 @@ class BaseConbinator {
       debug.stack('Unsupported', gram);
     }
     if (typeof this[method] !== 'undefined') {
-      this[method].call(this, emitter, gram, aio);
+      this[method].call(this, emitter, gram);
     } else {
       debug.stack('Unimpelemented : ' + method);
     }
@@ -187,4 +187,4 @@ class BaseConbinator {
   }
 }
 
-module.exports = BaseConbinator;
+module.exports = BaseCombinator;

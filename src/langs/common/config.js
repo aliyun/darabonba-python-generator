@@ -33,11 +33,23 @@ module.exports = {
       getBackoffTime: 'getBackoffTime',
       isRetryable: 'isRetryable'
     },
-    model: { name: 'TeaModel' },
-    converter: { name: 'TeaConverter' },
-    response: { name: 'TeaResponse' },
-    request: { name: 'TeaRequest' },
-    exception: { name: 'TeaException' },
-    exceptionUnretryable: { name: 'TeaUnretryableException' },
+    model: {
+      name: 'TeaModel'
+    },
+    converter: {
+      name: 'TeaConverter'
+    },
+    response: {
+      name: 'TeaResponse'
+    },
+    request: {
+      name: 'TeaRequest'
+    },
+    exception: {
+      name: 'TeaException'
+    },
+    exceptionUnretryable: {
+      name: 'TeaUnretryableException'
+    },
   }
 };

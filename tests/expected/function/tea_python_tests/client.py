@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
+from typing import Dict, List
 from Tea.core import TeaCore
 
 
@@ -8,11 +9,11 @@ class Client:
         pass
 
     @staticmethod
-    def hello():
+    def hello() -> None:
         return
 
     @staticmethod
-    def hello_map():
+    def hello_map() -> Dict[str, str]:
         m = {}
         return TeaCore.merge({
             'key': 'value',
@@ -20,7 +21,7 @@ class Client:
         }, m)
 
     @staticmethod
-    def hello_array_map():
+    def hello_array_map() -> List[Dict[str, str]]:
         return [
             {
                 'key': 'value'
@@ -28,56 +29,37 @@ class Client:
         ]
 
     @staticmethod
-    def hello_params(a, b):
+    def hello_params(
+        a: str,
+        b: str,
+    ) -> None:
         Client.hello_interface()
         Client.hello_array_map()
 
     @staticmethod
-    def hello_interface():
-        """
-        interface mode
-        """
-        raise Exception('Un-implemented')
-
-    def a_params(self):
-        self.hello_params('a', 'b')
-
-
-class AioClient(Client):
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def hello():
-        return
-
-    @staticmethod
-    def hello_map():
-        m = {}
-        return TeaCore.merge({
-            'key': 'value',
-            'key-1': 'value-1'
-        }, m)
-
-    @staticmethod
-    def hello_array_map():
-        return [
-            {
-                'key': 'value'
-            }
-        ]
-
-    @staticmethod
-    async def hello_params(a, b):
-        await Client.hello_interface()
+    async def hello_params_async(
+        a: str,
+        b: str,
+    ) -> None:
+        await Client.hello_interface_async()
         Client.hello_array_map()
 
     @staticmethod
-    async def hello_interface():
+    def hello_interface() -> None:
         """
         interface mode
         """
         raise Exception('Un-implemented')
 
-    async def a_params(self):
-        await self.hello_params('a', 'b')
+    @staticmethod
+    async def hello_interface_async() -> None:
+        """
+        interface mode
+        """
+        raise Exception('Un-implemented')
+
+    def a_params(self) -> None:
+        self.hello_params('a', 'b')
+
+    async def a_params_async(self) -> None:
+        await self.hello_params_async('a', 'b')

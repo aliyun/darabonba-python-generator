@@ -3,8 +3,3 @@
 class Client:
     def __init__(self):
         pass
-
-
-class AioClient(Client):
-    def __init__(self):
-        pass
