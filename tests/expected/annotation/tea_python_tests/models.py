@@ -7,20 +7,26 @@ class Test(TeaModel):
     """
     TestModel
     """
-    def __init__(self, test=None):
+    def __init__(
+        self,
+        test: str = None,
+    ):
         # Alichange app id 
-        self.test = test                # type: str
+        self.test = test
 
     def validate(self):
         self.validate_required(self.test, 'test')
 
     def to_map(self):
-        result = {}
+        result = dict()
         if self.test is not None:
             result['test'] = self.test
         return result
 
-    def from_map(self, map={}):
-        if map.get('test') is not None:
-            self.test = map.get('test')
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('test') is not None:
+            self.test = m.get('test')
         return self
+
+

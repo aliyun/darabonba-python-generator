@@ -11,7 +11,7 @@ class Client:
     def __init__(self):
         pass
 
-    def hello(self):
+    def hello(self) -> None:
         _request = TeaRequest()
         _request.method = 'GET'
         _request.pathname = '/'
@@ -22,7 +22,18 @@ class Client:
         _response = TeaCore.do_action(_request)
         return
 
-    def hello_runtime(self):
+    async def hello_async(self) -> None:
+        _request = TeaRequest()
+        _request.method = 'GET'
+        _request.pathname = '/'
+        _request.headers = {
+            'host': 'www.test.com'
+        }
+        _last_request = _request
+        _response = await TeaCore.async_do_action(_request)
+        return
+
+    def hello_runtime(self) -> None:
         _runtime = {}
         _last_request = None
         _last_exception = None
@@ -51,23 +62,7 @@ class Client:
                 raise e
         raise UnretryableException(_last_request, _last_exception)
 
-
-class AioClient(Client):
-    def __init__(self):
-        pass
-
-    async def hello(self):
-        _request = TeaRequest()
-        _request.method = 'GET'
-        _request.pathname = '/'
-        _request.headers = {
-            'host': 'www.test.com'
-        }
-        _last_request = _request
-        _response = await TeaCore.async_do_action(_request)
-        return
-
-    async def hello_runtime(self):
+    async def hello_runtime_async(self) -> None:
         _runtime = {}
         _last_request = None
         _last_exception = None

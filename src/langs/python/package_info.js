@@ -44,6 +44,7 @@ class PackageInfo extends BasePackageInfo {
       requires.push(requireItem);
     });
     const date = new Date();
+    const keywords = JSON.stringify(packageInfo.name.split(/_|-/));
     const params = {
       email: '',
       author: '',
@@ -51,6 +52,7 @@ class PackageInfo extends BasePackageInfo {
       require: JSON.stringify(requires, null, 4),
       namespace: this.config.package.split('.').join('\\\\'),
       date: ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear(),
+      keywords: keywords,
       ...packageInfo
     };
     Object.keys(files).forEach(filename => {

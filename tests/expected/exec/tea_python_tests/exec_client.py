@@ -2,22 +2,17 @@
 # This file is auto-generated, don't edit it. Thanks.
 import sys
 
+from typing import List
+
 
 class ExecClient:
     def __init__(self):
         pass
 
     @staticmethod
-    def main(args):
-        pass
-
-
-class AioExecClient(ExecClient):
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def main(args):
+    def main(
+        args: List[str],
+    ) -> None:
         pass
 
 

@@ -35,9 +35,13 @@ const {
   _exception,
   _symbol,
   _deepClone,
-  _isSnakeCase,
-  _getPyVariable
+  _isSnakeCase
 } = require('../../lib/helper');
+
+
+function _name(name) {
+  return _avoidKeywords(_toSnakeCase(name));
+}
 
 function _type(type) {
   const config = _config();
@@ -63,6 +67,7 @@ class Combinator extends CombinatorBase {
   constructor(config, imports) {
     super(config, imports);
     this.eol = '';
+    this.aioMode = false;
     this.clientMap = {};
     if (this.config.modelDirName) {
       this.config.model.dir = this.config.modelDirName;
@@ -118,21 +123,12 @@ class Combinator extends CombinatorBase {
           alias = _toSnakeCase(className) + '_' + importName;
         }
       }
-      // include Aio Client(Module)
-      let existResult = this.includeList.some(item => item.import === `Aio${importName}` && item.from === fromName);
-      if (!existResult) {
-        this.includeList.push({
-          'from': fromName,
-          'import': `Aio${importName}`,
-          'alias': alias ? `Aio${alias}` : '',
-        });
-      }
     }
 
     if (fromPackage) {
       fromName = fromPackage;
     }
-    
+
     let existResult = this.includeList.some(item => item.import === importName && item.from === fromName);
 
     if (!existResult) {
@@ -228,12 +224,12 @@ class Combinator extends CombinatorBase {
         this.includeList.splice(this.includeList.indexOf(i), 1);
       }
     });
-    
+
     let contentLine = content.split(emitter.eol);
     contentLine.forEach((l, index) => {
       const symbol = ['+', '-', '=', '*', '/', '%'];
       l = l.replace(/(\s*$)/g, '');
-      if (symbol.indexOf(l[l.length-1]) > -1) {
+      if (symbol.indexOf(l[l.length - 1]) > -1) {
         contentLine[index] = `${l}\\`;
       }
     });
@@ -266,10 +262,7 @@ class Combinator extends CombinatorBase {
     /******************************** emit body ********************************/
     emitter = new Emitter(this.config);
     this.emitClass(emitter, object);
-    emitter.emitln().emitln();
 
-    // emit aio client
-    this.emitClass(emitter, object, true);
     outputParts.body = this.checkSyntax(emitter.output, emitter);
     /******************************** emit head *******************************/
     emitter = new Emitter(this.config);
@@ -279,7 +272,7 @@ class Combinator extends CombinatorBase {
     }
     this.emitInclude(emitter);
     outputParts.head = emitter.output;
-    
+
     /***************************** combine output ******************************/
     const config = _deepClone(this.config);
     if (_isSnakeCase(this.config.clientName)) {
@@ -287,7 +280,7 @@ class Combinator extends CombinatorBase {
     } else {
       debug.stack('python clientName is must be snake case, Example: rpc_client.');
     }
-    
+
     this.combineOutputParts(config, outputParts);
   }
 
@@ -322,18 +315,16 @@ class Combinator extends CombinatorBase {
     /******************************** emit body ********************************/
     emitter = new Emitter(this.config);
     models.forEach((object, i) => {
-      this.emitClass(emitter, object);
       if (object.subObject && object.subObject.length > 0) {
-        emitter.emitln().emitln();
         object.subObject.forEach((obj, j) => {
           this.emitClass(emitter, obj);
           emitter.emitln().emitln();
         });
-      } else if (i < models.length - 1) {
-        emitter.emitln().emitln();
       }
+      this.emitClass(emitter, object);
+      emitter.emitln().emitln();
     });
-    outputParts.body = emitter.output;
+    outputParts.body = this.checkSyntax(emitter.output, emitter);
 
     /******************************** emit head ********************************/
     emitter = new Emitter(this.config);
@@ -367,35 +358,24 @@ class Combinator extends CombinatorBase {
     return _toCamelCase(className);
   }
 
-  emitClass(emitter, object, aio=false) {
+  emitClass(emitter, object) {
     var parent = '';
     let className = this.getClassName(object.name);
-    
+
     let tmp = [];
     if (!(object.extends instanceof Array)) {
       object.extends = [object.extends];
     }
 
-    if (aio) {
-      tmp.push(className);
-    }
     object.extends.forEach(baseClass => {
-      if (aio) {
-        tmp.push(`Aio${baseClass}`);
-      } else {
-        tmp.push(baseClass);
-      }
+      tmp.push(baseClass);
     });
     if (tmp.length > 0) {
       parent = '(' + tmp.join(', ') + ')';
     }
-  
-    if (aio) {
-      emitter.emitln(`class Aio${className}${parent}:`, this.level);
-    } else {
-      emitter.emitln(`class ${className}${parent}:`, this.level);
-    }
-    
+
+    emitter.emitln(`class ${className}${parent}:`, this.level);
+
     this.levelUp();
     if (object.annotations.length > 0) {
       this.emitAnnotations(emitter, object.annotations);
@@ -414,7 +394,7 @@ class Combinator extends CombinatorBase {
     // emit body nodes : PropItem | FuncItem | ConstructItem | AnnotationItem
     object.body.forEach(node => {
       if (node instanceof FuncItem) {
-        this.emitFunc(emitter, node, aio);
+        this.emitFunc(emitter, node);
       } else if (node instanceof ConstructItem) {
         if (this.config.emitType === 'model') {
           this.emitConstruct(emitter, node, propItems, false);
@@ -426,16 +406,18 @@ class Combinator extends CombinatorBase {
                 this.emitAnnotation(emitter, p);
               } else if (p instanceof PropItem) {
                 const type = this.getTypeHints(p.type);
-                emitter.emitln(`${_getPyVariable(p.name)} = None  # type: ${type}`, this.level);
+                if (type) {
+                  emitter.emitln(`${_name(p.name)}: ${type} = None`, this.level);
+                }
               }
             });
             emitter.emitln();
           }
-          this.emitConstruct(emitter, node, [], aio, true);
+          this.emitConstruct(emitter, node, [], true);
         }
       }
     });
-    
+
     if (this.config.emitType === 'model') {
       this.emitValidate(emitter, props, notes);
       this.emitToMap(emitter, props, notes);
@@ -445,47 +427,43 @@ class Combinator extends CombinatorBase {
   }
 
   emitComplexValidate(emitter, name, fieldType, depth) {
-    if (fieldType.lexeme) {
-      if (fieldType.lexeme === 'array') {
+    if (fieldType.objectType) {
+      if (fieldType.objectType === 'array') {
         if (depth > 0) {
           emitter.emitln(`for k${depth} in ${name}:`, this.level);
           this.levelUp();
           this.emitComplexValidate(emitter, `k${depth}`, fieldType.itemType, depth + 1);
           this.levelDown();
         } else {
-          emitter.emitln(`if self.${_getPyVariable(name)}:`, this.level);
+          emitter.emitln(`if self.${_name(name)}:`, this.level);
           this.levelUp();
-          emitter.emitln(`for k in self.${_getPyVariable(name)}:`, this.level);
+          emitter.emitln(`for k in self.${_name(name)}:`, this.level);
           this.levelUp();
           this.emitComplexValidate(emitter, 'k', fieldType.itemType, depth + 1);
           this.levelDown();
           this.levelDown();
         }
-      } else if (fieldType.lexeme === 'map') {
+      } else if (fieldType.objectType === 'map') {
         if (depth > 0) {
           emitter.emitln(`for v${depth} in ${name}.values():`, this.level);
           this.levelUp();
           this.emitComplexValidate(emitter, `v${depth}`, fieldType.valType, depth + 1);
           this.levelDown();
         } else {
-          emitter.emitln(`if self.${_getPyVariable(name)}:`, this.level);
+          emitter.emitln(`if self.${_name(name)}:`, this.level);
           this.levelUp();
-          emitter.emitln(`for v in self.${_getPyVariable(name)}.values():`, this.level);
+          emitter.emitln(`for v in self.${_name(name)}.values():`, this.level);
           this.levelUp();
           this.emitComplexValidate(emitter, 'v', fieldType.valType, depth + 1);
           this.levelDown();
           this.levelDown();
         }
-      }
-    } else {
-      if (!this.config.typeMap[fieldType] && !this.thirdPackageNamespace[fieldType]) {
+      } else if (fieldType.objectType === 'model') {
         emitter.emitln(`if ${name}:`, this.level);
         this.levelUp();
         emitter.emitln(`${name}.validate()`, this.level);
         this.levelDown();
         emitter.needSave = true;
-      } else {
-        emitter.needSave = false;
       }
     }
   }
@@ -497,7 +475,7 @@ class Combinator extends CombinatorBase {
     this.levelUp();
     let haveValidate = false;
     props.forEach(prop => {
-      
+
       let required = prop.notes.filter(item => item.key === 'required');
       let maxLength = prop.notes.filter(item => item.key === 'maxLength');
       let pattern = prop.notes.filter(item => item.key === 'pattern');
@@ -505,48 +483,49 @@ class Combinator extends CombinatorBase {
       let minimum = prop.notes.filter(item => item.key === 'minimum');
 
       if (required.length > 0) {
-        emitter.emitln(`self.validate_required(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}')`, this.level);
+        emitter.emitln(
+          `self.validate_required(self.${_name(prop.name)}, '${_name(prop.name)}')`,
+          this.level
+        );
         haveValidate = true;
       }
       if (maxLength.length > 0 || pattern.length > 0 || maximum.length > 0 || minimum.length > 0) {
-        emitter.emitln(`if self.${_getPyVariable(prop.name)} is not None:`, this.level);
+        emitter.emitln(`if self.${_name(prop.name)} is not None:`, this.level);
         this.levelUp();
 
         if (maxLength.length > 0) {
-          emitter.emitln(`self.validate_max_length(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}', ${maxLength[0].value})`, this.level);
+          emitter.emitln(`self.validate_max_length(self.${_name(prop.name)}, '${_name(prop.name)}', ${maxLength[0].value})`, this.level);
         }
 
         if (pattern.length > 0) {
-          emitter.emitln(`self.validate_pattern(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}', '${pattern[0].value}')`, this.level);
+          emitter.emitln(`self.validate_pattern(self.${_name(prop.name)}, '${_name(prop.name)}', '${pattern[0].value}')`, this.level);
         }
 
         if (maximum.length > 0) {
-          emitter.emitln(`self.validate_maximum(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}', ${maximum[0].value})`, this.level);
+          emitter.emitln(`self.validate_maximum(self.${_name(prop.name)}, '${_name(prop.name)}', ${maximum[0].value})`, this.level);
         }
 
         if (minimum.length > 0) {
-          emitter.emitln(`self.validate_minimum(self.${_getPyVariable(prop.name)}, '${_getPyVariable(prop.name)}', ${minimum[0].value})`, this.level);
+          emitter.emitln(`self.validate_minimum(self.${_name(prop.name)}, '${_name(prop.name)}', ${minimum[0].value})`, this.level);
         }
         this.levelDown();
         haveValidate = true;
       }
 
 
-      if (prop.type.lexeme) {
+      if (prop.type.objectType === 'array' || prop.type.objectType === 'map') {
         let emt = new Emitter(emitter.config);
         this.emitComplexValidate(emt, prop.name, prop.type, 0);
         if (emt.needSave === true) {
           haveValidate = true;
           emitter.emit(emt.output);
         }
-      } else {
-        if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
-          emitter.emitln(`if self.${_getPyVariable(prop.name)}:`, this.level);
-          this.levelUp();
-          emitter.emitln(`self.${_getPyVariable(prop.name)}.validate()`, this.level);
-          this.levelDown();
-          haveValidate = true;
-        }
+      } else if (prop.type.objectType === 'model') {
+        emitter.emitln(`if self.${_name(prop.name)}:`, this.level);
+        this.levelUp();
+        emitter.emitln(`self.${_name(prop.name)}.validate()`, this.level);
+        this.levelDown();
+        haveValidate = true;
       }
     });
 
@@ -563,150 +542,137 @@ class Combinator extends CombinatorBase {
     const type = prop.type;
     const parentType = prop.parentType;
 
-    if (type.lexeme) {
-      if (type.lexeme === 'array') {
-        if (depth > 0) {
-          emitter.emitln(`l${depth} = []`, this.level);
-          emitter.emitln(`for k${depth} in ${name}:`, this.level);
-          this.levelUp();
+    if (type.objectType === 'array') {
+      if (depth > 0) {
+        emitter.emitln(`l${depth} = []`, this.level);
+        emitter.emitln(`for k${depth} in ${name}:`, this.level);
+        this.levelUp();
+        const propInfo = {
+          name: `k${depth}`,
+          fieldName: fieldName,
+          type: type.itemType,
+          parentType: type.lexeme
+        };
+        this.emitComplexToMap(emitter, propInfo, `l${depth}`, depth + 1);
+        this.levelDown();
+        if (parentType === 'array') {
+          emitter.emitln(`${carrier}.append(l${depth})`, this.level);
+        } else if (parentType === 'map') {
+          const num = depth - 1 > 0 ? depth - 1 : '';
+          emitter.emitln(`${carrier}[k${num}] = l${depth}`, this.level);
+        }
+      } else {
+        emitter.emitln(`result['${fieldName}'] = []`, this.level);
+        emitter.emitln(`if self.${_name(name)} is not None:`, this.level);
+        this.levelUp();
+        emitter.emitln(`for k in self.${_name(name)}:`, this.level);
+        this.levelUp();
+        if (type.itemType.valType || type.itemType.itemType) {
           const propInfo = {
-            name: `k${depth}`,
+            name: 'k',
             fieldName: fieldName,
             type: type.itemType,
             parentType: type.lexeme
           };
-          this.emitComplexToMap(emitter, propInfo, `l${depth}`, depth + 1);
-          this.levelDown();
-          if (parentType === 'array') {
-            emitter.emitln(`${carrier}.append(l${depth})`, this.level);
-          } else if (parentType === 'map') {
-            const num = depth - 1 > 0 ? depth - 1 : '';
-            emitter.emitln(`${carrier}[k${num}] = l${depth}`, this.level);
-          }
+          this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth + 1);
         } else {
-          emitter.emitln(`result['${fieldName}'] = []`, this.level);
-          emitter.emitln(`if self.${_getPyVariable(name)} is not None:`, this.level);
-          this.levelUp();
-          emitter.emitln(`for k in self.${_getPyVariable(name)}:`, this.level);
-          this.levelUp();
-          if (type.itemType.lexeme) {
-            const propInfo = {
-              name: 'k',
-              fieldName: fieldName,
-              type: type.itemType,
-              parentType: type.lexeme
-            };
-            this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth + 1);
+          if (type.itemType.objectType === 'model') {
+            emitter.emitln(`result['${fieldName}'].append(k.to_map() if k else None)`, this.level);
+            emitter.needSave = true;
           } else {
-            if (!this.config.typeMap[type.itemType] && !this.thirdPackageNamespace[type.itemType]) {
-              emitter.emitln(`result['${fieldName}'].append(k.to_map() if k else None)`, this.level);
-              emitter.needSave = true;
-            } else {
-              emitter.needSave = false;
-            }
+            emitter.needSave = false;
           }
-          this.levelDown();
-          this.levelDown();
         }
-      } else if (type.lexeme === 'map') {
-        if (depth > 0) {
-          emitter.emitln(`d${depth} = {}`, this.level);
-          emitter.emitln(`for k${depth} ,v${depth} in ${name}.items():`, this.level);
-          this.levelUp();
+        this.levelDown();
+        this.levelDown();
+      }
+    } else if (type.objectType === 'map') {
+      if (depth > 0) {
+        emitter.emitln(`d${depth} = {}`, this.level);
+        emitter.emitln(`for k${depth} ,v${depth} in ${name}.items():`, this.level);
+        this.levelUp();
+        const propInfo = {
+          name: `v${depth}`,
+          fieldName: fieldName,
+          type: type.valType,
+          parentType: type.lexeme
+        };
+        this.emitComplexToMap(emitter, propInfo, `d${depth}`, depth + 1);
+        this.levelDown();
+        if (parentType === 'array') {
+          emitter.emitln(`${carrier}.append(d${depth})`, this.level);
+        } else if (parentType === 'map') {
+          const num = depth - 1 > 0 ? depth - 1 : '';
+          emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
+        }
+      } else {
+        emitter.emitln(`result['${fieldName}'] = {}`, this.level);
+        emitter.emitln(`if self.${_name(name)} is not None:`, this.level);
+        this.levelUp();
+        emitter.emitln(`for k, v in self.${_name(name)}.items():`, this.level);
+        this.levelUp();
+        if (type.valType.valType || type.valType.itemType) {
           const propInfo = {
-            name: `v${depth}`,
+            name: 'v',
             fieldName: fieldName,
             type: type.valType,
             parentType: type.lexeme
           };
-          this.emitComplexToMap(emitter, propInfo, `d${depth}`, depth + 1);
-          this.levelDown();
-          if (parentType === 'array') {
-            emitter.emitln(`${carrier}.append(d${depth})`, this.level);
-          } else if (parentType === 'map') {
-            const num = depth - 1 > 0 ? depth - 1 : '';
-            emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
-          }
+          this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth + 1);
         } else {
-          emitter.emitln(`result['${fieldName}'] = {}`, this.level);
-          emitter.emitln(`if self.${_getPyVariable(name)} is not None:`, this.level);
-          this.levelUp();
-          emitter.emitln(`for k, v in self.${_getPyVariable(name)}.items():`, this.level);
-          this.levelUp();
-          if (type.valType.lexeme) {
-            const propInfo = {
-              name: 'v',
-              fieldName: fieldName,
-              type: type.valType,
-              parentType: type.lexeme
-            };
-            this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth + 1);
+          if (type.valType.objectType === 'model') {
+            emitter.emitln(`result['${fieldName}'][k] = v.to_map()`, this.level);
+            emitter.needSave = true;
           } else {
-            if (!this.config.typeMap[type.valType] && !this.thirdPackageNamespace[type.valType]) {
-              emitter.emitln(`result['${fieldName}'][k] = v.to_map()`, this.level);
-              emitter.needSave = true;
-            } else {
-              emitter.needSave = false;
-            }
+            emitter.needSave = false;
           }
-          this.levelDown();
-          this.levelDown();
         }
+        this.levelDown();
+        this.levelDown();
       }
-    } else {
-      if (depth > 1) {
-        if (!this.config.typeMap[type] && !this.thirdPackageNamespace[type]) {
-          const num = depth - 1 > 0 ? depth - 1 : '';
-          if (parentType === 'array') {
-            emitter.emitln(`l${num}.append(k${num}.to_map() if k${num} else None)`, this.level);
-          } else if (parentType === 'map') {
-            emitter.emitln(`d${num}[k${num}] = v${num}.to_map()`, this.level);
-          }
-          emitter.needSave = true;
-        } else {
-          emitter.needSave = false;
-        }
+    } else if (type.objectType === 'model' || !this.config.typeMap[type] && !this.thirdPackageNamespace[type]) {
+      const num = depth - 1 > 0 ? depth - 1 : '';
+      if (parentType === 'array') {
+        emitter.emitln(`l${num}.append(k${num}.to_map() if k${num} else None)`, this.level);
+      } else if (parentType === 'map') {
+        emitter.emitln(`d${num}[k${num}] = v${num}.to_map()`, this.level);
       }
+      emitter.needSave = true;
     }
   }
 
   emitToMap(emitter, props, notes) {
     emitter.emitln('def to_map(self):', this.level);
     this.levelUp();
-    emitter.emitln('result = {}', this.level);
+    emitter.emitln('result = dict()', this.level);
     props.forEach(prop => {
       let noteName = prop.notes.filter(item => item.key === 'name');
       let name = noteName.length > 0 ? noteName[0].value : prop.name;
-      if (prop.type.lexeme) {
+      if (prop.type.objectType === 'array' || prop.type.objectType === 'map') {
         let emt = new Emitter(emitter.config);
         const propInfo = {
           name: prop.name,
           fieldName: name,
+          parentType: prop.type.objectType,
           type: prop.type,
         };
-        if (prop.type.lexeme === 'array') {
-          propInfo.parentType = 'array';
-          this.emitComplexToMap(emt, propInfo, null, 0);
-        } else if (prop.type.lexeme === 'map') {
-          propInfo.parentType = 'map';
-          this.emitComplexToMap(emt, propInfo, null, 0);
-        }
+        this.emitComplexToMap(emt, propInfo, null, 0);
         if (emt.needSave === true) {
           emitter.emit(emt.output);
         } else {
-          emitter.emitln(`if self.${_getPyVariable(prop.name)} is not None:`, this.level);
+          emitter.emitln(`if self.${_name(prop.name)} is not None:`, this.level);
           this.levelUp();
-          emitter.emitln(`result['${name}'] = self.${_getPyVariable(prop.name)}`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_name(prop.name)}`, this.level);
           this.levelDown();
         }
 
       } else {
-        emitter.emitln(`if self.${_getPyVariable(prop.name)} is not None:`, this.level);
+        emitter.emitln(`if self.${_name(prop.name)} is not None:`, this.level);
         this.levelUp();
-        if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
-          emitter.emitln(`result['${name}'] = self.${_getPyVariable(prop.name)}.to_map()`, this.level);
+        if (prop.type.objectType === 'model') {
+          emitter.emitln(`result['${name}'] = self.${_name(prop.name)}.to_map()`, this.level);
         } else {
-          emitter.emitln(`result['${name}'] = self.${_getPyVariable(prop.name)}`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_name(prop.name)}`, this.level);
         }
         this.levelDown();
       }
@@ -723,157 +689,155 @@ class Combinator extends CombinatorBase {
     const type = prop.type;
     const parentType = prop.parentType;
 
-    if (type.lexeme) {
-      if (type.lexeme === 'array') {
-        if (depth > 0) {
+    if (type.objectType === 'array') {
+      if (depth > 0) {
+        const propInfo = {
+          name: `k${depth}`,
+          fieldName: fieldName,
+          type: type.itemType,
+          parentType: type.lexeme
+        };
+
+        emitter.emitln(`l${depth} = []`, this.level);
+        emitter.emitln(`for k${depth} in ${name}:`, this.level);
+        this.levelUp();
+        this.emitComplexFromMap(emitter, propInfo, `l${depth}`, depth + 1);
+        this.levelDown();
+        if (parentType === 'array') {
+          emitter.emitln(`${carrier}.append(l${depth})`, this.level);
+        } else if (parentType === 'map') {
+          const num = depth - 1 > 0 ? depth - 1 : '';
+          emitter.emitln(`${carrier}['k${num}'] = l${depth}`, this.level);
+        }
+      } else {
+        emitter.emitln(`self.${_name(name)} = []`, this.level);
+        emitter.emitln(`if m.get('${fieldName}') is not None:`, this.level);
+        this.levelUp();
+        emitter.emitln(`for k in m.get('${fieldName}'):`, this.level);
+        this.levelUp();
+        if (type.itemType.valType || type.itemType.itemType) {
           const propInfo = {
-            name: `k${depth}`,
+            name: 'k',
             fieldName: fieldName,
             type: type.itemType,
             parentType: type.lexeme
           };
-
-          emitter.emitln(`l${depth} = []`, this.level);
-          emitter.emitln(`for k${depth} in ${name}:`, this.level);
-          this.levelUp();
-          this.emitComplexFromMap(emitter, propInfo, `l${depth}`, depth + 1);
-          this.levelDown();
-          if (parentType === 'array') {
-            emitter.emitln(`${carrier}.append(l${depth})`, this.level);
-          } else if (parentType === 'map') {
-            const num = depth - 1 > 0 ? depth - 1 : '';
-            emitter.emitln(`${carrier}['k${num}'] = l${depth}`, this.level);
-          }
+          this.emitComplexFromMap(emitter, propInfo, `self.${_name(name)}`, depth + 1);
         } else {
-          emitter.emitln(`self.${_getPyVariable(name)} = []`, this.level);
-          emitter.emitln(`if map.get('${fieldName}') is not None:`, this.level);
-          this.levelUp();
-          emitter.emitln(`for k in map.get('${fieldName}'):`, this.level);
-          this.levelUp();
-          if (type.itemType.lexeme) {
-            const propInfo = {
-              name: 'k',
-              fieldName: fieldName,
-              type: type.itemType,
-              parentType: type.lexeme
-            };
-            this.emitComplexFromMap(emitter, propInfo, `self.${_getPyVariable(name)}`, depth + 1);
+          if (type.itemType.objectType === 'model') {
+            emitter.emitln(`temp_model = ${type.itemType.lexeme}()`, this.level);
+            emitter.emitln(`self.${_name(name)}.append(temp_model.from_map(k))`, this.level);
+            emitter.needSave = true;
           } else {
-            if (!this.config.typeMap[type.itemType] && !this.thirdPackageNamespace[type.itemType]) {
-              emitter.emitln(`temp_model = ${type.itemType}()`, this.level);
-              emitter.emitln(`self.${_getPyVariable(name)}.append(temp_model.from_map(k))`, this.level);
-              emitter.needSave = true;
-            } else {
-              emitter.needSave = false;
-            }
+            emitter.needSave = false;
           }
-          this.levelDown();
-          this.levelDown();
         }
-      } else if (type.lexeme === 'map') {
-        if (depth > 0) {
+        this.levelDown();
+        this.levelDown();
+      }
+    } else if (type.objectType === 'map') {
+      if (depth > 0) {
+        const propInfo = {
+          name: `v${depth}`,
+          fieldName: fieldName,
+          type: type.valType,
+          parentType: type.lexeme
+        };
+
+        emitter.emitln(`d${depth} = {}`, this.level);
+        emitter.emitln(`for k${depth} ,v${depth} in ${name}.items():`, this.level);
+        this.levelUp();
+        this.emitComplexFromMap(emitter, propInfo, `d${depth}`, depth + 1);
+        this.levelDown();
+        if (parentType === 'array') {
+          emitter.emitln(`${carrier}.append(d${depth})`, this.level);
+        } else if (parentType === 'map') {
+          const num = depth - 1 > 0 ? depth - 1 : '';
+          emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
+        }
+      } else {
+        emitter.emitln(`self.${_name(name)} = {}`, this.level);
+        emitter.emitln(`if m.get('${fieldName}') is not None:`, this.level);
+        this.levelUp();
+        emitter.emitln(`for k, v in m.get('${fieldName}').items():`, this.level);
+        this.levelUp();
+        if (type.valType.valType || type.valType.itemType) {
           const propInfo = {
-            name: `v${depth}`,
+            name: 'v',
             fieldName: fieldName,
             type: type.valType,
             parentType: type.lexeme
           };
-
-          emitter.emitln(`d${depth} = {}`, this.level);
-          emitter.emitln(`for k${depth} ,v${depth} in ${name}.items():`, this.level);
-          this.levelUp();
-          this.emitComplexFromMap(emitter, propInfo, `d${depth}`, depth + 1);
-          this.levelDown();
-          if (parentType === 'array') {
-            emitter.emitln(`${carrier}.append(d${depth})`, this.level);
-          } else if (parentType === 'map') {
-            const num = depth - 1 > 0 ? depth - 1 : '';
-            emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
-          }
+          this.emitComplexFromMap(emitter, propInfo, `self.${_name(name)}`, depth + 1);
         } else {
-          emitter.emitln(`self.${_getPyVariable(name)} = {}`, this.level);
-          emitter.emitln(`if map.get('${fieldName}') is not None:`, this.level);
-          this.levelUp();
-          emitter.emitln(`for k, v in map.get('${fieldName}').items():`, this.level);
-          this.levelUp();
-          if (type.valType.lexeme) {
-            const propInfo = {
-              name: 'v',
-              fieldName: fieldName,
-              type: type.valType,
-              parentType: type.lexeme
-            };
-            this.emitComplexFromMap(emitter, propInfo, `self.${_getPyVariable(name)}`, depth + 1);
+          if (type.valType.objectType === 'model') {
+            emitter.emitln(`temp_model = ${type.valType.lexeme}()`, this.level);
+            emitter.emitln(`self.${_name(name)}[k] = temp_model.from_map(v)`, this.level);
+            emitter.needSave = true;
           } else {
-            if (!this.config.typeMap[type.valType] && !this.thirdPackageNamespace[type.valType]) {
-              emitter.emitln(`temp_model = ${type.valType}()`, this.level);
-              emitter.emitln(`self.${_getPyVariable(name)}[k] = temp_model.from_map(v)`, this.level);
-              emitter.needSave = true;
-            } else {
-              emitter.needSave = false;
-            }
+            emitter.needSave = false;
           }
-          this.levelDown();
-          this.levelDown();
         }
+        this.levelDown();
+        this.levelDown();
       }
-    } else {
-      if (depth > 1) {
-        if (!this.config.typeMap[type] && !this.thirdPackageNamespace[type]) {
-          const num = depth - 1 > 0 ? depth - 1 : '';
-          if (parentType === 'array') {
-            emitter.emitln(`temp_model = ${type}()`, this.level);
-            emitter.emitln(`l${num}.append(temp_model.from_map(${name}))`, this.level);
-          } else if (parentType === 'map') {
-            emitter.emitln(`temp_model = ${type}()`, this.level);
-            emitter.emitln(`d${num}[k${num}] = temp_model.from_map(${name})`, this.level);
-          }
-          emitter.needSave = true;
-        } else {
-          emitter.needSave = false;
-        }
+    } else if (type.objectType === 'model') {
+      const num = depth - 1 > 0 ? depth - 1 : '';
+      if (parentType === 'array') {
+        emitter.emitln(`temp_model = ${type.lexeme}()`, this.level);
+        emitter.emitln(`l${num}.append(temp_model.from_map(${name}))`, this.level);
+      } else if (parentType === 'map') {
+        emitter.emitln(`temp_model = ${type.lexeme}()`, this.level);
+        emitter.emitln(`d${num}[k${num}] = temp_model.from_map(${name})`, this.level);
       }
+      emitter.needSave = true;
+    } else if (!this.config.typeMap[type] && !this.thirdPackageNamespace[type]) {
+      const num = depth - 1 > 0 ? depth - 1 : '';
+      if (parentType === 'array') {
+        emitter.emitln(`temp_model = ${type}()`, this.level);
+        emitter.emitln(`l${num}.append(temp_model.from_map(${name}))`, this.level);
+      } else if (parentType === 'map') {
+        emitter.emitln(`temp_model = ${type}()`, this.level);
+        emitter.emitln(`d${num}[k${num}] = temp_model.from_map(${name})`, this.level);
+      }
+      emitter.needSave = true;
     }
   }
 
   emitFromMap(emitter, modelName, props, notes) {
-    emitter.emitln('def from_map(self, map={}):', this.level);
+    emitter.emitln('def from_map(self, m: dict = None):', this.level);
     this.levelUp();
+    emitter.emitln('m = m or dict()', this.level);
     props.forEach(prop => {
       let noteName = prop.notes.filter(item => item.key === 'name');
       let name = noteName.length > 0 ? noteName[0].value : prop.name;
 
-      if (prop.type.lexeme) {
+      if (prop.type.objectType === 'array' || prop.type.objectType === 'map') {
         let emt = new Emitter(emitter.config);
         const propInfo = {
           name: prop.name,
           fieldName: name,
+          parentType: prop.type.objectType,
           type: prop.type,
         };
-        if (prop.type.lexeme === 'array') {
-          propInfo.parentType = 'array';
-          this.emitComplexFromMap(emt, propInfo, null, 0);
-        } else if (prop.type.lexeme === 'map') {
-          propInfo.parentType = 'map';
-          this.emitComplexFromMap(emt, propInfo, null, 0);
-        }
+        this.emitComplexFromMap(emt, propInfo, null, 0);
         if (emt.needSave === true) {
           emitter.emit(emt.output);
         } else {
-          emitter.emitln(`if map.get('${name}') is not None:`, this.level);
+          emitter.emitln(`if m.get('${name}') is not None:`, this.level);
           this.levelUp();
-          emitter.emitln(`self.${_getPyVariable(prop.name)} = map.get('${name}')`, this.level);
+          emitter.emitln(`self.${_name(prop.name)} = m.get('${name}')`, this.level);
           this.levelDown();
         }
       } else {
-        emitter.emitln(`if map.get('${name}') is not None:`, this.level);
+        emitter.emitln(`if m.get('${name}') is not None:`, this.level);
         this.levelUp();
-        if (!this.config.typeMap[prop.type] && !this.thirdPackageNamespace[prop.type]) {
+        if (prop.type.objectType === 'model') {
           let type = _type(prop.type);
           emitter.emitln(`temp_model = ${type}()`, this.level);
-          emitter.emitln(`self.${_getPyVariable(prop.name)} = temp_model.from_map(map['${name}'])`, this.level);
+          emitter.emitln(`self.${_name(prop.name)} = temp_model.from_map(m['${name}'])`, this.level);
         } else {
-          emitter.emitln(`self.${_getPyVariable(prop.name)} = map.get('${name}')`, this.level);
+          emitter.emitln(`self.${_name(prop.name)} = m.get('${name}')`, this.level);
         }
         this.levelDown();
       }
@@ -884,43 +848,39 @@ class Combinator extends CombinatorBase {
 
   emitNotes(emitter, notes) {}
 
-  emitConstruct(emitter, construct, props, aio=false, isModule=false) {
+  emitConstruct(emitter, construct, props, isModule = false) {
     if (construct.params.length + props.length > 0) {
       let constructParams = [];
       construct.params.forEach(param => {
+        const typeHints = this.getTypeHints(param.type);
         if (param.value !== null && param.value !== 'null') {
-          constructParams.push(`${_getPyVariable(param.key)}=${param.value}`);
+          constructParams.push(`${_name(param.key)}: ${typeHints} = ${param.value},`);
         } else {
-          constructParams.push(`${_getPyVariable(param.key)}`);
+          constructParams.push(`${_name(param.key)}: ${typeHints},`);
         }
       });
-      emitter.emit('def __init__(self', this.level);
+      emitter.emitln('def __init__(', this.level);
+      this.levelUp();
+      emitter.emit('self', this.level);
 
       if (constructParams.length > 0) {
-        emitter.emit(', ');
-        emitter.emit(constructParams.join(', '));
+        emitter.emitln(', ');
+        constructParams.forEach(porp => {
+          emitter.emitln(porp, this.level);
+        });
       }
 
       if (props.length > 0) {
-        let constructProps = [];
-        let max_length = 90;
-        let curr_length = 0;
+        emitter.emitln(',');
         props.forEach((prop) => {
           if (prop instanceof PropItem) {
-            let str = ` ${_getPyVariable(prop.name)}=None`;
-            if (curr_length + str.length >= max_length) {
-              str = emitter.eol + emitter.indent(this.level + 3) + str;
-              curr_length = 0;
-            } else {
-              curr_length = curr_length + str.length;
-            }
-            constructProps.push(str);
+            const typeHints = this.getTypeHints(prop.type);
+            emitter.emitln(`${_name(prop.name)}: ${typeHints} = None,`, this.level);
           }
         });
-        emitter.emit(',');
-        emitter.emit(constructProps.join(','));
       }
-      emitter.emitln('):');
+      this.levelDown();
+      emitter.emitln('):', this.level);
       this.levelUp();
       this.func_self = 'self';
 
@@ -949,30 +909,11 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`# ${d}`, this.level);
         });
       }
-      const fieldType = prop.type.lexeme ? prop.type.lexeme : prop.type;
-      if (this.thirdPackageNamespace[fieldType]) {
-        emitter.emitln(`self.${_getPyVariable(prop.name)} = ${_getPyVariable(prop.name)}`, this.level);
-      } else {
-        let typeHints;
-        if (!isModule && prop.type.objectType === 'module') {
-          const type = this.getTypeHints(prop.type, ['Union']);
-          typeHints = `Union[${type}, Aio${type}]`;
-        } else {
-          typeHints = this.getTypeHints(prop.type);
-        }
-        
-        let declare_prop = `self.${_getPyVariable(prop.name)} = ${_getPyVariable(prop.name)}`;
-        if (declare_prop.length < 30) {
-          const space = ' '.repeat(30 - declare_prop.length);
-          declare_prop += space;
-        }
-        declare_prop += `  # type: ${typeHints}`;
-        emitter.emitln(declare_prop, this.level);
-      }
+      emitter.emitln(`self.${_name(prop.name)} = ${_name(prop.name)}`, this.level);
     });
     if (construct.body.length > 0) {
       construct.body.forEach(gram => {
-        this.grammer(emitter, gram, true, true, aio);
+        this.grammer(emitter, gram, true, true);
       });
     }
 
@@ -983,7 +924,7 @@ class Combinator extends CombinatorBase {
     //emitter.emitln();
   }
 
-  getTypeHints(fieldType, manualImport=[]) {
+  getTypeHints(fieldType, manualImport = []) {
     if (fieldType) {
       let [typeHints, imports] = this.typeHint(fieldType);
       const importList = imports.concat(manualImport);
@@ -994,7 +935,10 @@ class Combinator extends CombinatorBase {
           }
         });
         if (!existResult) {
-          this.includeList.push({from: 'typing', import: i});
+          this.includeList.push({
+            from: 'typing',
+            import: i
+          });
         }
       });
       return typeHints;
@@ -1003,15 +947,17 @@ class Combinator extends CombinatorBase {
 
   typeHint(fieldType) {
     let importType = [];
-    const typeHints = this.config.typeHints[_type(fieldType.lexeme?fieldType.lexeme:fieldType)];
+    const typeHints = this.config.typeHints[_type(fieldType.lexeme ? fieldType.lexeme : fieldType)];
 
-    if (fieldType.lexeme) {
-      importType.push(typeHints);
-      if (fieldType.lexeme === 'array') {
+    if (fieldType.objectType) {
+      if (typeHints) {
+        importType.push(typeHints);
+      }
+      if (fieldType.objectType === 'array') {
         let [itemType, imports] = this.typeHint(fieldType.itemType);
         importType.push.apply(importType, imports);
         return [`List[${itemType}]`, importType];
-      } else if (fieldType.lexeme === 'map') {
+      } else if (fieldType.objectType === 'map') {
         let [keyType, keyImports] = this.typeHint(fieldType.keyType);
         let [valueType, valueImports] = this.typeHint(fieldType.valType);
         importType.push.apply(importType, keyImports);
@@ -1021,10 +967,12 @@ class Combinator extends CombinatorBase {
     }
 
     if (typeHints && typeHints !== 'Dict' && typeHints !== 'List') {
-      importType.push(typeHints);
+      if (typeHints) {
+        importType.push(typeHints);
+      }
       return [typeHints, importType];
     }
-    
+
     return [_type(fieldType), importType];
   }
 
@@ -1045,7 +993,7 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  emitFunc(emitter, func, aio=false) {
+  emitAsyncFunc(emitter, func) {
     emitter.emitln();
     this.func_async = func.modify.indexOf('ASYNC') > -1;
     this.func_static = func.modify.indexOf('STATIC') > -1;
@@ -1053,37 +1001,87 @@ class Combinator extends CombinatorBase {
     if (this.func_static) {
       emitter.emitln('@staticmethod', this.level);
     }
+    emitter.emit('async ', this.level);
+    const rtype = this.getTypeHints(func.return[0]);
+    // def func.
+    let selfVar = this.func_static ? '' : 'self';
 
-    if (aio && this.func_async) {
-      emitter.emit('async ', this.level);
-    } else {
-      emitter.emit('', this.level);
-    }
     if (func.params.length > 0) {
-      let selfVar = this.func_static ? '' : 'self, ';
-      emitter.emit(`def ${_getPyVariable(func.name)}(${selfVar}`);
-      if (func.params.length > 0) {
-        let params = [];
-        func.params.forEach(p => {
-          params.push(`${_toSnakeCase(p.key)}`);
-        });
-        emitter.emit(params.join(', '));
+      emitter.emitln(`def ${_name(func.name)}_async(`);
+      this.levelUp();
+      if (selfVar) {
+        emitter.emitln(`${selfVar},`, this.level);
       }
+      func.params.forEach(p => {
+        const type = this.getTypeHints(p.type);
+        emitter.emitln(`${_name(p.key)}: ${type},`, this.level);
+      });
+      this.levelDown();
+      emitter.emitln(`) -> ${rtype}:`, this.level);
     } else {
-      let selfVar = this.func_static ? '' : 'self';
-      emitter.emit(`def ${_getPyVariable(func.name)}(${selfVar}`);
+      emitter.emit(`def ${_name(func.name)}_async(`);
+      if (selfVar) {
+        emitter.emit(`${selfVar}`);
+      }
+      emitter.emitln(`) -> ${rtype}:`);
     }
-    emitter.emitln('):');
     this.levelUp();
     this.emitFuncComment(emitter, func);
     func.body.forEach(gram => {
-      this.grammer(emitter, gram, true, true, aio);
+      this.grammer(emitter, gram);
     });
     if (func.body.filter(i => !(i instanceof AnnotationItem)).length === 0) {
       emitter.emitln('pass', this.level);
     }
-
     this.levelDown();
+  }
+
+  emitFunc(emitter, func) {
+    emitter.emitln();
+    this.func_async = func.modify.indexOf('ASYNC') > -1;
+    this.func_static = func.modify.indexOf('STATIC') > -1;
+    this.func_self = this.func_static ? this.getClassName(this.config.clientName) : 'self';
+    if (this.func_static) {
+      emitter.emitln('@staticmethod', this.level);
+    }
+    emitter.emit('', this.level);
+    const rtype = this.getTypeHints(func.return[0]);
+    // def func.
+    let selfVar = this.func_static ? '' : 'self';
+
+    if (func.params.length > 0) {
+      emitter.emitln(`def ${_name(func.name)}(`);
+      this.levelUp();
+      if (selfVar) {
+        emitter.emitln(`${selfVar},`, this.level);
+      }
+      func.params.forEach(p => {
+        const type = this.getTypeHints(p.type);
+        emitter.emitln(`${_name(p.key)}: ${type},`, this.level);
+      });
+      this.levelDown();
+      emitter.emitln(`) -> ${rtype}:`, this.level);
+    } else {
+      emitter.emit(`def ${_name(func.name)}(`);
+      if (selfVar) {
+        emitter.emit(`${selfVar}`);
+      }
+      emitter.emitln(`) -> ${rtype}:`);
+    }
+    this.levelUp();
+    this.emitFuncComment(emitter, func);
+    func.body.forEach(gram => {
+      this.grammer(emitter, gram);
+    });
+    if (func.body.filter(i => !(i instanceof AnnotationItem)).length === 0) {
+      emitter.emitln('pass', this.level);
+    }
+    this.levelDown();
+    if (this.func_async) {
+      this.aioMode = true;
+      this.emitAsyncFunc(emitter, func);
+      this.aioMode = false;
+    }
   }
 
   emitFuncComment(emitter, func) {
@@ -1104,30 +1102,10 @@ class Combinator extends CombinatorBase {
               let tmp = c.split(' ');
               if (tmp[tagIndex] === '@param') {
                 const param = tmp[tagIndex + 1];
-                tmp[tagIndex + 1] = _toSnakeCase(_avoidKeywords(param)) + ':';
-                let type = func.params.filter(p => {
-                  if (param === p.key) {
-                    return p.type;
-                  }
-                });
-                type = type[0] ? this.getTypeHints(type[0].type) : null;
-
-                emitter.emitln();
-                if (type) {
-                  let typeTmp = tmp.slice(0, 2);
-                  typeTmp[tagIndex] = '@type';
-                  typeTmp.push(type);
-                  emitter.emitln(typeTmp.join(' '), this.level);
-                }
+                tmp[tagIndex + 1] = _name(param) + ':';
                 emitter.emitln(tmp.join(' '), this.level);
               } else if (tmp[tagIndex] === '@return') {
-                let rtype = null;
-                rtype = func.return[0] ? this.getTypeHints(func.return[0]) : null;
                 tmp[tagIndex] = '@return:';
-                emitter.emitln();
-                if (rtype && rtype !== 'None') {
-                  emitter.emitln(`@rtype: ${rtype}`, this.level);
-                }
                 emitter.emitln(tmp.join(' '), this.level);
               }
             } else {
@@ -1146,19 +1124,8 @@ class Combinator extends CombinatorBase {
     let importList = this.includeList.filter(node => !node.from && node.import);
     let aliasList = this.includeList.filter(node => node.from && node.alias);
     let list = this.includeList.filter(node => node.from && !node.alias);
-    let aliasImport = {};
-    let aliasImportList = [];
     let from = {};
     let fromList = [];
-
-    aliasList.forEach(item => {
-      const importStmt = `${item.import} as ${item.alias}`;
-      if (!aliasImport[item.from]) {
-        aliasImport[item.from] = [importStmt];
-      } else {
-        aliasImport[item.from].push(importStmt);
-      }
-    });
 
     list.forEach(item => {
       if (!from[item.from]) {
@@ -1169,11 +1136,10 @@ class Combinator extends CombinatorBase {
     });
 
     Object.keys(from).forEach(key => {
-      fromList.push({ from: key, import: from[key] });
-    });
-    
-    Object.keys(aliasImport).forEach(key => {
-      aliasImportList.push({ from: key, import: aliasImport[key], multiln: true});
+      fromList.push({
+        from: key,
+        import: from[key]
+      });
     });
 
     if (importList.length) {
@@ -1190,8 +1156,8 @@ class Combinator extends CombinatorBase {
       emitter.emitln();
     }
 
-    if (aliasImportList.length) {
-      aliasImportList.forEach(include => {
+    if (aliasList.length) {
+      aliasList.forEach(include => {
         this.emitIncludeRow(emitter, include);
       });
       emitter.emitln();
@@ -1205,15 +1171,7 @@ class Combinator extends CombinatorBase {
   emitIncludeRow(emitter, include) {
     if (include.from) {
       emitter.emit(`from ${include.from} `, this.level);
-      if (include.import instanceof Array && include.import.length > 1 && include.multiln) {
-        emitter.emitln('import (');
-        this.levelUp();
-        include.import.forEach(importStmt => {
-          emitter.emitln(`${importStmt},`, this.level);
-        });
-        this.levelDown();
-        emitter.emitln(')');
-      } else if (include.import instanceof Array) {
+      if (include.import instanceof Array) {
         emitter.emitln(`import ${include.import.join(', ')}`);
       } else if (include.alias) {
         emitter.emitln(`import ${include.import} as ${include.alias}`);
@@ -1226,7 +1184,9 @@ class Combinator extends CombinatorBase {
   }
 
   emitExec(emitter) {
-    this.includeList.push({import: 'sys'});
+    this.includeList.push({
+      import: 'sys'
+    });
     emitter.emitln();
     emitter.emitln();
     emitter.emitln('if __name__ == \'__main__\':');
@@ -1235,7 +1195,7 @@ class Combinator extends CombinatorBase {
     this.levelDown();
   }
 
-  grammerCall(emitter, gram, aio=false) {
+  grammerCall(emitter, gram) {
     // path : 'parent', 'object', 'object_static', 'call', 'call_static', 'prop', 'prop_static', 'map', 'list'
     var pre = '';
     let params = '';
@@ -1245,14 +1205,14 @@ class Combinator extends CombinatorBase {
         let emit = new Emitter();
         if (p.value instanceof BehaviorToMap) {
           if (gram.path[1].name === 'isUnset') {
-            this.grammer(emit, p.value.grammer, false, false, aio);
+            this.grammer(emit, p.value.grammer, false, false);
           } else {
             emit.emit(`${this.addInclude('$Core')}.${this.config.tea.core.toMap}(`);
-            this.grammer(emit, p.value.grammer, false, false, aio);
+            this.grammer(emit, p.value.grammer, false, false);
             emit.emit(')');
           }
         } else {
-          this.grammer(emit, p, false, false, aio);
+          this.grammer(emit, p, false, false);
         }
         tmp.push(emit.output);
       });
@@ -1272,38 +1232,44 @@ class Combinator extends CombinatorBase {
         }
 
         if (path.type === 'parent' || path.type === 'parent_async') {
-          if (aio && path.type === 'parent_async') {
+          if (this.aioMode && path.type === 'parent_async') {
             pre += `await ${this.func_self}`;
           } else {
             pre += this.func_self;
           }
           if (path.name) {
-            pre += `.${_getPyVariable(path.name)}`;
+            pre += `.${_name(path.name)}`;
           }
         } else if (path.type === 'object') {
-          pre += `${_getPyVariable(_convertStaticParam(pathName))}`;
-        }else if (path.type === 'object_async') {
-          if (aio) {
-            pre += `await ${_getPyVariable(_convertStaticParam(pathName))}`;
+          pre += `${_name(_convertStaticParam(pathName))}`;
+        } else if (path.type === 'object_async') {
+          if (this.aioMode) {
+            pre += `await ${_name(_convertStaticParam(pathName))}`;
           } else {
-            pre += `${_getPyVariable(_convertStaticParam(pathName))}`;
+            pre += `${_name(_convertStaticParam(pathName))}`;
           }
         } else if (path.type === 'object_static') {
           pre += `${_convertStaticParam(pathName)}`;
         } else if (path.type === 'object_static_async') {
-          if (aio) {
-            pre += `await Aio${_convertStaticParam(pathName)}`;
+          if (this.aioMode) {
+            pre += `await ${_convertStaticParam(pathName)}`;
           } else {
             pre += `${_convertStaticParam(pathName)}`;
           }
         } else if (path.type === 'call' || path.type === 'call_static') {
-          pre += `.${_getPyVariable(pathName)}(${params})`;
+          pre += `.${_name(pathName)}(${params})`;
+        } else if (path.type === 'call_async' || path.type === 'call_static_async') {
+          if (this.aioMode) {
+            pre += `.${_name(pathName)}_async(${params})`;
+          } else {
+            pre += `.${_name(pathName)}(${params})`;
+          }
         } else if (path.type === 'prop') {
-          pre += `.${_getPyVariable(pathName)}`;
+          pre += `.${_name(pathName)}`;
         } else if (path.type === 'prop_static') {
-          pre += `.${_getPyVariable(pathName)}`;
+          pre += `.${_name(pathName)}`;
         } else if (path.type === 'map') {
-          pre += path.isVar ? `.get(${_getPyVariable(pathName)})` : `.get('${pathName}')`;
+          pre += path.isVar ? `.get(${_name(pathName)})` : `.get('${pathName}')`;
         } else if (path.type === 'map_set') {
           const quote = this._adaptedQuotes(pathName, emitter);
           pre += `[${quote}${pathName}${quote}]`;
@@ -1321,17 +1287,17 @@ class Combinator extends CombinatorBase {
     emitter.emit(pre);
   }
 
-  grammerExpr(emitter, gram, aio=false) {
+  grammerExpr(emitter, gram) {
     if (!gram.left && !gram.right) {
       emitter.emit(` ${_symbol(gram.opt)} `);
       return;
     }
-    this.grammer(emitter, gram.left, false, false, aio);
+    this.grammer(emitter, gram.left, false, false);
     emitter.emit(` ${_symbol(gram.opt)} `);
-    this.grammer(emitter, gram.right, false, false, aio);
+    this.grammer(emitter, gram.right, false, false);
   }
 
-  grammerVar(emitter, gram, aio=false) {
+  grammerVar(emitter, gram) {
     if (gram.varType === 'static_class') {
       const name = gram.name ? gram.name : gram.key;
       emitter.emit(`${name}()`);
@@ -1343,7 +1309,7 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  grammerValue(emitter, gram, aio=false, layer=1, isparams=false) {
+  grammerValue(emitter, gram, layer = 1, isparams = false) {
     if (gram.key) {
       if (!isparams) {
         const quote = this._adaptedQuotes(gram.key, emitter);
@@ -1353,7 +1319,7 @@ class Combinator extends CombinatorBase {
       }
     }
     if (gram instanceof GrammerCall) {
-      this.grammerCall(emitter, gram, aio);
+      this.grammerCall(emitter, gram);
     } else if (gram.type === 'array') {
       if (gram.needCast) {
         if (gram.value.length > 0) {
@@ -1373,7 +1339,7 @@ class Combinator extends CombinatorBase {
                 this.emitAnnotation(emitter, v, 0);
                 continue;
               }
-              this.grammerValue(emitter, v, aio, layer + 1);
+              this.grammerValue(emitter, v, layer + 1);
               if (i < expandParams.length - 1) {
                 emitter.emitln(',');
               } else {
@@ -1392,7 +1358,7 @@ class Combinator extends CombinatorBase {
                 this.emitAnnotation(emitter, v, 0);
                 continue;
               }
-              this.grammerValue(emitter, v, aio, layer + 1);
+              this.grammerValue(emitter, v, layer + 1);
               if (i < notExpandParams.length - 1) {
                 emitter.emitln(',');
                 emitter.emit('', this.level + layer);
@@ -1421,7 +1387,7 @@ class Combinator extends CombinatorBase {
               this.emitAnnotation(emitter, item, 0);
               continue;
             }
-            this.grammerValue(emitter, item, aio, layer + 1);
+            this.grammerValue(emitter, item, layer + 1);
             if (i < len - 1) {
               emitter.emitln(',');
             } else {
@@ -1449,7 +1415,7 @@ class Combinator extends CombinatorBase {
             this.emitAnnotation(emit, item);
             return true;
           }
-          this.grammerValue(emit, item, aio, 1, true);
+          this.grammerValue(emit, item, 1, true);
           tmp.push(emit.output);
         });
         this.levelDown();
@@ -1463,13 +1429,13 @@ class Combinator extends CombinatorBase {
     } else if (gram.type === 'param') {
       emitter.emit(`${_convertStaticParam(_toSnakeCase(gram.value))}`);
     } else if (gram.type === 'call') {
-      this.grammerCall(emitter, gram.value, aio);
+      this.grammerCall(emitter, gram.value);
     } else if (gram.type === 'number') {
       emitter.emit(gram.value);
     } else if (gram.type === 'null') {
       emitter.emit('None');
     } else if (gram.type === 'behavior') {
-      this.grammer(emitter, gram.value, true, true, aio);
+      this.grammer(emitter, gram.value);
     } else if (gram.type === 'expr') {
       if (Array.isArray(gram.value)) {
         const isConcatString = gram.value.some(item => {
@@ -1480,40 +1446,40 @@ class Combinator extends CombinatorBase {
             const needTanslate = gramItem.opt !== 'CONCAT' && gramItem.type !== 'string';
             if (needTanslate) {
               emitter.emit('str(');
-              this.grammer(emitter, gramItem, false, false, aio);
+              this.grammer(emitter, gramItem, false, false);
               emitter.emit(')');
             } else {
-              this.grammer(emitter, gramItem, false, false, aio);
+              this.grammer(emitter, gramItem, false, false);
             }
           });
         } else {
           gram.value.forEach(gramItem => {
-            this.grammer(emitter, gramItem, false, false, aio);
+            this.grammer(emitter, gramItem, false, false);
           });
         }
       } else {
-        this.grammer(emitter, gram.value, false, false, aio);
+        this.grammer(emitter, gram.value, false, false);
       }
     } else if (gram.type === 'instance') {
-      this.grammerNewObject(emitter, gram.value, aio);
-    }  else if (gram.type === 'module_instance') {
-      if (aio) {
-        this.grammerNewObject(emitter, gram.value, aio, true);
+      this.grammerNewObject(emitter, gram.value);
+    } else if (gram.type === 'module_instance') {
+      if (this.aioMode) {
+        this.grammerNewObject(emitter, gram.value, true);
       } else {
-        this.grammerNewObject(emitter, gram.value, aio);
+        this.grammerNewObject(emitter, gram.value);
       }
     } else if (gram.type === 'bool' || gram.type === 'boolean') {
       emitter.emit(gram.value ? 'True' : 'False');
     } else if (gram.type === 'var') {
-      this.grammerVar(emitter, gram.value, aio);
+      this.grammerVar(emitter, gram.value);
     } else if (gram.type === 'class') {
       emitter.emit(`${gram.value.name}`);
     } else if (gram.type === 'not') {
       emitter.emit(_symbol(Symbol.reverse()));
-      this.grammerValue(emitter, gram.value, aio);
+      this.grammerValue(emitter, gram.value);
     } else if (gram.type === '') {
       if (gram.varType) {
-        this.grammerVar(emitter, gram, aio);
+        this.grammerVar(emitter, gram);
       } else {
         debug.stack('Unsupported GrammerValue type', gram);
       }
@@ -1521,32 +1487,32 @@ class Combinator extends CombinatorBase {
       let grammerValue = new GrammerValue();
       grammerValue.type = 'array';
       grammerValue.value = gram;
-      this.grammerValue(emitter, grammerValue, aio);
+      this.grammerValue(emitter, grammerValue);
     } else {
       debug.stack('Unsupported GrammerValue type', gram);
     }
   }
 
-  grammerLoop(emitter, gram, aio=false) {
+  grammerLoop(emitter, gram) {
     if (gram.type === 'foreach') {
       emitter.emit('for ');
-      this.grammerVar(emitter, gram.item, aio);
+      this.grammerVar(emitter, gram.item);
       emitter.emit(' in ');
-      this.grammer(emitter, gram.source, false, false, aio);
+      this.grammer(emitter, gram.source, false, false);
       emitter.emitln(':');
     }
     this.levelUp();
     gram.body.forEach(node => {
-      this.grammer(emitter, node, true, true, aio);
+      this.grammer(emitter, node);
     });
     this.levelDown();
   }
 
-  grammerBreak(emitter, gram, aio=false) {
+  grammerBreak(emitter, gram) {
     emitter.emit('break');
   }
 
-  grammerCondition(emitter, gram, aio=false) {
+  grammerCondition(emitter, gram) {
     if (gram.type === 'elseif') {
       emitter.emit('elif');
     } else {
@@ -1557,7 +1523,7 @@ class Combinator extends CombinatorBase {
       emitter.emit(' ');
       let emit = new Emitter();
       gram.conditionBody.forEach(condition => {
-        this.grammer(emit, condition, false, false, aio);
+        this.grammer(emit, condition, false, false);
       });
       emitter.emit(`${emit.output}`);
     }
@@ -1565,7 +1531,7 @@ class Combinator extends CombinatorBase {
     emitter.emitln(':');
     this.levelUp();
     gram.body.forEach(node => {
-      this.grammer(emitter, node, true, true, aio);
+      this.grammer(emitter, node);
     });
     if (gram.body.filter(i => !(i instanceof AnnotationItem)).length === 0) {
       emitter.emitln('pass', this.level);
@@ -1574,12 +1540,12 @@ class Combinator extends CombinatorBase {
     this.levelDown();
     if (gram.elseItem.length && gram.elseItem.length > 0) {
       gram.elseItem.forEach(e => {
-        this.grammer(emitter, e, true, true, aio);
+        this.grammer(emitter, e);
       });
     }
   }
 
-  grammerReturn(emitter, gram, aio=false) {
+  grammerReturn(emitter, gram) {
     if (gram.type === 'null') {
       emitter.emit('return');
       return;
@@ -1587,32 +1553,32 @@ class Combinator extends CombinatorBase {
     emitter.emit('return ');
 
     if (gram.type === 'grammer') {
-      this.grammer(emitter, gram.expr, false, false, aio);
+      this.grammer(emitter, gram.expr, false, false);
     } else if (gram.type === 'string') {
       emitter.emit('\'\'');
     } else {
-      this.grammer(emitter, gram.expr, false, false, aio);
+      this.grammer(emitter, gram.expr, false, false);
     }
   }
 
-  grammerContinue(emitter, gram, aio=false) {
+  grammerContinue(emitter, gram) {
     emitter.emit('continue');
   }
 
-  grammerThrows(emitter, gram, aio=false) {
+  grammerThrows(emitter, gram) {
     if (gram.exception === null) {
       emitter.emit('raise ');
-      this.grammerValue(emitter, gram.params[0], aio);
+      this.grammerValue(emitter, gram.params[0]);
     } else {
       if (gram.params.length > 0) {
         emitter.emit(`raise ${_exception(gram.exception)}(`);
         if (gram.params.length === 1) {
-          this.grammerValue(emitter, gram.params[0], aio);
+          this.grammerValue(emitter, gram.params[0]);
         } else {
           let tmp = [];
           gram.params.forEach(p => {
             let emit = new Emitter();
-            this.grammerValue(emit, p, aio);
+            this.grammerValue(emit, p);
             tmp.push(emit.output);
           });
           emitter.emit(tmp.join(', '));
@@ -1625,60 +1591,56 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  grammerTryCatch(emitter, gram, aio=false) {
+  grammerTryCatch(emitter, gram) {
     emitter.emitln('try:');
     this.levelUp();
     gram.body.forEach(node => {
-      this.grammer(emitter, node, true, true, aio);
+      this.grammer(emitter, node, true, true);
     });
     this.levelDown();
     gram.catchBody.forEach(node => {
       assert.equal(true, node instanceof GrammerCatch);
-      this.grammerCatch(emitter, node, aio);
+      this.grammerCatch(emitter, node);
     });
 
     if (gram.finallyBody) {
-      this.grammerFinally(emitter, gram.finallyBody, aio);
+      this.grammerFinally(emitter, gram.finallyBody);
     }
   }
 
-  grammerFinally(emitter, gram, aio=false) {
+  grammerFinally(emitter, gram) {
     emitter.emitln('finally:', this.level);
     this.levelUp();
     gram.body.forEach(childGram => {
-      this.grammer(emitter, childGram, true, true, aio);
+      this.grammer(emitter, childGram);
     });
     this.levelDown();
   }
 
-  grammerCatch(emitter, gram, aio=false) {
+  grammerCatch(emitter, gram) {
     emitter.emit('except', this.level);
     if (gram.exceptions.type === 'BASE') {
       emitter.emit(' Exception as ');
-      this.grammerVar(emitter, gram.exceptions.exceptionVar, aio);
+      this.grammerVar(emitter, gram.exceptions.exceptionVar);
     } else {
       emitter.emit(` ${_exception(gram.exceptions.type)} as `);
-      this.grammerVar(emitter, gram.exceptions.exceptionVar, aio);
+      this.grammerVar(emitter, gram.exceptions.exceptionVar);
     }
 
     emitter.emitln(':');
     this.levelUp();
     gram.body.forEach(childGram => {
-      this.grammer(emitter, childGram, true, true, aio);
+      this.grammer(emitter, childGram);
     });
     this.levelDown();
   }
 
-  grammerNewObject(emitter, gram, aio=false, isModule=false) {
+  grammerNewObject(emitter, gram, isModule = false) {
     let objectName = gram.name;
-    if (isModule && aio) {
-      emitter.emit(`Aio${objectName}(`);
-    } else {
-      emitter.emit(`${objectName}(`);
-    }
-    
+
+    emitter.emit(`${objectName}(`);
     if (!Array.isArray(gram.params)) {
-      this.grammerValue(emitter, gram.params, aio);
+      this.grammerValue(emitter, gram.params);
     } else {
       if (gram.params.length > 0) {
         let params = [];
@@ -1695,7 +1657,7 @@ class Combinator extends CombinatorBase {
               emit.emit('\'\'');
             }
           } else {
-            this.grammerValue(emit, p.value, aio);
+            this.grammerValue(emit, p.value);
           }
           params.push(emit.output);
         });
@@ -1705,7 +1667,7 @@ class Combinator extends CombinatorBase {
     emitter.emit(')');
   }
 
-  behaviorTimeNow(emitter, behavior, aio=false) {
+  behaviorTimeNow(emitter, behavior) {
     let existResult = this.includeList.some(item => {
       if (item.import === 'time' && !item.from) {
         return true;
@@ -1719,20 +1681,20 @@ class Combinator extends CombinatorBase {
     emitter.emit('time.time()');
   }
 
-  behaviorSetMapItem(emitter, behavior, aio=false) {
+  behaviorSetMapItem(emitter, behavior) {
     let emit = new Emitter();
-    this.grammerCall(emit, behavior.call, aio);
-    
+    this.grammerCall(emit, behavior.call);
+
     const quote = this._adaptedQuotes(behavior.key, emitter);
     emitter.emit(`${emit.output}[${quote}${behavior.key}${quote}] = `, this.level);
-    this.grammerValue(emitter, behavior.value, aio);
+    this.grammerValue(emitter, behavior.value);
     emitter.emitln('');
   }
 
-  behaviorDoAction(emitter, behavior, aio=false) {
+  behaviorDoAction(emitter, behavior) {
     emitter.emit('', this.level);
-    this.grammerVar(emitter, behavior.var, aio);
-    if (aio) {
+    this.grammerVar(emitter, behavior.var);
+    if (this.aioMode) {
       emitter.emit(` = await ${this.addInclude('$Core')}.${this.config.tea.core.asyncDoAction}(`);
     } else {
       emitter.emit(` = ${this.addInclude('$Core')}.${this.config.tea.core.doAction}(`);
@@ -1741,36 +1703,36 @@ class Combinator extends CombinatorBase {
     let params = [];
     behavior.params.forEach(p => {
       let emit = new Emitter();
-      this.grammerValue(emit, p, aio);
+      this.grammerValue(emit, p);
       params.push(emit.output);
     });
     emitter.emit(params.join(', '));
     emitter.emitln(')');
     behavior.body.forEach(node => {
-      this.grammer(emitter, node, true, true, aio);
+      this.grammer(emitter, node);
     });
   }
 
-  behaviorRetry(emitter, behavior, aio=false) {
+  behaviorRetry(emitter, behavior) {
     emitter.emitln(`raise TeaException(${this.config.request}, ${this.config.response})`, this.level);
   }
 
-  behaviorToModel(emitter, behavior, aio=false) {
+  behaviorToModel(emitter, behavior) {
     emitter.emitln(`${this.addModelInclude(behavior.expected)}().from_map(`);
     this.levelUp();
-    this.grammer(emitter, behavior.grammer, true, true, aio);
+    this.grammer(emitter, behavior.grammer);
     this.levelDown();
     emitter.emit(')', this.level);
   }
-  
-  behaviorToMap(emitter, behavior, aio=false) {
+
+  behaviorToMap(emitter, behavior) {
     const grammer = behavior.grammer;
     if (grammer instanceof GrammerCall) {
       grammer.path.push({
         type: 'call',
         name: 'to_map'
       });
-      this.grammerCall(emitter, grammer, aio);
+      this.grammerCall(emitter, grammer);
     } else if (grammer instanceof GrammerVar) {
       const grammerCall = new GrammerCall('method');
       grammerCall.path.push({
@@ -1781,7 +1743,7 @@ class Combinator extends CombinatorBase {
         type: 'call',
         name: 'to_map'
       });
-      this.grammerCall(emitter, grammerCall, aio);
+      this.grammerCall(emitter, grammerCall);
     } else {
       debug.stack(grammer);
     }
@@ -1798,7 +1760,7 @@ class Combinator extends CombinatorBase {
     return quote;
   }
 
-  behaviorStrFormat (emitter, behavior, aio=false) {
+  behaviorStrFormat(emitter, behavior) {
     const quote = this._adaptedQuotes(behavior.tmp, emitter);
 
     if (behavior.item.length > 1) {
@@ -1810,7 +1772,7 @@ class Combinator extends CombinatorBase {
     }
 
     behavior.item.forEach((gram, index) => {
-      this.grammerValue(emitter, gram, aio);
+      this.grammerValue(emitter, gram);
       if (index + 1 < behavior.item.length) {
         emitter.emit(', ');
       }
@@ -1821,11 +1783,11 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  behaviorTypeInstance(emitter, behavior, aio=false) {
+  behaviorTypeInstance(emitter, behavior) {
 
   }
 
-  grammerSymbol(emitter, gram, aio=false) {
+  grammerSymbol(emitter, gram) {
     emitter.emit(_symbol(gram));
   }
 }

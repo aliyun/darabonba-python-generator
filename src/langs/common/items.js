@@ -48,7 +48,7 @@ class AnnotationItem extends Item {
   constructor(belong, mode = 'single', content = null) {
     super();
     this.belong = belong;
-    this.mode = mode;       // single | multi
+    this.mode = mode; // single | multi
     this.content = content;
   }
 }
@@ -64,7 +64,7 @@ class Grammer extends Item {
 class GrammerValue extends Grammer {
   constructor(type, value, key = '', needCast = false) {
     super();
-    this.type = type;    // map | array | string | number | call | null | behavior | param | expr | merge | var | class
+    this.type = type; // map | array | string | number | call | null | behavior | param | expr | merge | var | class
     this.key = key;
     this.value = value;
     this.needCast = needCast;
@@ -79,7 +79,7 @@ class GrammerNewObject extends Grammer {
     super();
     this.name = objectName;
     this.params = params;
-    this.type = type;  // var | map
+    this.type = type; // var | map
   }
 
   addParam(param) {
@@ -91,8 +91,8 @@ class GrammerVar extends Grammer {
   constructor(name = '', dataType = '', varType = 'var', itemType = '') {
     super();
     this.name = name;
-    this.type = dataType;      // Types Enum
-    this.varType = varType;    // static_class 静态类名 || var 可变 || const 不可变
+    this.type = dataType; // Types Enum
+    this.varType = varType; // static_class 静态类名 || var 可变 || const 不可变
     this.itemType = itemType;
     this.eol = false;
   }
@@ -101,7 +101,7 @@ class GrammerVar extends Grammer {
 class GrammerExpr extends Grammer {
   constructor(left = null, opt = '', right = '') {
     super();
-    this.left = left;    // GrammerVar
+    this.left = left; // GrammerVar
     this.opt = opt;
     this.right = right;
     this.setBelongTo(left, this.index);
@@ -112,7 +112,7 @@ class GrammerExpr extends Grammer {
 class GrammerCall extends Grammer {
   constructor(type = 'method', path = [], params = [], returnType = null, hasThrow = false) {
     super();
-    this.type = type;     // method | key | index | prop | sys_func | super
+    this.type = type; // method | key | index | prop | sys_func | super
     this.path = [];
     path.forEach(p => {
       this.addPath(p);
@@ -126,9 +126,10 @@ class GrammerCall extends Grammer {
     // {type: '', name: ''}
     const pathType = [
       'parent', 'object', 'object_static',
-      'call', 'call_static', 'prop',
+      'call', 'call_static', 'call_async', 
+      'call_static_async', 'prop',
       'prop_static', 'map', 'list',
-      'map_set', 'map_get','object_static_async',
+      'map_set', 'map_get', 'object_static_async',
       'object_async', 'parent_async'
     ];
     if (pathType.indexOf(path.type) < 0) {
@@ -149,9 +150,9 @@ class GrammerCall extends Grammer {
 class GrammerCondition extends Grammer {
   constructor(type = '', conditionBody = [], body = []) {
     super();
-    this.type = type;                    // like 'if' | elseif | else | 'while' | 'doWhile'
-    this.body = body;                    // Grammer
-    this.conditionBody = conditionBody;  // GrammerExpr | GrammerValue | GrammerCall
+    this.type = type; // like 'if' | elseif | else | 'while' | 'doWhile'
+    this.body = body; // Grammer
+    this.conditionBody = conditionBody; // GrammerExpr | GrammerValue | GrammerCall
     this.elseItem = [];
     this.eol = false;
   }
@@ -188,7 +189,7 @@ class GrammerException extends Grammer {
 class GrammerCatch extends Grammer {
   constructor(body = [], exceptions = null) {
     super();
-    this.exceptions = exceptions;  // GrammerException
+    this.exceptions = exceptions; // GrammerException
     this.body = body; // Grammer
   }
 
@@ -211,9 +212,9 @@ class GrammerFinally extends Grammer {
 class GrammerTryCatch extends Grammer {
   constructor(body = [], catchGramList = [], finallyGram = null) {
     super();
-    this.body = body;                // Grammer
-    this.catchBody = catchGramList;  // GrammerCatch
-    this.finallyBody = finallyGram;  // GrammerFinally
+    this.body = body; // Grammer
+    this.catchBody = catchGramList; // GrammerCatch
+    this.finallyBody = finallyGram; // GrammerFinally
     this.eol = false;
   }
 
@@ -236,8 +237,8 @@ class GrammerTryCatch extends Grammer {
 class GrammerThrows extends Grammer {
   constructor(exception = null, params = [], msg = '') {
     super();
-    this.exception = exception;  // ExceptionEnum
-    this.params = params;        // GrammerValue
+    this.exception = exception; // ExceptionEnum
+    this.params = params; // GrammerValue
     this.message = msg;
   }
 
@@ -268,12 +269,12 @@ class GrammerReturn extends Grammer {
 class GrammerLoop extends Grammer {
   constructor(type = '') {
     super();
-    this.type = type;      // foreach | forCondition
-    this.item = null;      // GrammerVar
-    this.source = null;    // GrammerCall | GrammerValue
-    this.start = null;     // GrammerExpr
+    this.type = type; // foreach | forCondition
+    this.item = null; // GrammerVar
+    this.source = null; // GrammerCall | GrammerValue
+    this.start = null; // GrammerExpr
     this.contions = [];
-    this.step = null;      // GrammerExpr
+    this.step = null; // GrammerExpr
     this.body = [];
     this.eol = false;
   }
@@ -317,12 +318,12 @@ class GrammerSymbol extends Grammer {
 class PropItem extends Item {
   constructor() {
     super();
-    this.modify = [];       // Modify
+    this.modify = []; // Modify
     this.name = '';
     this.type = '';
     this.itemType = '';
     this.value = null;
-    this.notes = [];        // [{key:'name', value:'test', type:'string'}, {key:'length', value:10, type:'number'}]
+    this.notes = []; // [{key:'name', value:'test', type:'string'}, {key:'length', value:10, type:'number'}]
   }
 
   addModify(modify) {
@@ -356,12 +357,12 @@ class FuncItem extends Item {
   constructor() {
     super();
     this.name = '';
-    this.modify = [];      // Modify
-    this.params = [];      // param
-    this.throws = [];      // Exception name
-    this.return = [];      // GrammerReturn
+    this.modify = []; // Modify
+    this.params = []; // param
+    this.throws = []; // Exception name
+    this.return = []; // GrammerReturn
     this.annotations = []; // AnnotationItem
-    this.body = [];        // grammer
+    this.body = []; // grammer
   }
 
   addBodyNode(node) {
@@ -404,14 +405,14 @@ class ObjectItem extends Item {
   constructor(type) {
     super();
     assert.equal(true, type === 'client' || type === 'model');
-    this.type = type;            // client | model
-    this.modify = [];            // Modify
-    this.name = '';              // object name
-    this.extends = [];           // object extends
-    this.body = [];              // PropItem | FuncItem | ConstructItem ...
-    this.annotations = [];       // AnnotationItem
-    this.topAnnotation = [];     // AnnotationItem
-    this.subObject = [];         // ObjectItem
+    this.type = type; // client | model
+    this.modify = []; // Modify
+    this.name = ''; // object name
+    this.extends = []; // object extends
+    this.body = []; // PropItem | FuncItem | ConstructItem ...
+    this.annotations = []; // AnnotationItem
+    this.topAnnotation = []; // AnnotationItem
+    this.subObject = []; // ObjectItem
     this.includeList = [];
     this.includeModelList = [];
   }

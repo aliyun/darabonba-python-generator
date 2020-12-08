@@ -9,7 +9,7 @@ class Client:
     def __init__(self):
         pass
 
-    def hello(self):
+    def hello(self) -> None:
         _request = TeaRequest()
         _request.method = 'GET'
         _request.pathname = '/'
@@ -30,43 +30,7 @@ class Client:
         a = 'string'
         return
 
-    @staticmethod
-    def hello_if():
-        if True:
-            pass
-        if True:
-            pass
-        elif True:
-            pass
-        else:
-            pass
-
-    @staticmethod
-    def hello_throw():
-        raise TeaException({})
-
-    @staticmethod
-    def hello_for_break():
-        for item in {}:
-            break
-
-    @staticmethod
-    def hello_while():
-        while True:
-            break
-
-    @staticmethod
-    def hello_declare():
-        hello = 'world'
-        hello_null = None
-        hello = 'hehe'
-
-
-class AioClient(Client):
-    def __init__(self):
-        pass
-
-    async def hello(self):
+    async def hello_async(self) -> None:
         _request = TeaRequest()
         _request.method = 'GET'
         _request.pathname = '/'
@@ -88,7 +52,7 @@ class AioClient(Client):
         return
 
     @staticmethod
-    def hello_if():
+    def hello_if() -> None:
         if True:
             pass
         if True:
@@ -99,21 +63,21 @@ class AioClient(Client):
             pass
 
     @staticmethod
-    def hello_throw():
+    def hello_throw() -> None:
         raise TeaException({})
 
     @staticmethod
-    def hello_for_break():
+    def hello_for_break() -> None:
         for item in {}:
             break
 
     @staticmethod
-    def hello_while():
+    def hello_while() -> None:
         while True:
             break
 
     @staticmethod
-    def hello_declare():
+    def hello_declare() -> None:
         hello = 'world'
         hello_null = None
         hello = 'hehe'

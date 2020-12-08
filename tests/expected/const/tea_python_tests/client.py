@@ -5,14 +5,5 @@ class Client:
         pass
 
     @staticmethod
-    def hello():
-        return "'Hello' %s" % 'World!'
-
-
-class AioClient(Client):
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def hello():
+    def hello() -> str:
         return "'Hello' %s" % 'World!'

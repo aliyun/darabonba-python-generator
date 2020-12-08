@@ -575,21 +575,13 @@ class ClientResolver extends BaseResolver {
       let call = new GrammerCall(call_type);
 
       if (object.left) {
-        let isStatic = object.isStatic ? true : false;
-        let isAsync = object.isAsync ? true : false;
-        let asyncTag = '';
-        let staticTag = '';
-        if (isStatic) {
-          staticTag = '_static';
-        }
-        if (isAsync) {
-          asyncTag = '_async';
-        }
+        let staticTag = object.isStatic ? '_static' : '';
+        let asyncTag = object.isAsync ? '_async' : '';
         const callType = staticTag + asyncTag;
 
         if (object.left.type === 'method_call') {
           call.addPath({ type: 'parent' + asyncTag, name: '' });
-          call.addPath({ type: 'call', name: object.left.id.lexeme });
+          call.addPath({ type: 'call' + callType, name: object.left.id.lexeme });
         } else if (object.left.type === 'instance_call') {
           if (object.left && object.left.id && object.left.id.lexeme) {
             if (object.left.id.type === 'variable') {
@@ -603,7 +595,6 @@ class ClientResolver extends BaseResolver {
         } else if (object.left.type === 'static_call') {
           if (object.left.id.type === 'module') {
             call.addPath({ type: 'object' + callType, name: this.combinator.addInclude(object.left.id.lexeme) });
-            isStatic = true;
           } else {
             // call.addPath({ type: 'call_static', name: object.left.id.lexeme });
             debug.stack(object);
@@ -615,7 +606,7 @@ class ClientResolver extends BaseResolver {
         if (object.left.propertyPath) {
           object.left.propertyPath.forEach(p => {
             call.addPath({
-              type: 'call',
+              type: 'call' + callType,
               name: p.lexeme
             });
           });

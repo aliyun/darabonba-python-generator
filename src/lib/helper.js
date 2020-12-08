@@ -148,10 +148,6 @@ function _toSnakeCase(str) {
   return res;
 }
 
-function _getPyVariable(name) {
-  return _avoidKeywords(_toSnakeCase(name));
-}
-
 
 module.exports = {
   _config,
@@ -170,6 +166,5 @@ module.exports = {
   _exception,
   _toSnakeCase,
   _toCamelCase,
-  _isSnakeCase,
-  _getPyVariable
+  _isSnakeCase
 };
