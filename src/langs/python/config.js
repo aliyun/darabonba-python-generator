@@ -127,6 +127,7 @@ module.exports = {
     core: {
       name: 'Tea.core.TeaCore',
       doAction: 'do_action',
+      asyncDoAction: 'async_do_action',
       allowRetry: 'allow_retry',
       sleep: 'sleep',
       getBackoffTime: 'get_backoff_time',

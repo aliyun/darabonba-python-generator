@@ -3,7 +3,16 @@
 import sys
 
 
-class ExecClient(object):
+class ExecClient:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def main(args):
+        pass
+
+
+class AioExecClient(ExecClient):
     def __init__(self):
         pass
 
