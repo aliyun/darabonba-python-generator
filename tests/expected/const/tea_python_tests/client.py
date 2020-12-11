@@ -6,4 +6,4 @@ class Client:
 
     @staticmethod
     def hello() -> str:
-        return "'Hello' %s" % 'World!'
+        return f"'Hello' {'World!'}"

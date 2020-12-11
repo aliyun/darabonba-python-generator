@@ -51,7 +51,7 @@ class Client(SourceClient):
                 map_val = {
                     'test': 'ok'
                 }
-                version = '/%s%s' % ('2019-01-08', self._pathname)
+                version = f"/{'2019-01-08'}{self._pathname}"
                 module_model_map_val = {}
                 module_map_val = {}
                 model_map_val = {}
@@ -59,7 +59,7 @@ class Client(SourceClient):
                 _request.protocol = self._protocol
                 _request.port = 80
                 _request.method = 'GET'
-                _request.pathname = '/%s' % self._pathname
+                _request.pathname = f'/{self._pathname}'
                 _request.query = SourceClient.query(TeaCore.merge({
                     'date': '2019'
                 }, request.header,
@@ -117,7 +117,7 @@ class Client(SourceClient):
                 map_val = {
                     'test': 'ok'
                 }
-                version = '/%s%s' % ('2019-01-08', self._pathname)
+                version = f"/{'2019-01-08'}{self._pathname}"
                 module_model_map_val = {}
                 module_map_val = {}
                 model_map_val = {}
@@ -125,7 +125,7 @@ class Client(SourceClient):
                 _request.protocol = self._protocol
                 _request.port = 80
                 _request.method = 'GET'
-                _request.pathname = '/%s' % self._pathname
+                _request.pathname = f'/{self._pathname}'
                 _request.query = SourceClient.query(TeaCore.merge({
                     'date': '2019'
                 }, request.header,
@@ -322,10 +322,10 @@ class Client(SourceClient):
         ]
 
     def template_string(self) -> str:
-        return '/%s' % self._protocol
+        return f'/{self._protocol}'
 
     async def template_string_async(self) -> str:
-        return '/%s' % self._protocol
+        return f'/{self._protocol}'
 
     def empty_model(self) -> None:
         main_models.ComplexRequest()
@@ -448,13 +448,16 @@ class Client(SourceClient):
     @staticmethod
     def str_fmt() -> None:
         s = 'strtest'
-        s_1 = ' % 1' + str(s) + ''
-        s_2 = ''' "hello" 'world' %s''' % s
-        s_3 = 'hello world'
-        s_4 = '''{
+        s_1 = f' % 1{s}'
+        s_2 = f''' "hello" 'world' {s}'''
+        s_3 = f'hello world'
+        s_4 = f'''{{
     "json": "json val",
     "key": "value"
-  }'''
+  }}'''
+        fs_1 = f'{{"key": "{s}"}}'
+        fs_2 = f'{{{{"key": "{s}"}}}}'
+        fs_3 = f' {s}'
 
     @staticmethod
     def call_to_map(
