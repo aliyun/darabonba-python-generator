@@ -1761,26 +1761,13 @@ class Combinator extends CombinatorBase {
   }
 
   behaviorStrFormat(emitter, behavior) {
-    const quote = this._adaptedQuotes(behavior.tmp, emitter);
-
-    if (behavior.item.length > 1) {
-      emitter.emit(`${quote}${behavior.tmp}${quote} % (`);
-    } else if (behavior.item.length === 1) {
-      emitter.emit(`${quote}${behavior.tmp}${quote} % `);
-    } else {
-      emitter.emit(`${quote}${behavior.tmp}${quote}`);
-    }
-
-    behavior.item.forEach((gram, index) => {
-      this.grammerValue(emitter, gram);
-      if (index + 1 < behavior.item.length) {
-        emitter.emit(', ');
-      }
+    behavior.item.forEach(gram => {
+      let valEmitter = new Emitter();
+      this.grammerValue(valEmitter, gram);
+      behavior.tmp = behavior.tmp.replace('${}', `{${valEmitter.output}}`);
     });
-
-    if (behavior.item.length > 1) {
-      emitter.emit(')');
-    }
+    const quote = this._adaptedQuotes(behavior.tmp, emitter);
+    emitter.emit(`f${quote}${behavior.tmp}${quote}`);
   }
 
   behaviorTypeInstance(emitter, behavior) {

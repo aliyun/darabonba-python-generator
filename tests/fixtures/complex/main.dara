@@ -220,6 +220,9 @@ static function strFmt(): void {
     "json": "json val",
     "key": "value"
   }`;
+  var fs1 = `{"key": "${s}"}`;
+  var fs2 = `{{"key": "${s}"}}`;
+  var fs3 = `${} ${s}`;
 }
 
 static function callToMap(m:map[string]any): map[string]any{
