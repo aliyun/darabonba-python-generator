@@ -1,5 +1,13 @@
 # ChangeLog
 
+## 1.2.0 - 2020-12-16
+
+* Added support for python3.9.
+* Drop support for python3.4 & python3.5 (Currently supported python versions:3.6,3.7,3.8,3.9).
+* Support for async function.
+* Replace the string formatting syntax with f-string.
+* Support for type annotation.
+
 ## 1.1.1 - 2020-11-23
 
 * Support for defining multi-line string.

@@ -1,6 +1,6 @@
 {
   "name": "@darabonba/python-generator",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "The darabonba generator for Python",
   "main": "src/generator.js",
   "directories": {
@@ -31,7 +31,7 @@
   "author": "Alibaba Cloud OpenAPI Team",
   "license": "Apache-2.0",
   "dependencies": {
-    "@darabonba/parser": "^1.2.7",
+    "@darabonba/parser": "^1.2.8",
     "enum": "^3.0.4"
   }
 }
