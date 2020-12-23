@@ -25,6 +25,10 @@
     "package": "Source",
     "clientName": "source_client"
   },
+  "python2": {
+    "package": "Source",
+    "clientName": "source_client"
+  },
   "releases": {
     "ts": "@scope/module:*"
   }

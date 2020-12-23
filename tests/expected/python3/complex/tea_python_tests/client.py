@@ -455,6 +455,8 @@ class Client(SourceClient):
     "json": "json val",
     "key": "value"
   }}'''
+        s_5 = f' %s str:{s}'
+        s_6 = f' %%s str'
         fs_1 = f'{{"key": "{s}"}}'
         fs_2 = f'{{{{"key": "{s}"}}}}'
         fs_3 = f' {s}'

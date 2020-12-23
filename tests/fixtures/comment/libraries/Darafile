@@ -20,6 +20,10 @@
     "package": "import",
     "clientName": "client"
   },
+  "python2": {
+    "package": "import",
+    "clientName": "client"
+  },
   "releases": {
     "ts": "@scope/module:*"
   }
