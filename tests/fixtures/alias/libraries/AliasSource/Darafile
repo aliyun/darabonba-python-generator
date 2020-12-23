@@ -7,5 +7,10 @@
     "package": "alias_source",
     "clientName": "source_client",
     "modelDirName": "Models"
+  },
+  "python2": {
+    "package": "alias_source",
+    "clientName": "source_client",
+    "modelDirName": "Models"
   }
 }

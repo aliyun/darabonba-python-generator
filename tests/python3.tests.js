@@ -10,9 +10,9 @@ let Generator = require('../src/generator');
 
 const lang = 'python';
 
-const expectedDir = path.join(__dirname, 'expected/');
+const expectedDir = path.join(__dirname, 'expected/python3/');
 const fixturesDir = path.join(__dirname, 'fixtures/');
-const outputDir = path.join(__dirname, '../', 'output/tests/');
+const outputDir = path.join(__dirname, '../', 'output/tests/python3/');
 
 function check(moduleName, expectedFiles = [], option = {}) {
   const mainFilePath = path.join(fixturesDir, moduleName, 'main.dara') ? path.join(fixturesDir, moduleName, 'main.dara') : path.join(fixturesDir, moduleName, 'main.tea');

@@ -220,6 +220,8 @@ static function strFmt(): void {
     "json": "json val",
     "key": "value"
   }`;
+  var s5 = ` %s str:${s}`;
+  var s6 = ` %%s str`;
   var fs1 = `{"key": "${s}"}`;
   var fs2 = `{{"key": "${s}"}}`;
   var fs3 = `${} ${s}`;

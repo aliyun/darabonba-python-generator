@@ -11,5 +11,9 @@
   "python": {
     "package": "Source",
     "clientName": "source_client"
+  },
+  "python2": {
+    "package": "Source",
+    "clientName": "source_client"
   }
 }
