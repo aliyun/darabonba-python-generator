@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 1.2.1 - 2020-12-25
+
+* Support generate python2 code.
+* Fix `variable is not defind` error.
+
 ## 1.2.0 - 2020-12-16
 
 * Added support for python3.9.
