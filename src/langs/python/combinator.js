@@ -38,6 +38,9 @@ const {
   _isSnakeCase
 } = require('../../lib/helper');
 
+function _contain(str, substr) {
+  return str.indexOf(substr) > -1;
+}
 
 function _name(name) {
   return _avoidKeywords(_toSnakeCase(name));
@@ -314,16 +317,37 @@ class Combinator extends CombinatorBase {
     });
     /******************************** emit body ********************************/
     emitter = new Emitter(this.config);
-    models.forEach((object, i) => {
-      if (object.subObject && object.subObject.length > 0) {
-        object.subObject.forEach((obj, j) => {
-          this.emitClass(emitter, obj);
-          emitter.emitln().emitln();
-        });
+    this.definedModels = [];
+    const self = this;
+    // Fix the problem when used before definition
+    const findUndefinedModel = function (type) {
+      if (type.objectType === 'array') {
+        findUndefinedModel.call(self, type.itemType);
+      } else if (type.objectType === 'map') {
+        findUndefinedModel.call(self, type.valType);
+      } else if (type.objectType === 'model' || !this.config.typeMap[type] && !this.thirdPackageNamespace[type]) {
+        let objectName = type.lexeme;
+        if (!_contain(this.definedModels, objectName)) {
+          const [obj] = models.filter(node => node.name === objectName);
+          if (obj) {
+            obj.body.filter(node => node instanceof PropItem).forEach(item => {
+              findUndefinedModel.call(self, item.type);
+            });
+            this.emitModel(emitter, obj);
+          }
+        }
+      } 
+    };
+    models.forEach(model => {
+      if (_contain(this.definedModels, model.name)) {
+        return;
       }
-      this.emitClass(emitter, object);
-      emitter.emitln().emitln();
+      model.body.filter(node => node instanceof PropItem).forEach(item => {
+        findUndefinedModel.call(self, item.type);
+      });
+      this.emitModel(emitter, model);
     });
+
     outputParts.body = this.checkSyntax(emitter.output, emitter);
 
     /******************************** emit head ********************************/
@@ -343,6 +367,21 @@ class Combinator extends CombinatorBase {
     config.layer = '';
     config.filename = 'models';
     this.combineOutputParts(config, outputParts);
+  }
+
+  emitModel(emitter, model) {
+    if (_contain(this.definedModels, model.name)) {
+      return;
+    }
+    this.definedModels.push(model.name);
+    if (model.subObject.length) {
+      model.subObject.forEach(obj => {
+        this.emitClass(emitter, obj);
+        emitter.emitln().emitln();
+      });
+    }
+    this.emitClass(emitter, model);
+    emitter.emitln().emitln();
   }
 
   getClassName(name) {
