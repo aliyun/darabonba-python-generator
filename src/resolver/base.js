@@ -259,7 +259,7 @@ class BaseResolver {
     }
 
     if (typeof typeNode === 'string' && typeNode.length > 0) {
-      typeInfo['type'] = 'model';
+      typeInfo['objectType'] = 'model';
       typeInfo['lexeme'] = this.combinator.addModelInclude(typeNode);
       return typeInfo;
     }
