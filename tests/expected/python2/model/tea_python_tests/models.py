@@ -4,19 +4,72 @@ from Tea.model import TeaModel
 from Tea.converter import TeaConverter
 
 
-class M(TeaModel):
-    def __init__(self):
-        pass
+class UseBeforeDefineModelSubModel(TeaModel):
+    def __init__(self, use_before_define_model=None):
+        self.use_before_define_model = use_before_define_model  # type: UseBeforeDefineModelOnSubModel
 
     def validate(self):
-        pass
+        self.validate_required(self.use_before_define_model, 'use_before_define_model')
+        if self.use_before_define_model:
+            self.use_before_define_model.validate()
 
     def to_map(self):
         result = dict()
+        if self.use_before_define_model is not None:
+            result['useBeforeDefineModel'] = self.use_before_define_model.to_map()
         return result
 
     def from_map(self, m=None):
         m = m or dict()
+        if m.get('useBeforeDefineModel') is not None:
+            temp_model = UseBeforeDefineModelOnSubModel()
+            self.use_before_define_model = temp_model.from_map(m['useBeforeDefineModel'])
+        return self
+
+
+class UseBeforeDefineModel(TeaModel):
+    def __init__(self, sub_model=None):
+        self.sub_model = sub_model  # type: UseBeforeDefineModelSubModel
+
+    def validate(self):
+        self.validate_required(self.sub_model, 'sub_model')
+        if self.sub_model:
+            self.sub_model.validate()
+
+    def to_map(self):
+        result = dict()
+        if self.sub_model is not None:
+            result['subModel'] = self.sub_model.to_map()
+        return result
+
+    def from_map(self, m=None):
+        m = m or dict()
+        if m.get('subModel') is not None:
+            temp_model = UseBeforeDefineModelSubModel()
+            self.sub_model = temp_model.from_map(m['subModel'])
+        return self
+
+
+class UseBeforeDefineModelOnSubModel(TeaModel):
+    def __init__(self, m=None):
+        self.m = m  # type: MyModel
+
+    def validate(self):
+        self.validate_required(self.m, 'm')
+        if self.m:
+            self.m.validate()
+
+    def to_map(self):
+        result = dict()
+        if self.m is not None:
+            result['m'] = self.m.to_map()
+        return result
+
+    def from_map(self, m=None):
+        m = m or dict()
+        if m.get('m') is not None:
+            temp_model = MyModel()
+            self.m = temp_model.from_map(m['m'])
         return self
 
 
@@ -40,11 +93,40 @@ class MyModelSubmodel(TeaModel):
         return self
 
 
+class MyModelSubModelModel(TeaModel):
+    def __init__(self, sub_model=None):
+        self.sub_model = sub_model  # type: list[M]
+
+    def validate(self):
+        self.validate_required(self.sub_model, 'sub_model')
+        if self.sub_model:
+            for k in self.sub_model:
+                if k:
+                    k.validate()
+
+    def to_map(self):
+        result = dict()
+        result['subModel'] = []
+        if self.sub_model is not None:
+            for k in self.sub_model:
+                result['subModel'].append(k.to_map() if k else None)
+        return result
+
+    def from_map(self, m=None):
+        m = m or dict()
+        self.sub_model = []
+        if m.get('subModel') is not None:
+            for k in m.get('subModel'):
+                temp_model = M()
+                self.sub_model.append(temp_model.from_map(k))
+        return self
+
+
 class MyModel(TeaModel):
     def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None,
                  submodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None,
                  class_end_time=None, max_length=None, min_length=None, maximum=None, minimum=None, test_3=None,
-                 array_array_model=None, array_map_model=None, map_model=None, submodel_map=None):
+                 array_array_model=None, array_map_model=None, map_model=None, submodel_map=None, sub_model_model=None):
         self.stringfield = TeaConverter.to_unicode(stringfield)  # type: unicode
         self.bytesfield = TeaConverter.to_str(bytesfield)  # type: str
         self.stringarrayfield = stringarrayfield  # type: list[unicode]
@@ -73,6 +155,7 @@ class MyModel(TeaModel):
         self.array_map_model = array_map_model  # type: list[dict[unicode, M]]
         self.map_model = map_model  # type: dict[unicode, M]
         self.submodel_map = submodel_map  # type: dict[unicode, MyModelSubmodel]
+        self.sub_model_model = sub_model_model  # type: MyModelSubModelModel
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')
@@ -121,6 +204,9 @@ class MyModel(TeaModel):
             for v in self.submodel_map.values():
                 if v:
                     v.validate()
+        self.validate_required(self.sub_model_model, 'sub_model_model')
+        if self.sub_model_model:
+            self.sub_model_model.validate()
 
     def to_map(self):
         result = dict()
@@ -184,6 +270,8 @@ class MyModel(TeaModel):
         if self.submodel_map is not None:
             for k, v in self.submodel_map.items():
                 result['submodelMap'][k] = v.to_map()
+        if self.sub_model_model is not None:
+            result['subModelModel'] = self.sub_model_model.to_map()
         return result
 
     def from_map(self, m=None):
@@ -255,6 +343,25 @@ class MyModel(TeaModel):
             for k, v in m.get('submodelMap').items():
                 temp_model = MyModelSubmodel()
                 self.submodel_map[k] = temp_model.from_map(v)
+        if m.get('subModelModel') is not None:
+            temp_model = MyModelSubModelModel()
+            self.sub_model_model = temp_model.from_map(m['subModelModel'])
+        return self
+
+
+class M(TeaModel):
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        result = dict()
+        return result
+
+    def from_map(self, m=None):
+        m = m or dict()
         return self
 
 

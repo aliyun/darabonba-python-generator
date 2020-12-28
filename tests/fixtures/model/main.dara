@@ -1,4 +1,12 @@
-model M = {};
+model useBeforeDefineModel = {
+  subModel: {
+    useBeforeDefineModel: UseBeforeDefineModelOnSubModel
+  }
+};
+
+model UseBeforeDefineModelOnSubModel = {
+  m: MyModel,
+}
 
 model MyModel = {
   stringfield: string,
@@ -25,6 +33,11 @@ model MyModel = {
   arrayMapModel: [ map[string]M ],
 
   mapModel: map[string]M,
-  submodelMap: map[string]MyModel.submodel
+  submodelMap: map[string]MyModel.submodel,
+
+  subModelModel: {
+    subModel: [ M ]
+  }
 };
 
+model M = {};
