@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.2 - 2020-12-28
+
+* Fix the emit order for sub model code.
+
 ## 1.2.1 - 2020-12-25
 
 * Support generate python2 code.
