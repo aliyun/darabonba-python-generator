@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.3 - 2020-12-30
+
+* Support for static type hints to the class itself.
+
 ## 1.2.2 - 2020-12-28
 
 * Fix the emit order for sub model code.
