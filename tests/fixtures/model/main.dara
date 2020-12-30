@@ -37,7 +37,9 @@ model MyModel = {
 
   subModelModel: {
     subModel: [ M ]
-  }
+  },
+
+  oneself: MyModel
 };
 
 model M = {};

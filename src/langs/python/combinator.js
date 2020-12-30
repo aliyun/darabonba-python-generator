@@ -202,6 +202,20 @@ class Combinator extends CombinatorBase {
     return resultName;
   }
 
+  simpleImport(imp, from = null) {
+    let existResult = this.includeList.some(item => {
+      if (item.import === imp && item.from === from) {
+        return true;
+      }
+    });
+    if (!existResult) {
+      this.includeList.push({
+        from: from,
+        import: imp
+      });
+    } 
+  }
+
   combine(objectArr = []) {
     super.combine(objectArr);
     this.config.dir = this.config.outputDir + '/' + this.config.package + '/';
@@ -223,7 +237,8 @@ class Combinator extends CombinatorBase {
       }
 
       const re = new RegExp(importName);
-      if (!re.test(content) && importName !== 'sys') {
+      const ignoreModule = ['sys'];
+      if (!re.test(content) && ignoreModule.indexOf(importName) === -1) {
         this.includeList.splice(this.includeList.indexOf(i), 1);
       }
     });
@@ -351,7 +366,7 @@ class Combinator extends CombinatorBase {
         this.emitModel(emitter, obj);
       });
     }
-    model.body.filter(node => node instanceof PropItem).forEach(item => {
+    model.body.filter(node => node instanceof PropItem && _type(node.type) !== model.name).forEach(item => {
       this.findUndefinedModel(emitter, item.type);
     });
     this.definedModels.push(model_name);
@@ -370,7 +385,7 @@ class Combinator extends CombinatorBase {
       if (!_contain(this.definedModels, objectName)) {
         const [obj] = models.filter(node => node.name === objectName);
         if (obj) {
-          obj.body.filter(node => node instanceof PropItem).forEach(item => {
+          obj.body.filter(node => node instanceof PropItem && _type(node.type) !== obj.name).forEach(item => {
             this.findUndefinedModel(emitter, item.type);
           });
           this.emitModel(emitter, obj);
@@ -395,6 +410,7 @@ class Combinator extends CombinatorBase {
   emitClass(emitter, object) {
     var parent = '';
     let className = this.getClassName(object.name);
+    this.className = className;
 
     let tmp = [];
     if (!(object.extends instanceof Array)) {
@@ -779,7 +795,7 @@ class Combinator extends CombinatorBase {
         };
 
         emitter.emitln(`d${depth} = {}`, this.level);
-        emitter.emitln(`for k${depth} ,v${depth} in ${name}.items():`, this.level);
+        emitter.emitln(`for k${depth}, v${depth} in ${name}.items():`, this.level);
         this.levelUp();
         this.emitComplexFromMap(emitter, propInfo, `d${depth}`, depth + 1);
         this.levelDown();
@@ -909,7 +925,12 @@ class Combinator extends CombinatorBase {
         props.forEach((prop) => {
           if (prop instanceof PropItem) {
             const typeHints = this.getTypeHints(prop.type);
-            emitter.emitln(`${_name(prop.name)}: ${typeHints} = None,`, this.level);
+            if (typeHints === this.className) {
+              emitter.emitln(`${_name(prop.name)}: '${typeHints}' = None,`, this.level);
+            } else {
+              emitter.emitln(`${_name(prop.name)}: ${typeHints} = None,`, this.level);
+            }
+            
           }
         });
       }
@@ -1158,6 +1179,7 @@ class Combinator extends CombinatorBase {
     let importList = this.includeList.filter(node => !node.from && node.import);
     let aliasList = this.includeList.filter(node => node.from && node.alias);
     let list = this.includeList.filter(node => node.from && !node.alias);
+    
     let from = {};
     let fromList = [];
 
@@ -1218,9 +1240,7 @@ class Combinator extends CombinatorBase {
   }
 
   emitExec(emitter) {
-    this.includeList.push({
-      import: 'sys'
-    });
+    this.simpleImport('sys');
     emitter.emitln();
     emitter.emitln();
     emitter.emitln('if __name__ == \'__main__\':');
@@ -1702,16 +1722,7 @@ class Combinator extends CombinatorBase {
   }
 
   behaviorTimeNow(emitter, behavior) {
-    let existResult = this.includeList.some(item => {
-      if (item.import === 'time' && !item.from) {
-        return true;
-      }
-    });
-    if (!existResult) {
-      this.includeList.push({
-        'import': 'time'
-      });
-    }
+    this.simpleImport('time');
     emitter.emit('time.time()');
   }
 

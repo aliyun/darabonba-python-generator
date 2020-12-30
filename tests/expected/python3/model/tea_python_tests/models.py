@@ -101,6 +101,7 @@ class MyModel(TeaModel):
         map_model: Dict[str, M] = None,
         submodel_map: Dict[str, MyModelSubmodel] = None,
         sub_model_model: MyModelSubModelModel = None,
+        oneself: 'MyModel' = None,
     ):
         self.stringfield = stringfield
         self.bytesfield = bytesfield
@@ -131,6 +132,7 @@ class MyModel(TeaModel):
         self.map_model = map_model
         self.submodel_map = submodel_map
         self.sub_model_model = sub_model_model
+        self.oneself = oneself
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')
@@ -182,6 +184,9 @@ class MyModel(TeaModel):
         self.validate_required(self.sub_model_model, 'sub_model_model')
         if self.sub_model_model:
             self.sub_model_model.validate()
+        self.validate_required(self.oneself, 'oneself')
+        if self.oneself:
+            self.oneself.validate()
 
     def to_map(self):
         result = dict()
@@ -247,6 +252,8 @@ class MyModel(TeaModel):
                 result['submodelMap'][k] = v.to_map()
         if self.sub_model_model is not None:
             result['subModelModel'] = self.sub_model_model.to_map()
+        if self.oneself is not None:
+            result['oneself'] = self.oneself.to_map()
         return result
 
     def from_map(self, m: dict = None):
@@ -304,7 +311,7 @@ class MyModel(TeaModel):
         if m.get('arrayMapModel') is not None:
             for k in m.get('arrayMapModel'):
                 d1 = {}
-                for k1 ,v1 in k.items():
+                for k1, v1 in k.items():
                     temp_model = M()
                     d1[k1] = temp_model.from_map(v1)
                 self.array_map_model.append(d1)
@@ -321,6 +328,9 @@ class MyModel(TeaModel):
         if m.get('subModelModel') is not None:
             temp_model = MyModelSubModelModel()
             self.sub_model_model = temp_model.from_map(m['subModelModel'])
+        if m.get('oneself') is not None:
+            temp_model = MyModel()
+            self.oneself = temp_model.from_map(m['oneself'])
         return self
 
 
