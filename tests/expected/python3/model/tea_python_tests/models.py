@@ -5,18 +5,101 @@ from typing import List, Dict, Any, BinaryIO
 
 
 class M(TeaModel):
-    def __init__(self):
-        pass
+    def __init__(
+        self,
+        oneself: 'M' = None,
+        self_array: List['M'] = None,
+        self_map: Dict[str, 'M'] = None,
+        self_array_map: List[Dict[str, 'M']] = None,
+        self_array_array: List[List['M']] = None,
+    ):
+        self.oneself = oneself
+        self.self_array = self_array
+        self.self_map = self_map
+        self.self_array_map = self_array_map
+        self.self_array_array = self_array_array
 
     def validate(self):
-        pass
+        self.validate_required(self.oneself, 'oneself')
+        if self.oneself:
+            self.oneself.validate()
+        self.validate_required(self.self_array, 'self_array')
+        if self.self_array:
+            for k in self.self_array:
+                if k:
+                    k.validate()
+        self.validate_required(self.self_map, 'self_map')
+        if self.self_map:
+            for v in self.self_map.values():
+                if v:
+                    v.validate()
+        self.validate_required(self.self_array_map, 'self_array_map')
+        self.validate_required(self.self_array_array, 'self_array_array')
+        if self.self_array_array:
+            for k in self.self_array_array:
+                for k1 in k:
+                    if k1:
+                        k1.validate()
 
     def to_map(self):
         result = dict()
+        if self.oneself is not None:
+            result['oneself'] = self.oneself.to_map()
+        result['selfArray'] = []
+        if self.self_array is not None:
+            for k in self.self_array:
+                result['selfArray'].append(k.to_map() if k else None)
+        result['selfMap'] = {}
+        if self.self_map is not None:
+            for k, v in self.self_map.items():
+                result['selfMap'][k] = v.to_map()
+        result['selfArrayMap'] = []
+        if self.self_array_map is not None:
+            for k in self.self_array_map:
+                d1 = {}
+                for k1 ,v1 in k.items():
+                    d1[k1] = v1.to_map()
+                result['selfArrayMap'].append(d1)
+        result['selfArrayArray'] = []
+        if self.self_array_array is not None:
+            for k in self.self_array_array:
+                l1 = []
+                for k1 in k:
+                    l1.append(k1.to_map() if k1 else None)
+                result['selfArrayArray'].append(l1)
         return result
 
     def from_map(self, m: dict = None):
         m = m or dict()
+        if m.get('oneself') is not None:
+            temp_model = M()
+            self.oneself = temp_model.from_map(m['oneself'])
+        self.self_array = []
+        if m.get('selfArray') is not None:
+            for k in m.get('selfArray'):
+                temp_model = M()
+                self.self_array.append(temp_model.from_map(k))
+        self.self_map = {}
+        if m.get('selfMap') is not None:
+            for k, v in m.get('selfMap').items():
+                temp_model = M()
+                self.self_map[k] = temp_model.from_map(v)
+        self.self_array_map = []
+        if m.get('selfArrayMap') is not None:
+            for k in m.get('selfArrayMap'):
+                d1 = {}
+                for k1, v1 in k.items():
+                    temp_model = M()
+                    d1[k1] = temp_model.from_map(v1)
+                self.self_array_map.append(d1)
+        self.self_array_array = []
+        if m.get('selfArrayArray') is not None:
+            for k in m.get('selfArrayArray'):
+                l1 = []
+                for k1 in k:
+                    temp_model = M()
+                    l1.append(temp_model.from_map(k1))
+                self.self_array_array.append(l1)
         return self
 
 
@@ -101,7 +184,6 @@ class MyModel(TeaModel):
         map_model: Dict[str, M] = None,
         submodel_map: Dict[str, MyModelSubmodel] = None,
         sub_model_model: MyModelSubModelModel = None,
-        oneself: 'MyModel' = None,
     ):
         self.stringfield = stringfield
         self.bytesfield = bytesfield
@@ -132,7 +214,6 @@ class MyModel(TeaModel):
         self.map_model = map_model
         self.submodel_map = submodel_map
         self.sub_model_model = sub_model_model
-        self.oneself = oneself
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')
@@ -184,9 +265,6 @@ class MyModel(TeaModel):
         self.validate_required(self.sub_model_model, 'sub_model_model')
         if self.sub_model_model:
             self.sub_model_model.validate()
-        self.validate_required(self.oneself, 'oneself')
-        if self.oneself:
-            self.oneself.validate()
 
     def to_map(self):
         result = dict()
@@ -252,8 +330,6 @@ class MyModel(TeaModel):
                 result['submodelMap'][k] = v.to_map()
         if self.sub_model_model is not None:
             result['subModelModel'] = self.sub_model_model.to_map()
-        if self.oneself is not None:
-            result['oneself'] = self.oneself.to_map()
         return result
 
     def from_map(self, m: dict = None):
@@ -328,9 +404,6 @@ class MyModel(TeaModel):
         if m.get('subModelModel') is not None:
             temp_model = MyModelSubModelModel()
             self.sub_model_model = temp_model.from_map(m['subModelModel'])
-        if m.get('oneself') is not None:
-            temp_model = MyModel()
-            self.oneself = temp_model.from_map(m['oneself'])
         return self
 
 
