@@ -366,7 +366,7 @@ class Combinator extends CombinatorBase {
         this.emitModel(emitter, obj);
       });
     }
-    model.body.filter(node => node instanceof PropItem && _type(node.type) !== model.name).forEach(item => {
+    model.body.filter(node => node instanceof PropItem && !this.hasModel(node.type, model.name)).forEach(item => {
       this.findUndefinedModel(emitter, item.type);
     });
     this.definedModels.push(model_name);
@@ -385,13 +385,26 @@ class Combinator extends CombinatorBase {
       if (!_contain(this.definedModels, objectName)) {
         const [obj] = models.filter(node => node.name === objectName);
         if (obj) {
-          obj.body.filter(node => node instanceof PropItem && _type(node.type) !== obj.name).forEach(item => {
+          obj.body.filter(node => node instanceof PropItem && !this.hasModel(node.type, obj.name)).forEach(item => {
             this.findUndefinedModel(emitter, item.type);
           });
           this.emitModel(emitter, obj);
         }
       }
     }
+  }
+
+  hasModel(obj, target) {
+    if (obj.objectType === 'array') {
+      return this.hasModel(obj.itemType, target);
+    } else if (obj.objectType === 'map') {
+      return this.hasModel(obj.valType, target);
+    } else if (obj.objectType === 'model' || !this.config.typeMap[obj] && !this.thirdPackageNamespace[obj]) {
+      if (_type(obj) === target) {
+        return true;
+      } 
+    }
+    return false;
   }
 
   getClassName(name) {
@@ -474,6 +487,7 @@ class Combinator extends CombinatorBase {
       this.emitFromMap(emitter, object.name, props, notes);
     }
     this.levelDown();
+    this.className = null;
   }
 
   emitComplexValidate(emitter, name, fieldType, depth) {
@@ -1004,20 +1018,21 @@ class Combinator extends CombinatorBase {
     let importType = [];
     const typeHints = this.config.typeHints[_type(fieldType.lexeme ? fieldType.lexeme : fieldType)];
 
-    if (fieldType.objectType) {
-      if (typeHints) {
-        importType.push(typeHints);
-      }
-      if (fieldType.objectType === 'array') {
-        let [itemType, imports] = this.typeHint(fieldType.itemType);
-        importType.push.apply(importType, imports);
-        return [`List[${itemType}]`, importType];
-      } else if (fieldType.objectType === 'map') {
-        let [keyType, keyImports] = this.typeHint(fieldType.keyType);
-        let [valueType, valueImports] = this.typeHint(fieldType.valType);
-        importType.push.apply(importType, keyImports);
-        importType.push.apply(importType, valueImports);
-        return [`Dict[${keyType}, ${valueType}]`, importType];
+    if (fieldType.objectType === 'array') {
+      importType.push(typeHints);
+      let [itemType, imports] = this.typeHint(fieldType.itemType);
+      importType.push.apply(importType, imports);
+      return [`List[${itemType}]`, importType];
+    } else if (fieldType.objectType === 'map') {
+      importType.push(typeHints);
+      let [keyType, keyImports] = this.typeHint(fieldType.keyType);
+      let [valueType, valueImports] = this.typeHint(fieldType.valType);
+      importType.push.apply(importType, keyImports);
+      importType.push.apply(importType, valueImports);
+      return [`Dict[${keyType}, ${valueType}]`, importType];
+    } else if (fieldType.objectType === 'model' || !this.config.typeMap[fieldType] && !this.thirdPackageNamespace[fieldType]) {
+      if (_type(fieldType) === this.className) {
+        return [`'${_type(fieldType)}'`, importType];
       }
     }
 

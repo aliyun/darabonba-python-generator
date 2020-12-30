@@ -37,9 +37,13 @@ model MyModel = {
 
   subModelModel: {
     subModel: [ M ]
-  },
-
-  oneself: MyModel
+  }
 };
 
-model M = {};
+model M = {
+    oneself: M,
+    selfArray: [M],
+    selfMap: map[string]M,
+    selfArrayMap: [ map[string]M ],
+    selfArrayArray: [ [ M ] ]
+};

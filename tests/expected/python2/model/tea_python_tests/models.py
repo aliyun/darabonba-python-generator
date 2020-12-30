@@ -126,7 +126,7 @@ class MyModel(TeaModel):
     def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None,
                  submodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None,
                  class_end_time=None, max_length=None, min_length=None, maximum=None, minimum=None, test_3=None,
-                 array_array_model=None, array_map_model=None, map_model=None, submodel_map=None, sub_model_model=None, oneself=None):
+                 array_array_model=None, array_map_model=None, map_model=None, submodel_map=None, sub_model_model=None):
         self.stringfield = TeaConverter.to_unicode(stringfield)  # type: unicode
         self.bytesfield = TeaConverter.to_str(bytesfield)  # type: str
         self.stringarrayfield = stringarrayfield  # type: list[unicode]
@@ -156,7 +156,6 @@ class MyModel(TeaModel):
         self.map_model = map_model  # type: dict[unicode, M]
         self.submodel_map = submodel_map  # type: dict[unicode, MyModelSubmodel]
         self.sub_model_model = sub_model_model  # type: MyModelSubModelModel
-        self.oneself = oneself  # type: MyModel
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')
@@ -208,9 +207,6 @@ class MyModel(TeaModel):
         self.validate_required(self.sub_model_model, 'sub_model_model')
         if self.sub_model_model:
             self.sub_model_model.validate()
-        self.validate_required(self.oneself, 'oneself')
-        if self.oneself:
-            self.oneself.validate()
 
     def to_map(self):
         result = dict()
@@ -276,8 +272,6 @@ class MyModel(TeaModel):
                 result['submodelMap'][k] = v.to_map()
         if self.sub_model_model is not None:
             result['subModelModel'] = self.sub_model_model.to_map()
-        if self.oneself is not None:
-            result['oneself'] = self.oneself.to_map()
         return result
 
     def from_map(self, m=None):
@@ -352,25 +346,98 @@ class MyModel(TeaModel):
         if m.get('subModelModel') is not None:
             temp_model = MyModelSubModelModel()
             self.sub_model_model = temp_model.from_map(m['subModelModel'])
-        if m.get('oneself') is not None:
-            temp_model = MyModel()
-            self.oneself = temp_model.from_map(m['oneself'])
         return self
 
 
 class M(TeaModel):
-    def __init__(self):
-        pass
+    def __init__(self, oneself=None, self_array=None, self_map=None, self_array_map=None, self_array_array=None):
+        self.oneself = oneself  # type: M
+        self.self_array = self_array  # type: list[M]
+        self.self_map = self_map  # type: dict[unicode, M]
+        self.self_array_map = self_array_map  # type: list[dict[unicode, M]]
+        self.self_array_array = self_array_array  # type: list[list[M]]
 
     def validate(self):
-        pass
+        self.validate_required(self.oneself, 'oneself')
+        if self.oneself:
+            self.oneself.validate()
+        self.validate_required(self.self_array, 'self_array')
+        if self.self_array:
+            for k in self.self_array:
+                if k:
+                    k.validate()
+        self.validate_required(self.self_map, 'self_map')
+        if self.self_map:
+            for v in self.self_map.values():
+                if v:
+                    v.validate()
+        self.validate_required(self.self_array_map, 'self_array_map')
+        self.validate_required(self.self_array_array, 'self_array_array')
+        if self.self_array_array:
+            for k in self.self_array_array:
+                for k1 in k:
+                    if k1:
+                        k1.validate()
 
     def to_map(self):
         result = dict()
+        if self.oneself is not None:
+            result['oneself'] = self.oneself.to_map()
+        result['selfArray'] = []
+        if self.self_array is not None:
+            for k in self.self_array:
+                result['selfArray'].append(k.to_map() if k else None)
+        result['selfMap'] = {}
+        if self.self_map is not None:
+            for k, v in self.self_map.items():
+                result['selfMap'][k] = v.to_map()
+        result['selfArrayMap'] = []
+        if self.self_array_map is not None:
+            for k in self.self_array_map:
+                d1 = {}
+                for k1 ,v1 in k.items():
+                    d1[k1] = v1.to_map()
+                result['selfArrayMap'].append(d1)
+        result['selfArrayArray'] = []
+        if self.self_array_array is not None:
+            for k in self.self_array_array:
+                l1 = []
+                for k1 in k:
+                    l1.append(k1.to_map() if k1 else None)
+                result['selfArrayArray'].append(l1)
         return result
 
     def from_map(self, m=None):
         m = m or dict()
+        if m.get('oneself') is not None:
+            temp_model = M()
+            self.oneself = temp_model.from_map(m['oneself'])
+        self.self_array = []
+        if m.get('selfArray') is not None:
+            for k in m.get('selfArray'):
+                temp_model = M()
+                self.self_array.append(temp_model.from_map(k))
+        self.self_map = {}
+        if m.get('selfMap') is not None:
+            for k, v in m.get('selfMap').items():
+                temp_model = M()
+                self.self_map[k] = temp_model.from_map(v)
+        self.self_array_map = []
+        if m.get('selfArrayMap') is not None:
+            for k in m.get('selfArrayMap'):
+                d1 = {}
+                for k1 ,v1 in k.items():
+                    temp_model = M()
+                    d1[k1] = temp_model.from_map(v1)
+                self.self_array_map.append(d1)
+        self.self_array_array = []
+        if m.get('selfArrayArray') is not None:
+            for k in m.get('selfArrayArray'):
+                l1 = []
+                for k1 in k:
+                    temp_model = M()
+                    l1.append(temp_model.from_map(k1))
+                self.self_array_array.append(l1)
         return self
 
 
