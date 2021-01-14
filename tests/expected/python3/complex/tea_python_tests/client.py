@@ -79,7 +79,7 @@ class Client(SourceClient):
                 ])
                 self.hello(None, None)
                 self.complex_3(None)
-                return main_models.RuntimeObject().from_map(
+                return source_models.RuntimeObject().from_map(
                     {}
                 )
             except Exception as e:
@@ -145,7 +145,7 @@ class Client(SourceClient):
                 ])
                 await self.hello_async(None, None)
                 await self.complex_3_async(None)
-                return main_models.RuntimeObject().from_map(
+                return source_models.RuntimeObject().from_map(
                     {}
                 )
             except Exception as e:
@@ -290,7 +290,7 @@ class Client(SourceClient):
         response: TeaResponse,
         val: Dict[str, str],
     ) -> source_models.Request:
-        return main_models.Request().from_map(
+        return source_models.Request().from_map(
             {}
         )
 
@@ -301,7 +301,7 @@ class Client(SourceClient):
         response: TeaResponse,
         val: Dict[str, str],
     ) -> source_models.Request:
-        return main_models.Request().from_map(
+        return source_models.Request().from_map(
             {}
         )
 

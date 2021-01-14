@@ -767,7 +767,12 @@ class ClientResolver extends BaseResolver {
         node.type = 'grammer';
       }
       if (stmt.expectedType && stmt.expectedType.type === 'model') {
-        node.expr = new BehaviorToModel(node.expr, stmt.expectedType.name);
+        let expected = '';
+        if (stmt.expectedType.moduleName) {
+          expected += `${stmt.expectedType.moduleName}.`;
+        }
+        expected += stmt.expectedType.name;
+        node.expr = new BehaviorToModel(node.expr, expected);
       }
     } else if (stmt.type === 'throw') {
       node = new GrammerThrows(this.combinator.addInclude('$Exception'));
