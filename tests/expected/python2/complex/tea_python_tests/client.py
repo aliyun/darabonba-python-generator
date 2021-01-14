@@ -73,7 +73,7 @@ class Client(SourceClient):
                 ])
                 self.hello(None, None)
                 self.complex_3(None)
-                return main_models.RuntimeObject().from_map(
+                return source_models.RuntimeObject().from_map(
                     {}
                 )
             except Exception as e:
@@ -137,7 +137,7 @@ class Client(SourceClient):
 
     @staticmethod
     def print(reqeust, reqs, response, val):
-        return main_models.Request().from_map(
+        return source_models.Request().from_map(
             {}
         )
 
