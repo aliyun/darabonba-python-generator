@@ -452,12 +452,13 @@ class BehaviorTimeNow extends Behavior {
 }
 
 class BehaviorSetMapItem extends Behavior {
-  constructor(call = null, key = '', value = null) {
+  constructor(call = null, key = '', value = null, isVar = false) {
     super();
     this.name = 'behaviorSetMapItem';
     assert.equal(true, call instanceof GrammerCall);
     this.call = call;
     this.key = key;
+    this.isVar = isVar;
     this.value = value;
   }
 }

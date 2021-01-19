@@ -11,4 +11,6 @@ init(config: Source.Config){
   };
   @endpointMap['ap-northeast-1'];
   @endpointMap['ap-northeast-1'] = "";
+  @endpointMap[config.strValue] = 'str';
+  @endpointMap[config.strValue];
 }
