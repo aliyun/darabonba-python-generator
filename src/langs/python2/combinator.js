@@ -1612,8 +1612,13 @@ class Combinator extends CombinatorBase {
     let emit = new Emitter();
     this.grammerCall(emit, behavior.call);
 
-    const quote = this._adaptedQuotes(behavior.key, emitter);
-    emitter.emit(`${emit.output}[${quote}${behavior.key}${quote}] = `, this.level);
+    if (behavior.isVar) {
+      emitter.emit(`${emit.output}[${_name(behavior.key)}] = `, this.level);
+    } else {
+      const quote = this._adaptedQuotes(behavior.key, emitter);
+      emitter.emit(`${emit.output}[${quote}${behavior.key}${quote}] = `, this.level);
+    }
+    
     this.grammerValue(emitter, behavior.value);
     emitter.emitln('');
   }

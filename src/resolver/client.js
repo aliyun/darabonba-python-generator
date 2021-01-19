@@ -640,7 +640,6 @@ class ClientResolver extends BaseResolver {
       valGrammer.value = call;
     } else if (object.type === 'array_access') {
       valGrammer.type = 'call';
-      
       let accessIndex;
       if (object.accessKey.type === 'number') {
         accessIndex = object.accessKey.value.value;
@@ -669,6 +668,11 @@ class ClientResolver extends BaseResolver {
       valGrammer.value = call;
     } else if (object.type === 'map_access') {
       valGrammer.type = 'call';
+      let isVar = false;
+      if (object.accessKey.type === 'variable') {
+        isVar = true;
+      }
+
       let accessKey = object.accessKey.id ? object.accessKey.id.lexeme : object.accessKey.value.lexeme;
       if (object.accessKey.id) {
         accessKey = object.accessKey.id.lexeme;
@@ -692,7 +696,15 @@ class ClientResolver extends BaseResolver {
           }
         });
       }
-      call.addPath({ type: 'map', name: accessKey, isVar: object.accessKey.type === 'variable'});
+
+      if (object.accessKey.propertyPath) {
+        isVar = true;
+        object.accessKey.propertyPath.forEach(prop => {
+          accessKey += `.${prop.lexeme}`;
+        });
+      }
+
+      call.addPath({ type: 'map', name: accessKey, isVar: isVar});
       valGrammer.value = call;
     } else {
       debug.stack('unimpelemented : ' + object.type, object);
@@ -840,7 +852,17 @@ class ClientResolver extends BaseResolver {
         const call = grammerValue.value;
         call.type = 'prop';
         call.path = call.path.splice(0, call.path.length - 1);
-        node = new BehaviorSetMapItem(call, stmt.left.accessKey.value.string, right);
+        let isVar = false;
+        var item = stmt.left.accessKey.value ? stmt.left.accessKey.value.string : stmt.left.accessKey.id.lexeme;
+        if (stmt.left.accessKey.type === 'variable') {
+          isVar = true;
+        } else if (stmt.left.accessKey.type === 'property_access') {
+          isVar = true;
+          stmt.left.accessKey.propertyPath.forEach(p => {
+            item += `.${p.lexeme}`;
+          });
+        }
+        node = new BehaviorSetMapItem(call, item, right, isVar);
       }
 
       if (!hasMapAccess) {

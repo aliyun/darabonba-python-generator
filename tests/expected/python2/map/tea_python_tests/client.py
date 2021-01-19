@@ -15,3 +15,5 @@ class Client(SourceClient):
         }
         self._endpoint_map.get('ap-northeast-1')
         self._endpoint_map['ap-northeast-1'] = ''
+        self._endpoint_map[config.str_value] = 'str'
+        self._endpoint_map.get(config.str_value)

@@ -2,4 +2,6 @@ type @endpointRule = string
 type @endpointMap = map[string]string
 
 init(config: Config);
-model Config = {}
+model Config = {
+  strValue:string
+}
