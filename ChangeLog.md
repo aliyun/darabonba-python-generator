@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.5 - 2020-01-27
+
+* Resolve multi condition
+
 ## 1.2.4 - 2020-01-19
 
 * Fix wrong function return value.
