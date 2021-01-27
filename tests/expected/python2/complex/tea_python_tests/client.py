@@ -38,6 +38,11 @@ class Client(SourceClient):
             _retry_times = _retry_times + 1
             try:
                 _request = TeaRequest()
+                x = False
+                y = True
+                z = False
+                if x and y or not z:
+                    x = y
                 # to map test.
                 req = source_models.Request()
                 m = self.call_to_map(TeaCore.to_map(req))

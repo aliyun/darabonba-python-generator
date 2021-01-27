@@ -40,6 +40,12 @@ static async function print(reqeust: $Request, reqs: [ ComplexRequest ], respons
 }
 
 api complex1(request: ComplexRequest, client: Source): Source.RuntimeObject {
+  var x = false;
+  var y = true;
+  var z = false;
+  if (x && y || !z) {
+    x = y;
+  }
   // to map test.
   var req = new Source.Request{};
   var m = callToMap(req);
