@@ -1481,9 +1481,13 @@ class Combinator extends CombinatorBase {
         gram.value.forEach(item => {
           let emit = new Emitter();
           if (item instanceof AnnotationItem) {
-            this.emitAnnotation(emit, item);
+            if (item.mode === 'single') {
+              emit.emit(`# ${item.content}`, this.level);
+            } 
+            tmp.push(emit.output);
             return true;
           }
+
           this.grammerValue(emit, item, 1, true);
           tmp.push(emit.output);
         });
