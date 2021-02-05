@@ -30,7 +30,9 @@ class Client(object):
         # new model instance comment
         model_instance = main_models.Test1(
             test='test',
-            test_2='test2'
+            # test declare back comment,
+            test_2='test2',
+            # test2 declare back comment
         )
         array = [
             # array string comment
@@ -63,7 +65,9 @@ class Client(object):
                 _request = TeaRequest()
                 # new model instance comment
                 model_instance = main_models.Test1(
+                    # test declare front comment,
                     test='test',
+                    # test2 declare front comment,
                     test_2='test2'
                 )
                 # number declare comment
@@ -114,7 +118,7 @@ class Client(object):
                 _request = TeaRequest()
                 # new model instance comment
                 model_instance = main_models.Test3(
-
+                    # empty model
                 )
                 # boolean declare comment
                 bool = True
