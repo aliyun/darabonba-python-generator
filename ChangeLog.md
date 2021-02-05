@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.6 - 2020-02-05
+
+* Improve annotations.
+
 ## 1.2.5 - 2020-01-27
 
 * Resolve multi condition
