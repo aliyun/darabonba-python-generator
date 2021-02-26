@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
-from Tea.converter import TeaConverter
 
 
 class ComplexRequestHeader(TeaModel):
     def __init__(self, content=None):
         # Body
-        self.content = TeaConverter.to_unicode(content)  # type: unicode
+        self.content = content  # type: str
 
     def validate(self):
         self.validate_required(self.content, 'content')
@@ -27,9 +26,9 @@ class ComplexRequestHeader(TeaModel):
 
 class ComplexRequestConfigs(TeaModel):
     def __init__(self, key=None, value=None, extra=None):
-        self.key = TeaConverter.to_unicode(key)  # type: unicode
-        self.value = value  # type: list[unicode]
-        self.extra = extra  # type: dict[unicode, unicode]
+        self.key = key  # type: str
+        self.value = value  # type: list[str]
+        self.extra = extra  # type: dict[str, str]
 
     def validate(self):
         self.validate_required(self.key, 'key')
@@ -60,7 +59,7 @@ class ComplexRequestConfigs(TeaModel):
 class ComplexRequestPart(TeaModel):
     def __init__(self, part_number=None):
         # PartNumber
-        self.part_number = TeaConverter.to_unicode(part_number)  # type: unicode
+        self.part_number = part_number  # type: str
 
     def validate(self):
         pass
@@ -80,11 +79,11 @@ class ComplexRequestPart(TeaModel):
 
 class ComplexRequest(TeaModel):
     def __init__(self, access_key=None, body=None, strs=None, header=None, num=None, configs=None, part=None):
-        self.access_key = TeaConverter.to_unicode(access_key)  # type: unicode
+        self.access_key = access_key  # type: str
         # Body
         self.body = body  # type: READABLE
         # Strs
-        self.strs = strs  # type: list[unicode]
+        self.strs = strs  # type: list[str]
         # header
         self.header = header  # type: ComplexRequestHeader
         self.num = num  # type: int

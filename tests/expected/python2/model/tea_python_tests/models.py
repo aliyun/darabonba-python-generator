@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
-from Tea.converter import TeaConverter
 
 
 class UseBeforeDefineModelSubModel(TeaModel):
@@ -75,7 +74,7 @@ class UseBeforeDefineModelOnSubModel(TeaModel):
 
 class MyModelSubmodel(TeaModel):
     def __init__(self, stringfield=None):
-        self.stringfield = TeaConverter.to_unicode(stringfield)  # type: unicode
+        self.stringfield = stringfield  # type: str
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')
@@ -127,34 +126,34 @@ class MyModel(TeaModel):
                  submodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None,
                  class_end_time=None, max_length=None, min_length=None, maximum=None, minimum=None, test_3=None,
                  array_array_model=None, array_map_model=None, map_model=None, submodel_map=None, sub_model_model=None):
-        self.stringfield = TeaConverter.to_unicode(stringfield)  # type: unicode
-        self.bytesfield = TeaConverter.to_str(bytesfield)  # type: str
-        self.stringarrayfield = stringarrayfield  # type: list[unicode]
-        self.mapfield = mapfield  # type: dict[unicode, unicode]
-        self.name = TeaConverter.to_unicode(name)  # type: unicode
+        self.stringfield = stringfield  # type: str
+        self.bytesfield = bytesfield  # type: bytes
+        self.stringarrayfield = stringarrayfield  # type: list[str]
+        self.mapfield = mapfield  # type: dict[str, str]
+        self.name = name  # type: str
         self.submodel = submodel  # type: MyModelSubmodel
         self.subarray = subarray  # type: list[M]
-        self.maparray = maparray  # type: list[dict[unicode, any]]
+        self.maparray = maparray  # type: list[dict[str, any]]
         self.object = object  # type: dict
         self.numberfield = numberfield  # type: int
         self.readable = readable  # type: READABLE
         self.exist_model = exist_model  # type: M
         # 结束时间
-        self.class_end_time = TeaConverter.to_unicode(class_end_time)  # type: unicode
+        self.class_end_time = class_end_time  # type: str
         # 最大长度
-        self.max_length = TeaConverter.to_unicode(max_length)  # type: unicode
+        self.max_length = max_length  # type: str
         # 最小长度
-        self.min_length = TeaConverter.to_unicode(min_length)  # type: unicode
+        self.min_length = min_length  # type: str
         # 校验最大值
         self.maximum = maximum  # type: long
         # 校验最小值
         self.minimum = minimum  # type: long
         # test3 desc
-        self.test_3 = test_3  # type: list[list[unicode]]
+        self.test_3 = test_3  # type: list[list[str]]
         self.array_array_model = array_array_model  # type: list[list[M]]
-        self.array_map_model = array_map_model  # type: list[dict[unicode, M]]
-        self.map_model = map_model  # type: dict[unicode, M]
-        self.submodel_map = submodel_map  # type: dict[unicode, MyModelSubmodel]
+        self.array_map_model = array_map_model  # type: list[dict[str, M]]
+        self.map_model = map_model  # type: dict[str, M]
+        self.submodel_map = submodel_map  # type: dict[str, MyModelSubmodel]
         self.sub_model_model = sub_model_model  # type: MyModelSubModelModel
 
     def validate(self):
@@ -353,8 +352,8 @@ class M(TeaModel):
     def __init__(self, oneself=None, self_array=None, self_map=None, self_array_map=None, self_array_array=None):
         self.oneself = oneself  # type: M
         self.self_array = self_array  # type: list[M]
-        self.self_map = self_map  # type: dict[unicode, M]
-        self.self_array_map = self_array_map  # type: list[dict[unicode, M]]
+        self.self_map = self_map  # type: dict[str, M]
+        self.self_array_map = self_array_map  # type: list[dict[str, M]]
         self.self_array_array = self_array_array  # type: list[list[M]]
 
     def validate(self):

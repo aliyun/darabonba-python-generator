@@ -17,9 +17,9 @@ class Client(object):
     top annotation
     """
     # type's comment
-    _a = None  # type: list[unicode]
-    _comple_list = None  # type: list[list[unicode]]
-    _endpoint_map = None  # type: dict[unicode, unicode]
+    _a = None  # type: list[str]
+    _comple_list = None  # type: list[list[str]]
+    _endpoint_map = None  # type: dict[str, str]
 
     def __init__(self):
         """
@@ -152,13 +152,13 @@ class Client(object):
         """
         testFunc
 
-        @type str: unicode
+        @type str: str
         @param str: description: string parameter
 
         @type val: bool
         @param val: description: boolean parameter
 
-        @rtype: unicode
+        @rtype: str
         @return: `test` for return
         """
         # empty comment1
