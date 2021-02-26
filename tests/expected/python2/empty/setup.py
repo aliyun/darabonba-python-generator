@@ -19,12 +19,13 @@
 """
 
 import os
+import sys
 from setuptools import setup, find_packages
 
 """
 setup module for tea_python_tests.
 
-Created on 24/12/2020
+Created on 26/02/2021
 
 @author: Alibaba
 """
@@ -39,9 +40,14 @@ VERSION = __import__(PACKAGE).__version__
 REQUIRES = []
 
 LONG_DESCRIPTION = ''
+
 if os.path.exists('./README.md'):
-    with open("README.md") as fp:
-        LONG_DESCRIPTION = fp.read()
+    if sys.version_info.major == 2:
+        with open("README.md") as fp:
+            LONG_DESCRIPTION = fp.read()
+    else:
+        with open("README.md", encoding="utf-8") as fp:
+            LONG_DESCRIPTION = fp.read()
 
 setup(
     name=NAME,

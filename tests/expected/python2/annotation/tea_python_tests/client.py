@@ -11,7 +11,7 @@ class Client(object):
     """
     top annotation
     """
-    _a = None  # type: unicode
+    _a = None  # type: str
 
     def __init__(self):
         """

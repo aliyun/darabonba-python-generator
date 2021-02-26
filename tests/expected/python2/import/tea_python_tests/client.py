@@ -6,8 +6,8 @@ from Source import models as source_models
 
 
 class Client(object):
-    _id = None  # type: list[unicode]
-    _str = None  # type: unicode
+    _id = None  # type: list[str]
+    _str = None  # type: str
 
     def __init__(self):
         pass

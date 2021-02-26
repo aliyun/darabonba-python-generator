@@ -59,13 +59,13 @@ module.exports = {
     'CONCAT': '+'
   },
   typeMap: {
-    'string': 'unicode',
+    'string': 'str',
     'boolean': 'bool',
     'number': 'int',
     'integer': 'int',
     'object': 'dict',
     'map': 'dict',
-    'bytes': 'str',
+    'bytes': 'bytes',
     'long': 'long',
     'array': 'list',
     'readable': 'READABLE',
@@ -130,7 +130,9 @@ module.exports = {
     converter: {
       name: 'Tea.converter.TeaConverter',
       toStr: 'to_str',
-      toUnicode: 'to_unicode'
+      toUnicode: 'to_unicode',
+      toString: 'to_string',
+      toBytes: 'to_bytes'
     },
     response: {
       name: 'Tea.response.TeaResponse'

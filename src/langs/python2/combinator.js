@@ -920,13 +920,7 @@ class Combinator extends CombinatorBase {
       }
 
       const fieldType = this.typeHint(prop.type);
-      if (fieldType === 'unicode') {
-        emitter.emitln(`self.${_name(prop.name)} = ${this.addInclude('$Converter')}.${this.config.tea.converter.toUnicode}(${_name(prop.name)})  # type: ${fieldType}`, this.level);
-      } else if (fieldType === 'str') {
-        emitter.emitln(`self.${_name(prop.name)} = ${this.addInclude('$Converter')}.${this.config.tea.converter.toStr}(${_name(prop.name)})  # type: ${fieldType}`, this.level);
-      } else {
-        emitter.emitln(`self.${_name(prop.name)} = ${_name(prop.name)}  # type: ${fieldType}`, this.level);
-      }
+      emitter.emitln(`self.${_name(prop.name)} = ${_name(prop.name)}  # type: ${fieldType}`, this.level);
     });
     if (construct.body.length > 0) {
       construct.body.forEach(gram => {

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
-from Tea.converter import TeaConverter
 
 
 class Test(TeaModel):
@@ -10,7 +9,7 @@ class Test(TeaModel):
     """
     def __init__(self, test=None):
         # Alichange app id 
-        self.test = TeaConverter.to_unicode(test)  # type: unicode
+        self.test = test  # type: str
 
     def validate(self):
         self.validate_required(self.test, 'test')
