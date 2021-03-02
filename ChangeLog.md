@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.7 - 2020-03-02
+
+* Python2 version upgraded to compatible version.
+
 ## 1.2.6 - 2020-02-05
 
 * Improve annotations.
