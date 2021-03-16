@@ -18,6 +18,10 @@ class Test(TeaModel):
         self.validate_required(self.test, 'test')
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.test is not None:
             result['test'] = self.test

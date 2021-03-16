@@ -84,7 +84,8 @@ class Client(SourceClient):
                 ])
                 self.hello(None, None)
                 self.complex_3(None)
-                return source_models.RuntimeObject().from_map(
+                return TeaCore.from_map(
+                    source_models.RuntimeObject(),
                     {}
                 )
             except Exception as e:
@@ -155,7 +156,8 @@ class Client(SourceClient):
                 ])
                 await self.hello_async(None, None)
                 await self.complex_3_async(None)
-                return source_models.RuntimeObject().from_map(
+                return TeaCore.from_map(
+                    source_models.RuntimeObject(),
                     {}
                 )
             except Exception as e:
@@ -242,7 +244,8 @@ class Client(SourceClient):
         SourceClient.parse(main_models.ComplexRequest())
         SourceClient.array(TeaCore.to_map(request), '1')
         SourceClient.async_func()
-        return main_models.ComplexRequest().from_map(
+        return TeaCore.from_map(
+            main_models.ComplexRequest(),
             TeaCore.merge(_request.query)
         )
 
@@ -275,7 +278,8 @@ class Client(SourceClient):
         SourceClient.parse(main_models.ComplexRequest())
         SourceClient.array(TeaCore.to_map(request), '1')
         await SourceClient.async_func_async()
-        return main_models.ComplexRequest().from_map(
+        return TeaCore.from_map(
+            main_models.ComplexRequest(),
             TeaCore.merge(_request.query)
         )
 
@@ -300,7 +304,8 @@ class Client(SourceClient):
         response: TeaResponse,
         val: Dict[str, str],
     ) -> source_models.Request:
-        return source_models.Request().from_map(
+        return TeaCore.from_map(
+            source_models.Request(),
             {}
         )
 
@@ -311,7 +316,8 @@ class Client(SourceClient):
         response: TeaResponse,
         val: Dict[str, str],
     ) -> source_models.Request:
-        return source_models.Request().from_map(
+        return TeaCore.from_map(
+            source_models.Request(),
             {}
         )
 

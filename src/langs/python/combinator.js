@@ -708,6 +708,12 @@ class Combinator extends CombinatorBase {
   emitToMap(emitter, props, notes) {
     emitter.emitln('def to_map(self):', this.level);
     this.levelUp();
+    emitter.emitln('_map = super().to_map()', this.level);
+    emitter.emitln('if _map is not None:', this.level);
+    this.levelUp();
+    emitter.emitln('return _map', this.level);
+    this.levelDown();
+    emitter.emitln();
     emitter.emitln('result = dict()', this.level);
     props.forEach(prop => {
       let noteName = prop.notes.filter(item => item.key === 'name');
@@ -1787,8 +1793,9 @@ class Combinator extends CombinatorBase {
   }
 
   behaviorToModel(emitter, behavior) {
-    emitter.emitln(`${this.addModelInclude(behavior.expected)}().from_map(`);
+    emitter.emitln(`${this.addInclude('$Core')}.${this.config.tea.core.fromMap}(`);
     this.levelUp();
+    emitter.emitln(`${this.addModelInclude(behavior.expected)}(),`, this.level);
     this.grammer(emitter, behavior.grammer);
     this.levelDown();
     emitter.emit(')', this.level);

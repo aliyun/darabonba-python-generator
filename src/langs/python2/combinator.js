@@ -424,9 +424,9 @@ class Combinator extends CombinatorBase {
     });
 
     if (this.config.emitType === 'model') {
-      this.emitValidate(emitter, props, notes);
-      this.emitToMap(emitter, props, notes);
-      this.emitFromMap(emitter, object.name, props, notes);
+      this.emitValidate(emitter, className, props, notes);
+      this.emitToMap(emitter, className, props, notes);
+      this.emitFromMap(emitter, className, props, notes);
     }
     this.levelDown();
   }
@@ -473,7 +473,7 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  emitValidate(emitter, props, notes) {
+  emitValidate(emitter, className, props, notes) {
     //print validate
     emitter.emitln('');
     emitter.emitln('def validate(self):', this.level);
@@ -646,9 +646,15 @@ class Combinator extends CombinatorBase {
     }
   }
 
-  emitToMap(emitter, props, notes) {
+  emitToMap(emitter, className, props, notes) {
     emitter.emitln('def to_map(self):', this.level);
     this.levelUp();
+    emitter.emitln(`_map = super(${className}, self).to_map()`, this.level);
+    emitter.emitln('if _map is not None:', this.level);
+    this.levelUp();
+    emitter.emitln('return _map', this.level);
+    this.levelDown();
+    emitter.emitln();
     emitter.emitln('result = dict()', this.level);
     props.forEach(prop => {
       let noteName = prop.notes.filter(item => item.key === 'name');
@@ -1643,8 +1649,9 @@ class Combinator extends CombinatorBase {
   }
 
   behaviorToModel(emitter, behavior) {
-    emitter.emitln(`${this.addModelInclude(behavior.expected)}().from_map(`);
+    emitter.emitln(`${this.addInclude('$Core')}.${this.config.tea.core.fromMap}(`);
     this.levelUp();
+    emitter.emitln(`${this.addModelInclude(behavior.expected)}(),`, this.level);
     this.grammer(emitter, behavior.grammer);
     this.levelDown();
     emitter.emit(')', this.level);

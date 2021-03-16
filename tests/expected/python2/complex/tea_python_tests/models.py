@@ -12,6 +12,10 @@ class ComplexRequestHeader(TeaModel):
         self.validate_required(self.content, 'content')
 
     def to_map(self):
+        _map = super(ComplexRequestHeader, self).to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.content is not None:
             result['Content'] = self.content
@@ -36,6 +40,10 @@ class ComplexRequestConfigs(TeaModel):
         self.validate_required(self.extra, 'extra')
 
     def to_map(self):
+        _map = super(ComplexRequestConfigs, self).to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.key is not None:
             result['key'] = self.key
@@ -65,6 +73,10 @@ class ComplexRequestPart(TeaModel):
         pass
 
     def to_map(self):
+        _map = super(ComplexRequestPart, self).to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.part_number is not None:
             result['PartNumber'] = self.part_number
@@ -108,6 +120,10 @@ class ComplexRequest(TeaModel):
                     k.validate()
 
     def to_map(self):
+        _map = super(ComplexRequest, self).to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.access_key is not None:
             result['accessKey'] = self.access_key
