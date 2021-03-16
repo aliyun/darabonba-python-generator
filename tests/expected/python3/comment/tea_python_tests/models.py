@@ -41,6 +41,10 @@ class Test1(TeaModel):
         self.validate_required(self.a_sts, 'a_sts')
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.test is not None:
             result['test'] = self.test
@@ -94,6 +98,10 @@ class Test2(TeaModel):
         self.validate_required(self.test_2, 'test_2')
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.test is not None:
             result['test'] = self.test
@@ -133,6 +141,10 @@ class Test3(TeaModel):
         self.validate_required(self.test_1, 'test_1')
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.test is not None:
             result['test'] = self.test

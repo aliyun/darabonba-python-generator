@@ -42,6 +42,10 @@ class M(TeaModel):
                         k1.validate()
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.oneself is not None:
             result['oneself'] = self.oneself.to_map()
@@ -114,6 +118,10 @@ class MyModelSubmodel(TeaModel):
         self.validate_required(self.stringfield, 'stringfield')
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.stringfield is not None:
             result['stringfield'] = self.stringfield
@@ -141,6 +149,10 @@ class MyModelSubModelModel(TeaModel):
                     k.validate()
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         result['subModel'] = []
         if self.sub_model is not None:
@@ -267,6 +279,10 @@ class MyModel(TeaModel):
             self.sub_model_model.validate()
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.stringfield is not None:
             result['stringfield'] = self.stringfield
@@ -420,6 +436,10 @@ class UseBeforeDefineModelOnSubModel(TeaModel):
             self.m.validate()
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.m is not None:
             result['m'] = self.m.to_map()
@@ -446,6 +466,10 @@ class UseBeforeDefineModelSubModel(TeaModel):
             self.use_before_define_model.validate()
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.use_before_define_model is not None:
             result['useBeforeDefineModel'] = self.use_before_define_model.to_map()
@@ -472,6 +496,10 @@ class UseBeforeDefineModel(TeaModel):
             self.sub_model.validate()
 
     def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
         result = dict()
         if self.sub_model is not None:
             result['subModel'] = self.sub_model.to_map()
