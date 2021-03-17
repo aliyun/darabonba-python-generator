@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.8 - 2020-03-17
+
+* Improve TeaModel to avoid serialization exception.
+
 ## 1.2.7 - 2020-03-02
 
 * Python2 version upgraded to compatible version.
