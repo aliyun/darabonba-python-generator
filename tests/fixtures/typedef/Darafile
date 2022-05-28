@@ -1,0 +1,61 @@
+{
+  "scope": "darabonba",
+  "name": "main",
+  "version": "0.0.1",
+  "main": "./main.dara",
+  "libraries": {
+    "OSS": "alibabacloud:OSS:*"
+  },
+  "python": {
+    "package": "tea_python_tests",
+    "clientName": "client",
+    "typedef": {
+      "HttpResponse": {
+        "import": "requests",
+        "type": "Response",
+        "package": "requests:2.21.0"
+      },
+      "HttpHeader": {
+        "import": null,
+        "type": "Dict[str, Any]",
+        "package": null
+      },
+      "TeaModel": {
+        "import": "Tea.model",
+        "type": "TeaModel",
+        "package": "alibabacloud-tea:0.2.9"
+      },
+      "TeaException": {
+        "import": "Tea.exceptions",
+        "type": "TeaException",
+        "package": "alibabacloud-tea:0.2.9"
+      }
+    }
+  },
+  "python2": {
+    "package": "tea_python_tests",
+    "clientName": "client",
+    "typedef": {
+      "HttpResponse": {
+        "import": "requests",
+        "type": "Response",
+        "package": "requests:2.21.0"
+      },
+      "HttpHeader": {
+        "import": null,
+        "type": "Dict[str, Any]",
+        "package": null
+      },
+      "TeaModel": {
+        "import": "Tea.model",
+        "type": "TeaModel",
+        "package": "alibabacloud-tea-py2:0.0.4"
+      },
+      "TeaException": {
+        "import": "Tea.exceptions",
+        "type": "TeaException",
+        "package": "alibabacloud-tea-py2:0.0.4"
+      }
+    }
+  }
+}

@@ -198,6 +198,38 @@ class Combinator extends CombinatorBase {
     return resultName;
   }
 
+  addTypedefInclude(typeName) {
+    let accessPath = typeName.split('.');
+    let importName = '';
+    let fromName = '';
+    let typedefModule = {};
+    if (accessPath.length === 2) {
+      if (this.importsTypedef[accessPath[0]] && this.importsTypedef[accessPath[0]][accessPath[1]]) {
+        typedefModule = this.importsTypedef[accessPath[0]][accessPath[1]];
+      }
+    } else if (accessPath.length === 1 && this.typedef[accessPath[0]]) {
+      typedefModule = this.typedef[accessPath[0]];
+    }
+    if (typedefModule.import || typedefModule.package) {
+      if (typedefModule.import) {
+        fromName = typedefModule.import;
+      }
+      if (typedefModule.type) {
+        importName = typedefModule.type;
+      }
+    }
+
+    let existResult = this.includeList.some(item => item.import === importName && item.from === fromName);
+    if (!existResult) {
+      this.includeList.push({
+        'from': fromName,
+        'import': importName,
+        'alias': '',
+      });
+    }
+    return typedefModule.type || typeName;
+  }
+
   combine(objectArr = []) {
     super.combine(objectArr);
     this.config.dir = this.config.outputDir + '/' + this.config.package + '/';

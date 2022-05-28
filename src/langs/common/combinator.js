@@ -36,6 +36,8 @@ class BaseCombinator {
     this.thirdPackageClient = imports.thirdPackageClient;
     this.thirdPackageClientAlias = imports.thirdPackageClientAlias;
     this.thirdPackageModel = imports.thirdPackageModel;
+    this.typedef = imports.typedef;
+    this.importsTypedef = imports.importsTypedef;
 
     _config(this.config);
   }
