@@ -228,4 +228,46 @@ describe('Python Generator', function () {
       }
     });
   });
+
+  it('typedef should ok', function () {
+    check('typedef', [
+      'tea_python_tests/client.py',
+      'tea_python_tests/models.py'
+    ],
+    {
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'client',
+        packageInfo: {
+          name: 'tea_python_tests',
+          desc: 'Generate setup.py',
+          github: 'https://github.com/',
+          author: 'Alibaba',
+          email: 'sdk-team@alibabacloud.com'
+        },
+        typedef: {
+          HttpResponse: {
+            import: 'requests',
+            type: 'Response',
+            package: 'requests:2.21.0'
+          },
+          HttpHeader: {
+            import: null,
+            type: 'Dict[str, Any]',
+            package: null
+          },
+          TeaModel: {
+            import: 'Tea.model',
+            type: 'TeaModel',
+            package: 'alibabacloud-tea:0.2.9'
+          },
+          TeaException: {
+            import: 'Tea.exceptions',
+            type: 'TeaException',
+            package: 'alibabacloud-tea:0.2.9'
+          }
+        }
+      }
+    });
+  });
 });

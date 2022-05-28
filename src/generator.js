@@ -14,11 +14,18 @@ class Generator {
       throw new Error('`option.outputDir` should not empty');
     }
     this.lang = lang;
+    this.typedef = meta[lang] && meta[lang].typedef ? meta[lang].typedef : {};
     this.initConfig(meta);
   }
 
   visit(ast) {
     this.imports = this.resolveImports(ast);
+    this.imports.typedef = this.typedef;
+    Object.keys(this.typedef).forEach((def) => {
+      if (this.typedef[def].package && !this.imports.requirePackage.includes(this.typedef[def].package)) {
+        this.imports.requirePackage.push(this.typedef[def].package);
+      }
+    });
     const objects = [];
 
     // combine client code
@@ -120,6 +127,7 @@ class Generator {
     let thirdPackageModel = {};
     let thirdPackageClient = {};
     let thirdPackageClientAlias = {};
+    let importsTypedef = {};
 
     if (imports.length > 0) {
       const lockPath = path.join(this.config.pkgDir, '.libraries.json');
@@ -158,6 +166,20 @@ class Generator {
           modelDir = daraMeta[this.lang].modelDirName
             ? daraMeta[this.lang].modelDirName
             : this.config.model.dir;
+          if (daraMeta[this.lang].typedef) {
+            importsTypedef[aliasId] = {};
+            const moduleTypedef = daraMeta[this.lang].typedef;
+            Object.keys(moduleTypedef || {}).forEach((types) => {
+              if (!importsTypedef[aliasId][types]) {
+                importsTypedef[aliasId][types] = {};
+              }
+              importsTypedef[aliasId][types].import = moduleTypedef[types].import;
+              importsTypedef[aliasId][types].type = moduleTypedef[types].type;
+              if (!requirePackage.includes(moduleTypedef[types].package)) {
+                requirePackage.push(moduleTypedef[types].package);
+              }
+            });
+          }
         } else {
           packageName = daraMeta.name;
           clientName = this.config.clientName;
@@ -197,6 +219,7 @@ class Generator {
       thirdPackageClient,
       thirdPackageClientAlias,
       thirdPackageModel,
+      importsTypedef,
     };
   }
 }

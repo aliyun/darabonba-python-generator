@@ -202,6 +202,38 @@ class Combinator extends CombinatorBase {
     return resultName;
   }
 
+  addTypedefInclude(typeName) {
+    let accessPath = typeName.split('.');
+    let importName = '';
+    let fromName = '';
+    let typedefModule = {};
+    if (accessPath.length === 2) {
+      if (this.importsTypedef[accessPath[0]] && this.importsTypedef[accessPath[0]][accessPath[1]]) {
+        typedefModule = this.importsTypedef[accessPath[0]][accessPath[1]];
+      }
+    } else if (accessPath.length === 1 && this.typedef[accessPath[0]]) {
+      typedefModule = this.typedef[accessPath[0]];
+    }
+    if (typedefModule.import || typedefModule.package) {
+      if (typedefModule.import) {
+        fromName = typedefModule.import;
+      }
+      if (typedefModule.type) {
+        importName = typedefModule.type;
+      }
+    }
+
+    let existResult = this.includeList.some(item => item.import === importName && item.from === fromName);
+    if (!existResult) {
+      this.includeList.push({
+        'from': fromName,
+        'import': importName,
+        'alias': '',
+      });
+    }
+    return typedefModule.type || typeName;
+  }
+
   simpleImport(imp, from = null) {
     let existResult = this.includeList.some(item => {
       if (item.import === imp && item.from === from) {
@@ -213,7 +245,7 @@ class Combinator extends CombinatorBase {
         from: from,
         import: imp
       });
-    } 
+    }
   }
 
   combine(objectArr = []) {
@@ -402,7 +434,7 @@ class Combinator extends CombinatorBase {
     } else if (obj.objectType === 'model' || !this.config.typeMap[obj] && !this.thirdPackageNamespace[obj]) {
       if (_type(obj) === target) {
         return true;
-      } 
+      }
     }
     return false;
   }
@@ -916,7 +948,7 @@ class Combinator extends CombinatorBase {
     this.levelDown();
   }
 
-  emitNotes(emitter, notes) {}
+  emitNotes(emitter, notes) { }
 
   emitConstruct(emitter, construct, props, isModule = false) {
     if (construct.params.length + props.length > 0) {
@@ -950,7 +982,7 @@ class Combinator extends CombinatorBase {
             } else {
               emitter.emitln(`${_name(prop.name)}: ${typeHints} = None,`, this.level);
             }
-            
+
           }
         });
       }
@@ -1200,7 +1232,7 @@ class Combinator extends CombinatorBase {
     let importList = this.includeList.filter(node => !node.from && node.import);
     let aliasList = this.includeList.filter(node => node.from && node.alias);
     let list = this.includeList.filter(node => node.from && !node.alias);
-    
+
     let from = {};
     let fromList = [];
 
@@ -1489,7 +1521,7 @@ class Combinator extends CombinatorBase {
           if (item instanceof AnnotationItem) {
             if (item.mode === 'single') {
               emit.emit(`# ${item.content}`, this.level);
-            } 
+            }
             tmp.push(emit.output);
             return true;
           }
@@ -1761,7 +1793,7 @@ class Combinator extends CombinatorBase {
       const quote = this._adaptedQuotes(behavior.key, emitter);
       emitter.emit(`${emit.output}[${quote}${behavior.key}${quote}] = `, this.level);
     }
-    
+
     this.grammerValue(emitter, behavior.value);
     emitter.emitln('');
   }

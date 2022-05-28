@@ -162,6 +162,9 @@ class BaseResolver {
       } else if (typeNode.idType === 'module') {
         typeInfo['lexeme'] = this.combinator.addInclude(typeNode.lexeme);
         return typeInfo;
+      } else if (typeNode.idType === 'typedef') {
+        typeInfo['lexeme'] = this.combinator.addTypedefInclude(typeNode.lexeme);
+        return typeInfo;
       } else if (typeNode.idType === 'builtin_model') {
         typeInfo['objectType'] = 'builtin_model';
         return this.combinator.addInclude(typeNode.lexeme);
@@ -212,6 +215,13 @@ class BaseResolver {
         });
         typeInfo['objectType'] = 'model';
         typeInfo['lexeme'] = this.combinator.addModelInclude(tmp.join('.'));
+        return typeInfo;
+      } else if (typeNode.type === 'moduleTypedef') {
+        let tmp = [];
+        typeNode.path.forEach(item => {
+          tmp.push(item.lexeme);
+        });
+        typeInfo['lexeme'] = this.combinator.addTypedefInclude(tmp.join('.'));
         return typeInfo;
       } else if (typeNode.type === 'subModel') {
         let tmp = [];
