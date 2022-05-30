@@ -3,15 +3,12 @@ English | [简体中文](/README-CN.md)
 # Darabonba Python Generator
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
 [![codecov][cov-image]][cov-url]
 [![David deps][david-image]][david-url]
 [![npm download][download-image]][download-url]
 
 [npm-image]: https://img.shields.io/npm/v/@darabonba/python-generator.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/@darabonba/python-generator
-[travis-image]: https://img.shields.io/travis/aliyun/darabonba-python-generator.svg?style=flat-square
-[travis-url]: https://travis-ci.org/aliyun/darabonba-python-generator
 [cov-image]: https://codecov.io/gh/aliyun/darabonba-python-generator/branch/master/graph/badge.svg
 [cov-url]: https://codecov.io/gh/aliyun/darabonba-python-generator
 [david-image]: https://img.shields.io/david/aliyun/darabonba-python-generator.svg?style=flat-square
