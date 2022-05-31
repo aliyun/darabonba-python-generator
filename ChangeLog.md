@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.10 - 2022-05-31
+
+* Fix import package for typedef.
+
 ## 1.2.9 - 2022-05-31
 
 * Support Typedef.
