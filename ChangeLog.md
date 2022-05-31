@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.9 - 2022-05-31
+
+* Support Typedef.
+
 ## 1.2.8 - 2020-03-17
 
 * Improve TeaModel to avoid serialization exception.
