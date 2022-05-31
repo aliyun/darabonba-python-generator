@@ -175,7 +175,7 @@ class Generator {
               }
               importsTypedef[aliasId][types].import = moduleTypedef[types].import;
               importsTypedef[aliasId][types].type = moduleTypedef[types].type;
-              if (!requirePackage.includes(moduleTypedef[types].package)) {
+              if (moduleTypedef[types].package && !requirePackage.includes(moduleTypedef[types].package)) {
                 requirePackage.push(moduleTypedef[types].package);
               }
             });
