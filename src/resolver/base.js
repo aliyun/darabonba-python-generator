@@ -153,7 +153,7 @@ class BaseResolver {
   }
 
   resolveType(typeNode, sourceNode, prop) {
-    let typeInfo = {objectType: 'module'};
+    let typeInfo = { objectType: 'module' };
     if (typeNode.idType) {
       if (typeNode.idType === 'model') {
         typeInfo['objectType'] = 'model';
@@ -172,7 +172,7 @@ class BaseResolver {
       debug.stack(typeNode, sourceNode);
     } else if (typeNode.type) {
       if (typeNode.type === 'fieldType') {
-        return this.resolveType(typeNode.fieldType, typeNode);
+        return this.resolveType(typeNode.fieldType, typeNode, prop);
       } else if (typeNode.type === 'modelBody') {
         // is sub model
         typeInfo['objectType'] = 'model';
@@ -239,14 +239,14 @@ class BaseResolver {
       let itemType;
       if (sourceNode.fieldItemType.type === 'modelBody') {
         typeInfo['objectType'] = 'model';
-        typeInfo['lexeme'] = this.combinator.addModelInclude(sourceNode.itemType);
+        typeInfo['lexeme'] = this.combinator.addModelInclude(sourceNode.itemType ? sourceNode.itemType : prop);
         itemType = typeInfo;
       } else if (sourceNode.fieldItemType.idType === 'model') {
         typeInfo['objectType'] = 'model';
         typeInfo['lexeme'] = this.combinator.addModelInclude(sourceNode.fieldItemType.lexeme);
         itemType = typeInfo;
       } else {
-        itemType = this.resolveType(sourceNode.fieldItemType, sourceNode);
+        itemType = this.resolveType(sourceNode.fieldItemType, sourceNode, sourceNode.itemType ? sourceNode.itemType : prop);
       }
       const arrayType = {
         lexeme: 'array',

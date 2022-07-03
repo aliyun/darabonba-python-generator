@@ -163,6 +163,18 @@ class Client(SourceClient):
             '1'
         ]
 
+    @staticmethod
+    def array_2():
+        temp = source_models.Config()
+        any_arr = [
+            temp
+        ]
+        return [
+            [
+                any_arr
+            ]
+        ]
+
     def template_string(self):
         return '/%s' % TeaConverter.to_unicode(self._protocol)
 

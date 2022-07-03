@@ -101,6 +101,39 @@ class ComplexRequestPart(TeaModel):
         return self
 
 
+class ComplexRequestComplexList(TeaModel):
+    def __init__(
+        self,
+        name: str = None,
+        code: int = None,
+    ):
+        self.name = name
+        self.code = code
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
+        result = dict()
+        if self.name is not None:
+            result['Name'] = self.name
+        if self.code is not None:
+            result['Code'] = self.code
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('Name') is not None:
+            self.name = m.get('Name')
+        if m.get('Code') is not None:
+            self.code = m.get('Code')
+        return self
+
+
 class ComplexRequest(TeaModel):
     def __init__(
         self,
@@ -111,6 +144,8 @@ class ComplexRequest(TeaModel):
         num: int = None,
         configs: ComplexRequestConfigs = None,
         part: List[ComplexRequestPart] = None,
+        complex_list: List[List[List[ComplexRequestComplexList]]] = None,
+        complex_list_1: List[List[Dict[str, str]]] = None,
     ):
         self.access_key = access_key
         # Body
@@ -123,6 +158,8 @@ class ComplexRequest(TeaModel):
         self.configs = configs
         # Part
         self.part = part
+        self.complex_list = complex_list
+        self.complex_list_1 = complex_list_1
 
     def validate(self):
         self.validate_required(self.access_key, 'access_key')
@@ -139,6 +176,14 @@ class ComplexRequest(TeaModel):
             for k in self.part:
                 if k:
                     k.validate()
+        self.validate_required(self.complex_list, 'complex_list')
+        if self.complex_list:
+            for k in self.complex_list:
+                for k1 in k:
+                    for k2 in k1:
+                        if k2:
+                            k2.validate()
+        self.validate_required(self.complex_list_1, 'complex_list_1')
 
     def to_map(self):
         _map = super().to_map()
@@ -162,6 +207,18 @@ class ComplexRequest(TeaModel):
         if self.part is not None:
             for k in self.part:
                 result['Part'].append(k.to_map() if k else None)
+        result['complexList'] = []
+        if self.complex_list is not None:
+            for k in self.complex_list:
+                l1 = []
+                for k1 in k:
+                    l2 = []
+                    for k2 in k1:
+                        l2.append(k2.to_map() if k2 else None)
+                    l1.append(l2)
+                result['complexList'].append(l1)
+        if self.complex_list_1 is not None:
+            result['complexList1'] = self.complex_list_1
         return result
 
     def from_map(self, m: dict = None):
@@ -185,6 +242,19 @@ class ComplexRequest(TeaModel):
             for k in m.get('Part'):
                 temp_model = ComplexRequestPart()
                 self.part.append(temp_model.from_map(k))
+        self.complex_list = []
+        if m.get('complexList') is not None:
+            for k in m.get('complexList'):
+                l1 = []
+                for k1 in k:
+                    l2 = []
+                    for k2 in k1:
+                        temp_model = ComplexRequestComplexList()
+                        l2.append(temp_model.from_map(k2))
+                    l1.append(l2)
+                self.complex_list.append(l1)
+        if m.get('complexList1') is not None:
+            self.complex_list_1 = m.get('complexList1')
         return self
 
 
