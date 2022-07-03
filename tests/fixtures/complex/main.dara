@@ -29,6 +29,13 @@ model ComplexRequest = {
       partNumber?: string(description='PartNumber', name='PartNumber')
     }
   ](description='Part', name='Part'),
+  complexList: [[[ 
+    {
+      name?: string(name='Name'),
+      code?: int32(name='Code'),
+    }
+  ]]](name='complexList'),
+  complexList1: [[map[string]string]],
 }
 
 async function hello(request: object, strs: [ string ]): [ string ] {
@@ -136,6 +143,12 @@ static function array0(req: object): [ any ] {
 
 static function array1(): [ string ] {
   return ["1"];
+}
+
+static function array2(): [[ any ]] {
+  var temp = new Source.Config{};
+  var anyArr : [Source.Config] = [temp];
+  return [[anyArr]];
 }
 
 async function TemplateString(): string {
