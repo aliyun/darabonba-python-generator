@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.11 - 2022-07-11
+
+* Support complex list(`array-in-array`).
+
 ## 1.2.10 - 2022-05-31
 
 * Fix import package for typedef.
