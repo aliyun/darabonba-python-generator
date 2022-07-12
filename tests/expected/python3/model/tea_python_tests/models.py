@@ -49,23 +49,23 @@ class M(TeaModel):
         result = dict()
         if self.oneself is not None:
             result['oneself'] = self.oneself.to_map()
-        result['selfArray'] = []
         if self.self_array is not None:
+            result['selfArray'] = []
             for k in self.self_array:
                 result['selfArray'].append(k.to_map() if k else None)
-        result['selfMap'] = {}
         if self.self_map is not None:
+            result['selfMap'] = {}
             for k, v in self.self_map.items():
                 result['selfMap'][k] = v.to_map()
-        result['selfArrayMap'] = []
         if self.self_array_map is not None:
+            result['selfArrayMap'] = []
             for k in self.self_array_map:
                 d1 = {}
                 for k1 ,v1 in k.items():
                     d1[k1] = v1.to_map()
                 result['selfArrayMap'].append(d1)
-        result['selfArrayArray'] = []
         if self.self_array_array is not None:
+            result['selfArrayArray'] = []
             for k in self.self_array_array:
                 l1 = []
                 for k1 in k:
@@ -154,8 +154,8 @@ class MyModelSubModelModel(TeaModel):
             return _map
 
         result = dict()
-        result['subModel'] = []
         if self.sub_model is not None:
+            result['subModel'] = []
             for k in self.sub_model:
                 result['subModel'].append(k.to_map() if k else None)
         return result
@@ -296,8 +296,8 @@ class MyModel(TeaModel):
             result['realName'] = self.name
         if self.submodel is not None:
             result['submodel'] = self.submodel.to_map()
-        result['subarray'] = []
         if self.subarray is not None:
+            result['subarray'] = []
             for k in self.subarray:
                 result['subarray'].append(k.to_map() if k else None)
         if self.maparray is not None:
@@ -322,26 +322,26 @@ class MyModel(TeaModel):
             result['minimum'] = self.minimum
         if self.test_3 is not None:
             result['test3'] = self.test_3
-        result['arrayArrayModel'] = []
         if self.array_array_model is not None:
+            result['arrayArrayModel'] = []
             for k in self.array_array_model:
                 l1 = []
                 for k1 in k:
                     l1.append(k1.to_map() if k1 else None)
                 result['arrayArrayModel'].append(l1)
-        result['arrayMapModel'] = []
         if self.array_map_model is not None:
+            result['arrayMapModel'] = []
             for k in self.array_map_model:
                 d1 = {}
                 for k1 ,v1 in k.items():
                     d1[k1] = v1.to_map()
                 result['arrayMapModel'].append(d1)
-        result['mapModel'] = {}
         if self.map_model is not None:
+            result['mapModel'] = {}
             for k, v in self.map_model.items():
                 result['mapModel'][k] = v.to_map()
-        result['submodelMap'] = {}
         if self.submodel_map is not None:
+            result['submodelMap'] = {}
             for k, v in self.submodel_map.items():
                 result['submodelMap'][k] = v.to_map()
         if self.sub_model_model is not None:

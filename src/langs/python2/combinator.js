@@ -295,7 +295,7 @@ class Combinator extends CombinatorBase {
     emitter = new Emitter(this.config);
 
     this.emitClass(emitter, object);
-    
+
     outputParts.body = this.checkSyntax(emitter.output, emitter);
     /******************************** emit head *******************************/
     emitter = new Emitter(this.config);
@@ -599,9 +599,9 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`${carrier}[k${num}] = l${depth}`, this.level);
         }
       } else {
-        emitter.emitln(`result['${fieldName}'] = []`, this.level);
         emitter.emitln(`if self.${_name(name)} is not None:`, this.level);
         this.levelUp();
+        emitter.emitln(`result['${fieldName}'] = []`, this.level);
         emitter.emitln(`for k in self.${_name(name)}:`, this.level);
         this.levelUp();
         if (type.itemType.valType || type.itemType.itemType) {
@@ -643,9 +643,9 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
         }
       } else {
-        emitter.emitln(`result['${fieldName}'] = {}`, this.level);
         emitter.emitln(`if self.${_name(name)} is not None:`, this.level);
         this.levelUp();
+        emitter.emitln(`result['${fieldName}'] = {}`, this.level);
         emitter.emitln(`for k, v in self.${_name(name)}.items():`, this.level);
         this.levelUp();
         if (type.valType.valType || type.valType.itemType) {
@@ -889,7 +889,7 @@ class Combinator extends CombinatorBase {
     this.levelDown();
   }
 
-  emitNotes(emitter, notes) {}
+  emitNotes(emitter, notes) { }
 
   emitConstruct(emitter, construct, props, isModule = false) {
     if (construct.params.length + props.length > 0) {
@@ -915,10 +915,10 @@ class Combinator extends CombinatorBase {
         props.forEach((prop) => {
           if (prop instanceof PropItem) {
             let str = ` ${_name(prop.name)}=None`;
-            if(curr_length+str.length>=max_length){
-              str =  emitter.eol + emitter.indent(this.level + 3) + str;
+            if (curr_length + str.length >= max_length) {
+              str = emitter.eol + emitter.indent(this.level + 3) + str;
               curr_length = 0;
-            }else{
+            } else {
               curr_length = curr_length + str.length;
             }
             constructProps.push(str);
@@ -1257,7 +1257,7 @@ class Combinator extends CombinatorBase {
         from: from,
         import: imp
       });
-    } 
+    }
   }
 
   grammerExpr(emitter, gram) {
@@ -1269,7 +1269,7 @@ class Combinator extends CombinatorBase {
     emitter.emit(` ${_symbol(gram.opt)} `);
     this.grammer(emitter, gram.right, false, false);
   }
-  
+
   grammerVar(emitter, gram) {
     if (gram.varType === 'static_class') {
       const name = gram.name ? gram.name : gram.key;
@@ -1387,7 +1387,7 @@ class Combinator extends CombinatorBase {
           if (item instanceof AnnotationItem) {
             if (item.mode === 'single') {
               emit.emit(`# ${item.content}`, this.level);
-            } 
+            }
             tmp.push(emit.output);
             return true;
           }
@@ -1653,7 +1653,7 @@ class Combinator extends CombinatorBase {
       const quote = this._adaptedQuotes(behavior.key, emitter);
       emitter.emit(`${emit.output}[${quote}${behavior.key}${quote}] = `, this.level);
     }
-    
+
     this.grammerValue(emitter, behavior.value);
     emitter.emitln('');
   }

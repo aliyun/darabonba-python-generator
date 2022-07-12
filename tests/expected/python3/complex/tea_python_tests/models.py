@@ -203,12 +203,12 @@ class ComplexRequest(TeaModel):
             result['Num'] = self.num
         if self.configs is not None:
             result['configs'] = self.configs.to_map()
-        result['Part'] = []
         if self.part is not None:
+            result['Part'] = []
             for k in self.part:
                 result['Part'].append(k.to_map() if k else None)
-        result['complexList'] = []
         if self.complex_list is not None:
+            result['complexList'] = []
             for k in self.complex_list:
                 l1 = []
                 for k1 in k:
