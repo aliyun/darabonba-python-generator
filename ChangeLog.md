@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.3.0 - 2022-07-18
+
+* Model convert to map except blank struct.
+
 ## 1.2.11 - 2022-07-11
 
 * Support complex list(`array-in-array`).
