@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.12 - 2022-07-20
+
+* Support infinite loop reference in model.
+
 ## 1.2.11 - 2022-07-11
 
 * Support complex list(`array-in-array`).
