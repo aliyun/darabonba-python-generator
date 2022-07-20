@@ -393,6 +393,7 @@ class Combinator extends CombinatorBase {
     if (_contain(this.definedModels, model.name)) {
       return;
     }
+    this.definedModels.push(model_name);
     if (model.subObject.length) {
       model.subObject.forEach(obj => {
         this.emitModel(emitter, obj);
@@ -401,7 +402,6 @@ class Combinator extends CombinatorBase {
     model.body.filter(node => node instanceof PropItem && !this.hasModel(node.type, model.name)).forEach(item => {
       this.findUndefinedModel(emitter, item.type);
     });
-    this.definedModels.push(model_name);
     this.emitClass(emitter, model);
     emitter.emitln().emitln();
   }
