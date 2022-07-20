@@ -47,3 +47,11 @@ model M = {
     selfArrayMap: [ map[string]M ],
     selfArrayArray: [ [ M ] ]
 };
+
+model Node {
+  child?: {
+    subChild?: {
+      childNode?: Node(name='childNode'),
+    }(name='subChild'),
+  }(name='child'),
+}

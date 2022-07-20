@@ -468,3 +468,81 @@ class M(TeaModel):
         return self
 
 
+class NodeChildSubChild(TeaModel):
+    def __init__(self, child_node=None):
+        self.child_node = child_node  # type: Node
+
+    def validate(self):
+        if self.child_node:
+            self.child_node.validate()
+
+    def to_map(self):
+        _map = super(NodeChildSubChild, self).to_map()
+        if _map is not None:
+            return _map
+
+        result = dict()
+        if self.child_node is not None:
+            result['childNode'] = self.child_node.to_map()
+        return result
+
+    def from_map(self, m=None):
+        m = m or dict()
+        if m.get('childNode') is not None:
+            temp_model = Node()
+            self.child_node = temp_model.from_map(m['childNode'])
+        return self
+
+
+class NodeChild(TeaModel):
+    def __init__(self, sub_child=None):
+        self.sub_child = sub_child  # type: NodeChildSubChild
+
+    def validate(self):
+        if self.sub_child:
+            self.sub_child.validate()
+
+    def to_map(self):
+        _map = super(NodeChild, self).to_map()
+        if _map is not None:
+            return _map
+
+        result = dict()
+        if self.sub_child is not None:
+            result['subChild'] = self.sub_child.to_map()
+        return result
+
+    def from_map(self, m=None):
+        m = m or dict()
+        if m.get('subChild') is not None:
+            temp_model = NodeChildSubChild()
+            self.sub_child = temp_model.from_map(m['subChild'])
+        return self
+
+
+class Node(TeaModel):
+    def __init__(self, child=None):
+        self.child = child  # type: NodeChild
+
+    def validate(self):
+        if self.child:
+            self.child.validate()
+
+    def to_map(self):
+        _map = super(Node, self).to_map()
+        if _map is not None:
+            return _map
+
+        result = dict()
+        if self.child is not None:
+            result['child'] = self.child.to_map()
+        return result
+
+    def from_map(self, m=None):
+        m = m or dict()
+        if m.get('child') is not None:
+            temp_model = NodeChild()
+            self.child = temp_model.from_map(m['child'])
+        return self
+
+
