@@ -140,6 +140,8 @@ class Generator {
         let targetPath;
         if (moduleDir.startsWith('/')) {
           targetPath = moduleDir;
+        } else if (moduleDir.startsWith('./') || moduleDir.startsWith('../')) {
+          targetPath = path.join(this.config.pkgDir, moduleDir);
         } else {
           targetPath = path.join(this.config.pkgDir, lock[moduleDir]);
         }

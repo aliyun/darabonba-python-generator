@@ -157,12 +157,20 @@ describe('Python Generator', function () {
 
   it('import should ok', function () {
     check('import', [
-      'tea_python_tests/client.py'
+      'tea_python_tests/client.py',
+      'setup.py'
     ],
     {
       python2: {
         package: 'tea_python_tests',
-        clientName: 'client'
+        clientName: 'client',
+        packageInfo: {
+          name: 'tea_python_tests',
+          desc: 'Generate setup.py',
+          github: 'https://github.com/',
+          author: 'Alibaba',
+          email: 'sdk-team@alibabacloud.com'
+        }
       }
     });
   });

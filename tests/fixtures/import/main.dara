@@ -1,7 +1,9 @@
 import Source;
+import Local;
 
 type @id = [ string ];
 type @str = string;
+type @model = Local.Local;
 
 
 static function Sample(client: Source): void {

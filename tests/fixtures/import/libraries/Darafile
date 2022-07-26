@@ -30,6 +30,7 @@
     "clientName": "source_client"
   },
   "releases": {
-    "ts": "@scope/module:*"
+    "python": "alibabacloud_import:0.0.1",
+    "python2": "alibabacloud_import_py2:0.0.1"
   }
 }

@@ -1,3 +1,4 @@
 {
-  "alibabacloud:Import:*": "./libraries"
+  "alibabacloud:Import:*": "./libraries",
+  "Local": "./pack/"
 }

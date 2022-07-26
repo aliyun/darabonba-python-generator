@@ -1,0 +1,10 @@
+{
+  "scope": "alibabacloud",
+  "name": "local",
+  "version": "0.0.1",
+  "main": "./local.dara",
+  "releases": {
+    "python": "alibabacloud_local:0.0.1",
+    "python2": "alibabacloud_local_py2:0.0.1"
+  }
+}
