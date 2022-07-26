@@ -3,12 +3,14 @@
 from Source.source_client import SourceClient
 from typing import List
 
+from local import models as local_models
 from Source import models as source_models
 
 
 class Client:
     _id: List[str] = None
     _str: str = None
+    _model: local_models.Local = None
 
     def __init__(self):
         pass
