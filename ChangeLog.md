@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.13 - 2022-07-27
+
+* Support import local package.
+
 ## 1.2.12 - 2022-07-20
 
 * Support infinite loop reference in model.
