@@ -36,6 +36,7 @@ model ComplexRequest = {
     }
   ]]](name='complexList'),
   complexList1: [[map[string]string]],
+  from: string(name='from', description='test keywords')
 }
 
 async function hello(request: object, strs: [ string ]): [ string ] {
@@ -74,6 +75,11 @@ api complex1(request: ComplexRequest, client: Source): Source.RuntimeObject {
     ...mapVal
   });
   __request.body = Source.body();
+  request.from = 'test';
+  var from = new ComplexRequest{
+    from = 'test',
+  };
+  Complex3(from);
 } returns {
   if (true && true) {
     return null;

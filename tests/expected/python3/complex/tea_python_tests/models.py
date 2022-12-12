@@ -146,6 +146,7 @@ class ComplexRequest(TeaModel):
         part: List[ComplexRequestPart] = None,
         complex_list: List[List[List[ComplexRequestComplexList]]] = None,
         complex_list_1: List[List[Dict[str, str]]] = None,
+        from_: str = None,
     ):
         self.access_key = access_key
         # Body
@@ -160,6 +161,8 @@ class ComplexRequest(TeaModel):
         self.part = part
         self.complex_list = complex_list
         self.complex_list_1 = complex_list_1
+        # test keywords
+        self.from_ = from_
 
     def validate(self):
         self.validate_required(self.access_key, 'access_key')
@@ -184,6 +187,7 @@ class ComplexRequest(TeaModel):
                         if k2:
                             k2.validate()
         self.validate_required(self.complex_list_1, 'complex_list_1')
+        self.validate_required(self.from_, 'from_')
 
     def to_map(self):
         _map = super().to_map()
@@ -219,6 +223,8 @@ class ComplexRequest(TeaModel):
                 result['complexList'].append(l1)
         if self.complex_list_1 is not None:
             result['complexList1'] = self.complex_list_1
+        if self.from_ is not None:
+            result['from'] = self.from_
         return result
 
     def from_map(self, m: dict = None):
@@ -255,6 +261,8 @@ class ComplexRequest(TeaModel):
                 self.complex_list.append(l1)
         if m.get('complexList1') is not None:
             self.complex_list_1 = m.get('complexList1')
+        if m.get('from') is not None:
+            self.from_ = m.get('from')
         return self
 
 

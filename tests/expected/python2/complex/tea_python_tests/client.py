@@ -64,6 +64,11 @@ class Client(SourceClient):
                 }, request.header,
                     map_val))
                 _request.body = SourceClient.body()
+                request.from_ = 'test'
+                from_ = main_models.ComplexRequest(
+                    from_='test'
+                )
+                self.complex_3(from_)
                 _last_request = _request
                 _response = TeaCore.do_action(_request, _runtime)
                 if True and True:
