@@ -1410,7 +1410,7 @@ class Combinator extends CombinatorBase {
       emitter.emit(`${name}()`);
     } else if (gram.varType === 'var' || gram.varType === 'const') {
       const name = gram.name ? gram.name : gram.key;
-      emitter.emit(`${_convertStaticParam(_toSnakeCase(name))}`);
+      emitter.emit(`${_convertStaticParam(_name(name))}`);
     } else {
       debug.stack(gram);
     }
@@ -1422,7 +1422,7 @@ class Combinator extends CombinatorBase {
         const quote = this._adaptedQuotes(gram.key, emitter);
         emitter.emit(`${quote}${gram.key}${quote}: `);
       } else {
-        emitter.emit(`${_toSnakeCase(gram.key)}=`, this.level);
+        emitter.emit(`${_name(gram.key)}=`, this.level);
       }
     }
     if (gram instanceof GrammerCall) {
@@ -1538,7 +1538,7 @@ class Combinator extends CombinatorBase {
       const quote = this._adaptedQuotes(gram.value, emitter);
       emitter.emit(`${quote}${gram.value}${quote}`);
     } else if (gram.type === 'param') {
-      emitter.emit(`${_convertStaticParam(_toSnakeCase(gram.value))}`);
+      emitter.emit(`${_convertStaticParam(_name(gram.value))}`);
     } else if (gram.type === 'call') {
       this.grammerCall(emitter, gram.value);
     } else if (gram.type === 'number') {
@@ -1758,7 +1758,7 @@ class Combinator extends CombinatorBase {
         gram.params.forEach(p => {
           let emit = new Emitter();
           if (p.key) {
-            emit.emit(`${_toSnakeCase(p.key)}`);
+            emit.emit(`${_name(p.key)}`);
             emit.emit('=');
           }
           if (typeof (p.value) === 'string') {
