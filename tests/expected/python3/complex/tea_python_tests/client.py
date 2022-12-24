@@ -416,6 +416,8 @@ class Client(SourceClient):
     ) -> str:
         config_val = request.configs.value[0]
         val = request.configs.value[index]
+        i_0 = 0
+        val = request.configs.value[i_0]
         return config_val
 
     @staticmethod
@@ -450,6 +452,8 @@ class Client(SourceClient):
         config: str,
     ) -> None:
         request.configs.value[0] = config
+        i_0 = 0
+        request.configs.value[i_0] = config
 
     @staticmethod
     def map_access(
@@ -465,6 +469,8 @@ class Client(SourceClient):
     ) -> str:
         config_info = request.configs.extra.get('name')
         config_value = request.configs.extra.get(key)
+        i_0 = key
+        config_value = request.configs.extra.get(i_0)
         return config_info
 
     @staticmethod
@@ -482,6 +488,8 @@ class Client(SourceClient):
         name: str,
     ) -> None:
         request.configs.extra['name'] = name
+        i_0 = 'name'
+        request.configs.extra[i_0] = name
 
     @staticmethod
     def str_fmt() -> None:
