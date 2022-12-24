@@ -220,6 +220,8 @@ class Client(SourceClient):
     def array_access_3(request, index):
         config_val = request.configs.value[0]
         val = request.configs.value[index]
+        i_0 = 0
+        val = request.configs.value[i_0]
         return config_val
 
     @staticmethod
@@ -247,6 +249,8 @@ class Client(SourceClient):
     @staticmethod
     def array_assign_3(request, config):
         request.configs.value[0] = config
+        i_0 = 0
+        request.configs.value[i_0] = config
 
     @staticmethod
     def map_access(request):
@@ -257,6 +261,8 @@ class Client(SourceClient):
     def map_access_2(request, key):
         config_info = request.configs.extra.get('name')
         config_value = request.configs.extra.get(key)
+        i_0 = key
+        config_value = request.configs.extra.get(i_0)
         return config_info
 
     @staticmethod
@@ -271,6 +277,8 @@ class Client(SourceClient):
     @staticmethod
     def map_assign(request, name):
         request.configs.extra['name'] = name
+        i_0 = 'name'
+        request.configs.extra[i_0] = name
 
     @staticmethod
     def str_fmt():

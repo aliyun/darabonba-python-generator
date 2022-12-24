@@ -1233,7 +1233,7 @@ class Combinator extends CombinatorBase {
           const quote = this._adaptedQuotes(pathName, emitter);
           pre += `[${quote}${pathName}${quote}]`;
         } else if (path.type === 'list') {
-          pre += `[${pathName}]`;
+          pre += path.isVar ? `[${_name(pathName)}]` : `[${pathName}]`;
         } else {
           debug.stack(gram);
         }
