@@ -1,5 +1,8 @@
 # ChangeLog
 
+## 1.2.15 - 2022-12-26
+* Fix: array assign and access with variables name
+
 ## 1.2.14 - 2022-12-12
 
 * Fix: avoid keywords in model and variables.
