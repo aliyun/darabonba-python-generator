@@ -170,7 +170,13 @@ describe('Python Generator', function () {
           github: 'https://github.com/',
           author: 'Alibaba',
           email: 'sdk-team@alibabacloud.com'
-        }
+        },
+        additionalPackage: [
+          {
+            from: '__future__',
+            import: 'annotations'
+          }
+        ]
       }
     });
   });
@@ -195,7 +201,13 @@ describe('Python Generator', function () {
     {
       python: {
         package: 'tea_python_tests',
-        clientName: 'client'
+        clientName: 'client',
+        additionalPackage: [
+          {
+            from: '__future__',
+            import: 'annotations'
+          }
+        ]
       }
     });
   });

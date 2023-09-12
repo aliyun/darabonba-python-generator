@@ -38,6 +38,7 @@ class BaseCombinator {
     this.thirdPackageModel = imports.thirdPackageModel;
     this.typedef = imports.typedef;
     this.importsTypedef = imports.importsTypedef;
+    this.additionalPackage = imports.additionalPackage;
 
     _config(this.config);
   }
