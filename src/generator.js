@@ -15,12 +15,14 @@ class Generator {
     }
     this.lang = lang;
     this.typedef = meta[lang] && meta[lang].typedef ? meta[lang].typedef : {};
+    this.additionalPackage = meta[lang] && meta[lang].additionalPackage ? meta[lang].additionalPackage : [];
     this.initConfig(meta);
   }
 
   visit(ast) {
     this.imports = this.resolveImports(ast);
     this.imports.typedef = this.typedef;
+    this.imports.additionalPackage = this.additionalPackage;
     Object.keys(this.typedef).forEach((def) => {
       if (this.typedef[def].package && !this.imports.requirePackage.includes(this.typedef[def].package)) {
         this.imports.requirePackage.push(this.typedef[def].package);

@@ -1234,7 +1234,8 @@ class Combinator extends CombinatorBase {
     let list = this.includeList.filter(node => node.from && !node.alias);
 
     let from = {};
-    let fromList = [];
+    let fromList =  [];
+    fromList = fromList.concat(this.additionalPackage);
 
     list.forEach(item => {
       if (!from[item.from]) {
