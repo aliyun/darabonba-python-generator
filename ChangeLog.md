@@ -1,5 +1,8 @@
 # ChangeLog
 
+## 1.2.16 - 2023-09-13
+* Feat: support importing additional package
+
 ## 1.2.15 - 2022-12-26
 * Fix: array assign and access with variables name
 
