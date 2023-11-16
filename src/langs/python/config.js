@@ -67,7 +67,8 @@ module.exports = {
     'WRITABLE': 'BinaryIO',
     'any': 'Any',
     'dict': 'Dict',
-    'list': 'List'
+    'list': 'List',
+    'iterator': 'Iterator'
   },
   typeMap: {
     'string': 'str',
@@ -94,7 +95,8 @@ module.exports = {
     'uint64': 'int',
     'any': 'any',
     'void': 'None',
-    'null': 'None'
+    'null': 'None',
+    'iterator': 'Iterator'
   },
   type: {
     // 'long': 'base',
@@ -110,7 +112,8 @@ module.exports = {
     'dict': 'complex',
     'list': 'complex',
     'READABLE': 'custom',
-    'WRITABLE': 'custom'
+    'WRITABLE': 'custom',
+    'iterator': 'complex'
   },
   exceptionMap: {
     'BASE': 'Exception',
