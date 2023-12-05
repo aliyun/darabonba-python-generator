@@ -157,8 +157,7 @@ describe('Python Generator', function () {
 
   it('import should ok', function () {
     check('import', [
-      'tea_python_tests/client.py',
-      'setup.py'
+      'tea_python_tests/client.py'
     ],
     {
       python: {
@@ -179,6 +178,9 @@ describe('Python Generator', function () {
         ]
       }
     });
+    const expected = fs.readFileSync(path.join(expectedDir, 'import', 'setup.py'), 'utf8');
+    const output = fs.readFileSync(path.join(outputDir, 'import', 'setup.py'), 'utf8');
+    assert.deepStrictEqual(output.replace(new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}'), '*'), expected);
   });
 
   it('map should ok', function () {

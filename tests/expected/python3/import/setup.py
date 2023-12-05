@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 """
 setup module for tea_python_tests.
 
-Created on 13/09/2023
+Created on *
 
 @author: Alibaba
 """
