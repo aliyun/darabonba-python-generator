@@ -658,9 +658,9 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`${carrier}[k${num}] = l${depth}`, this.level);
         }
       } else {
-        emitter.emitln(`result['${fieldName}'] = []`, this.level);
         emitter.emitln(`if self.${_name(name)} is not None:`, this.level);
         this.levelUp();
+        emitter.emitln(`result['${fieldName}'] = []`, this.level);
         emitter.emitln(`for k in self.${_name(name)}:`, this.level);
         this.levelUp();
         if (type.itemType.valType || type.itemType.itemType) {
@@ -702,9 +702,9 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
         }
       } else {
-        emitter.emitln(`result['${fieldName}'] = {}`, this.level);
         emitter.emitln(`if self.${_name(name)} is not None:`, this.level);
         this.levelUp();
+        emitter.emitln(`result['${fieldName}'] = {}`, this.level);
         emitter.emitln(`for k, v in self.${_name(name)}.items():`, this.level);
         this.levelUp();
         if (type.valType.valType || type.valType.itemType) {
