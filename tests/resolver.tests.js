@@ -28,8 +28,8 @@ describe('client resolver should be ok', function () {
   it('resolve should be ok', function () {
     const combinator = new Combinator(Object.assign(_deepClone(config), {
       package: 'test', model: { dir: 'Models' }
-    }), { });
-    const code = new ClientResolver({moduleBody: { nodes: [] }}, combinator, {});
+    }), {});
+    const code = new ClientResolver({ moduleBody: { nodes: [] } }, combinator, {});
     mm(code, 'initAnnotation', function () { return; });
     mm(code, 'resolveProps', function () { return; });
     mm(code.combinator, 'addInclude', function (className) { return className; });
@@ -83,7 +83,7 @@ describe('client resolver should be ok', function () {
     }), {});
     const code = new ClientResolver({}, combinator, {});
     const funcItem = new FuncItem();
-    
+
     mm(code.combinator, 'addInclude', function (className) {
       return className;
     });

@@ -4,7 +4,12 @@ module.exports = {
   indent: '    ',
   ext: '.tea',
   resolvePathByPackage: false,
-  keywords: [],
+  keywords: {
+    general: [],
+    function: [],
+    class: [],
+    param_variables: []
+  },
   typeMap: {},
   symbolMap: {},
   modifyOrder: [],

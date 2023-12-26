@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from Tea.model import TeaModel
-from typing import List, Dict, BinaryIO
+from typing import List, Dict, Any, BinaryIO
 
 
 class ComplexRequestHeader(TeaModel):
@@ -134,6 +134,33 @@ class ComplexRequestComplexList(TeaModel):
         return self
 
 
+class ComplexRequestComplexList2(TeaModel):
+    def __init__(
+        self,
+        any: Any = None,
+    ):
+        self.any = any
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        _map = super().to_map()
+        if _map is not None:
+            return _map
+
+        result = dict()
+        if self.any is not None:
+            result['Name'] = self.any
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('Name') is not None:
+            self.any = m.get('Name')
+        return self
+
+
 class ComplexRequest(TeaModel):
     def __init__(
         self,
@@ -146,7 +173,11 @@ class ComplexRequest(TeaModel):
         part: List[ComplexRequestPart] = None,
         complex_list: List[List[List[ComplexRequestComplexList]]] = None,
         complex_list_1: List[List[Dict[str, str]]] = None,
+        complex_list_2: List[List[List[ComplexRequestComplexList2]]] = None,
         from_: str = None,
+        self_: str = None,
+        print: str = None,
+        exec: str = None,
     ):
         self.access_key = access_key
         # Body
@@ -161,8 +192,15 @@ class ComplexRequest(TeaModel):
         self.part = part
         self.complex_list = complex_list
         self.complex_list_1 = complex_list_1
+        self.complex_list_2 = complex_list_2
         # test keywords
         self.from_ = from_
+        # test keywords
+        self.self = self_
+        # test keywords
+        self.print = print
+        # test keywords
+        self.exec = exec
 
     def validate(self):
         self.validate_required(self.access_key, 'access_key')
@@ -187,7 +225,17 @@ class ComplexRequest(TeaModel):
                         if k2:
                             k2.validate()
         self.validate_required(self.complex_list_1, 'complex_list_1')
+        self.validate_required(self.complex_list_2, 'complex_list_2')
+        if self.complex_list_2:
+            for k in self.complex_list_2:
+                for k1 in k:
+                    for k2 in k1:
+                        if k2:
+                            k2.validate()
         self.validate_required(self.from_, 'from_')
+        self.validate_required(self.self, 'self')
+        self.validate_required(self.print, 'print')
+        self.validate_required(self.exec, 'exec')
 
     def to_map(self):
         _map = super().to_map()
@@ -223,8 +271,24 @@ class ComplexRequest(TeaModel):
                 result['complexList'].append(l1)
         if self.complex_list_1 is not None:
             result['complexList1'] = self.complex_list_1
+        result['ComplexList2'] = []
+        if self.complex_list_2 is not None:
+            for k in self.complex_list_2:
+                l1 = []
+                for k1 in k:
+                    l2 = []
+                    for k2 in k1:
+                        l2.append(k2.to_map() if k2 else None)
+                    l1.append(l2)
+                result['ComplexList2'].append(l1)
         if self.from_ is not None:
             result['from'] = self.from_
+        if self.self is not None:
+            result['self'] = self.self
+        if self.print is not None:
+            result['print'] = self.print
+        if self.exec is not None:
+            result['exec'] = self.exec
         return result
 
     def from_map(self, m: dict = None):
@@ -261,8 +325,25 @@ class ComplexRequest(TeaModel):
                 self.complex_list.append(l1)
         if m.get('complexList1') is not None:
             self.complex_list_1 = m.get('complexList1')
+        self.complex_list_2 = []
+        if m.get('ComplexList2') is not None:
+            for k in m.get('ComplexList2'):
+                l1 = []
+                for k1 in k:
+                    l2 = []
+                    for k2 in k1:
+                        temp_model = ComplexRequestComplexList2()
+                        l2.append(temp_model.from_map(k2))
+                    l1.append(l2)
+                self.complex_list_2.append(l1)
         if m.get('from') is not None:
             self.from_ = m.get('from')
+        if m.get('self') is not None:
+            self.self = m.get('self')
+        if m.get('print') is not None:
+            self.print = m.get('print')
+        if m.get('exec') is not None:
+            self.exec = m.get('exec')
         return self
 
 

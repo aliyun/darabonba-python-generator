@@ -36,7 +36,15 @@ model ComplexRequest = {
     }
   ]]](name='complexList'),
   complexList1: [[map[string]string]],
-  from: string(name='from', description='test keywords')
+  complexList2: [[[ 
+    {
+      any?: any(name='Name'),
+    }
+  ]]](name='ComplexList2'),
+  from: string(name='from', description='test keywords'),
+  self: string(name='self', description='test keywords'),
+  print: string(name='print', description='test keywords'),
+  exec: string(name='exec', description='test keywords'),
 }
 
 async function hello(request: object, strs: [ string ]): [ string ] {
