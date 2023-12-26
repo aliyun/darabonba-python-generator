@@ -31,7 +31,9 @@ const {
   _toSnakeCase,
   _toCamelCase,
   _avoidKeywords,
-  _isKeywords,
+  _avoidFuncKeywords,
+  _avoidClassKeywords,
+  _avoidVarKeywords,
   _exception,
   _symbol,
   _deepClone,
@@ -44,6 +46,14 @@ function _contain(str, substr) {
 
 function _name(name) {
   return _avoidKeywords(_toSnakeCase(name));
+}
+
+function _varName(name){
+  return _avoidVarKeywords(_toSnakeCase(name));
+}
+
+function _funcName(name){
+  return _avoidFuncKeywords(_toSnakeCase(name));
 }
 
 function _type(type) {
@@ -446,10 +456,7 @@ class Combinator extends CombinatorBase {
     } else {
       className = name.split('.').map(item => _upperFirst(item)).join('');
     }
-    if (_isKeywords(className)) {
-      className = _avoidKeywords(className);
-    }
-    return _toCamelCase(className);
+    return _toCamelCase(_avoidClassKeywords(className));
   }
 
   emitClass(emitter, object) {
@@ -502,7 +509,7 @@ class Combinator extends CombinatorBase {
               } else if (p instanceof PropItem) {
                 const type = this.getTypeHints(p.type);
                 if (type) {
-                  emitter.emitln(`${_name(p.name)}: ${type} = None`, this.level);
+                  emitter.emitln(`${_varName(p.name)}: ${type} = None`, this.level);
                 }
               }
             });
@@ -670,7 +677,7 @@ class Combinator extends CombinatorBase {
             type: type.itemType,
             parentType: type.lexeme
           };
-          this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth + 1);
+          this.emitComplexToMap(emitter, propInfo, `result['${fieldName}']`, depth + 1);
         } else {
           if (type.itemType.objectType === 'model') {
             emitter.emitln(`result['${fieldName}'].append(k.to_map() if k else None)`, this.level);
@@ -714,7 +721,7 @@ class Combinator extends CombinatorBase {
             type: type.valType,
             parentType: type.lexeme
           };
-          this.emitComplexToMap(emitter, propInfo, `result['${name}']`, depth + 1);
+          this.emitComplexToMap(emitter, propInfo, `result['${fieldName}']`, depth + 1);
         } else {
           if (type.valType.objectType === 'model') {
             emitter.emitln(`result['${fieldName}'][k] = v.to_map()`, this.level);
@@ -956,9 +963,9 @@ class Combinator extends CombinatorBase {
       construct.params.forEach(param => {
         const typeHints = this.getTypeHints(param.type);
         if (param.value !== null && param.value !== 'null') {
-          constructParams.push(`${_name(param.key)}: ${typeHints} = ${param.value},`);
+          constructParams.push(`${_varName(param.key)}: ${typeHints} = ${param.value},`);
         } else {
-          constructParams.push(`${_name(param.key)}: ${typeHints},`);
+          constructParams.push(`${_varName(param.key)}: ${typeHints},`);
         }
       });
       emitter.emitln('def __init__(', this.level);
@@ -978,9 +985,9 @@ class Combinator extends CombinatorBase {
           if (prop instanceof PropItem) {
             const typeHints = this.getTypeHints(prop.type);
             if (typeHints === this.className) {
-              emitter.emitln(`${_name(prop.name)}: '${typeHints}' = None,`, this.level);
+              emitter.emitln(`${_varName(prop.name)}: '${typeHints}' = None,`, this.level);
             } else {
-              emitter.emitln(`${_name(prop.name)}: ${typeHints} = None,`, this.level);
+              emitter.emitln(`${_varName(prop.name)}: ${typeHints} = None,`, this.level);
             }
 
           }
@@ -1016,7 +1023,7 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`# ${d}`, this.level);
         });
       }
-      emitter.emitln(`self.${_name(prop.name)} = ${_name(prop.name)}`, this.level);
+      emitter.emitln(`self.${_name(prop.name)} = ${_varName(prop.name)}`, this.level);
     });
     if (construct.body.length > 0) {
       construct.body.forEach(gram => {
@@ -1115,19 +1122,19 @@ class Combinator extends CombinatorBase {
     let selfVar = this.func_static ? '' : 'self';
 
     if (func.params.length > 0) {
-      emitter.emitln(`def ${_name(func.name)}_async(`);
+      emitter.emitln(`def ${_funcName(func.name)}_async(`);
       this.levelUp();
       if (selfVar) {
         emitter.emitln(`${selfVar},`, this.level);
       }
       func.params.forEach(p => {
         const type = this.getTypeHints(p.type);
-        emitter.emitln(`${_name(p.key)}: ${type},`, this.level);
+        emitter.emitln(`${_varName(p.key)}: ${type},`, this.level);
       });
       this.levelDown();
       emitter.emitln(`) -> ${rtype}:`, this.level);
     } else {
-      emitter.emit(`def ${_name(func.name)}_async(`);
+      emitter.emit(`def ${_funcName(func.name)}_async(`);
       if (selfVar) {
         emitter.emit(`${selfVar}`);
       }
@@ -1158,19 +1165,19 @@ class Combinator extends CombinatorBase {
     let selfVar = this.func_static ? '' : 'self';
 
     if (func.params.length > 0) {
-      emitter.emitln(`def ${_name(func.name)}(`);
+      emitter.emitln(`def ${_funcName(func.name)}(`);
       this.levelUp();
       if (selfVar) {
         emitter.emitln(`${selfVar},`, this.level);
       }
       func.params.forEach(p => {
         const type = this.getTypeHints(p.type);
-        emitter.emitln(`${_name(p.key)}: ${type},`, this.level);
+        emitter.emitln(`${_varName(p.key)}: ${type},`, this.level);
       });
       this.levelDown();
       emitter.emitln(`) -> ${rtype}:`, this.level);
     } else {
-      emitter.emit(`def ${_name(func.name)}(`);
+      emitter.emit(`def ${_funcName(func.name)}(`);
       if (selfVar) {
         emitter.emit(`${selfVar}`);
       }
@@ -1349,12 +1356,12 @@ class Combinator extends CombinatorBase {
             pre += `.${_name(path.name)}`;
           }
         } else if (path.type === 'object') {
-          pre += `${_name(_convertStaticParam(pathName))}`;
+          pre += `${_varName(_convertStaticParam(pathName))}`;
         } else if (path.type === 'object_async') {
           if (this.aioMode) {
-            pre += `await ${_name(_convertStaticParam(pathName))}`;
+            pre += `await ${_varName(_convertStaticParam(pathName))}`;
           } else {
-            pre += `${_name(_convertStaticParam(pathName))}`;
+            pre += `${_varName(_convertStaticParam(pathName))}`;
           }
         } else if (path.type === 'object_static') {
           pre += `${_convertStaticParam(pathName)}`;
@@ -1365,24 +1372,24 @@ class Combinator extends CombinatorBase {
             pre += `${_convertStaticParam(pathName)}`;
           }
         } else if (path.type === 'call' || path.type === 'call_static') {
-          pre += `.${_name(pathName)}(${params})`;
+          pre += `.${_funcName(pathName)}(${params})`;
         } else if (path.type === 'call_async' || path.type === 'call_static_async') {
           if (this.aioMode) {
-            pre += `.${_name(pathName)}_async(${params})`;
+            pre += `.${_funcName(pathName)}_async(${params})`;
           } else {
-            pre += `.${_name(pathName)}(${params})`;
+            pre += `.${_funcName(pathName)}(${params})`;
           }
         } else if (path.type === 'prop') {
           pre += `.${_name(pathName)}`;
         } else if (path.type === 'prop_static') {
           pre += `.${_name(pathName)}`;
         } else if (path.type === 'map') {
-          pre += path.isVar ? `.get(${_name(pathName)})` : `.get('${pathName}')`;
+          pre += path.isVar ? `.get(${_varName(pathName)})` : `.get('${pathName}')`;
         } else if (path.type === 'map_set') {
           const quote = this._adaptedQuotes(pathName, emitter);
           pre += `[${quote}${pathName}${quote}]`;
         } else if (path.type === 'list') {
-          pre += path.isVar ? `[${_name(pathName)}]` : `[${pathName}]`;
+          pre += path.isVar ? `[${_varName(pathName)}]` : `[${pathName}]`;
         } else {
           debug.stack(gram);
         }
@@ -1411,7 +1418,7 @@ class Combinator extends CombinatorBase {
       emitter.emit(`${name}()`);
     } else if (gram.varType === 'var' || gram.varType === 'const') {
       const name = gram.name ? gram.name : gram.key;
-      emitter.emit(`${_convertStaticParam(_name(name))}`);
+      emitter.emit(`${_convertStaticParam(_varName(name))}`);
     } else {
       debug.stack(gram);
     }
@@ -1423,7 +1430,7 @@ class Combinator extends CombinatorBase {
         const quote = this._adaptedQuotes(gram.key, emitter);
         emitter.emit(`${quote}${gram.key}${quote}: `);
       } else {
-        emitter.emit(`${_name(gram.key)}=`, this.level);
+        emitter.emit(`${_varName(gram.key)}=`, this.level);
       }
     }
     if (gram instanceof GrammerCall) {
@@ -1539,7 +1546,7 @@ class Combinator extends CombinatorBase {
       const quote = this._adaptedQuotes(gram.value, emitter);
       emitter.emit(`${quote}${gram.value}${quote}`);
     } else if (gram.type === 'param') {
-      emitter.emit(`${_convertStaticParam(_name(gram.value))}`);
+      emitter.emit(`${_convertStaticParam(_varName(gram.value))}`);
     } else if (gram.type === 'call') {
       this.grammerCall(emitter, gram.value);
     } else if (gram.type === 'number') {
@@ -1759,7 +1766,7 @@ class Combinator extends CombinatorBase {
         gram.params.forEach(p => {
           let emit = new Emitter();
           if (p.key) {
-            emit.emit(`${_name(p.key)}`);
+            emit.emit(`${_varName(p.key)}`);
             emit.emit('=');
           }
           if (typeof (p.value) === 'string') {
@@ -1789,7 +1796,7 @@ class Combinator extends CombinatorBase {
     this.grammerCall(emit, behavior.call);
 
     if (behavior.isVar) {
-      emitter.emit(`${emit.output}[${_name(behavior.key)}] = `, this.level);
+      emitter.emit(`${emit.output}[${_varName(behavior.key)}] = `, this.level);
     } else {
       const quote = this._adaptedQuotes(behavior.key, emitter);
       emitter.emit(`${emit.output}[${quote}${behavior.key}${quote}] = `, this.level);

@@ -53,7 +53,31 @@ function _deepClone(obj) {
 }
 
 function _avoidKeywords(str) {
-  if (config.keywords.indexOf(str.toLowerCase()) > -1) {
+  if (config.keywords.general.indexOf(str.toLowerCase()) > -1) {
+    return str + '_';
+  }
+  return str;
+}
+
+function _avoidFuncKeywords(str) {
+  if (config.keywords.general.indexOf(str.toLowerCase()) > -1
+    || config.keywords.function.indexOf(str.toLowerCase()) > -1) {
+    return str + '_';
+  }
+  return str;
+}
+
+function _avoidClassKeywords(str) {
+  if (config.keywords.general.indexOf(str.toLowerCase()) > -1
+    || config.keywords.class.indexOf(str.toLowerCase()) > -1) {
+    return str + '_';
+  }
+  return str;
+}
+
+function _avoidVarKeywords(str) {
+  if (config.keywords.general.indexOf(str.toLowerCase()) > -1
+    || config.keywords.param_variables.indexOf(str.toLowerCase()) > -1) {
     return str + '_';
   }
   return str;
@@ -69,7 +93,7 @@ function _convertStaticParam(param) {
 }
 
 function _isKeywords(str) {
-  return config.keywords.indexOf(str.toLowerCase()) > -1;
+  return config.keywords.general.indexOf(str.toLowerCase()) > -1;
 }
 
 function _modify(modify) {
@@ -159,6 +183,9 @@ module.exports = {
   _isBasicType,
   _deepClone,
   _avoidKeywords,
+  _avoidFuncKeywords,
+  _avoidClassKeywords,
+  _avoidVarKeywords,
   _convertStaticParam,
   _isKeywords,
   _modify,

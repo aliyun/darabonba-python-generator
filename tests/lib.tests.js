@@ -14,6 +14,9 @@ const {
   _upperFirst,
   _config,
   _avoidKeywords,
+  _avoidFuncKeywords,
+  _avoidClassKeywords,
+  _avoidVarKeywords,
   _modify,
   _symbol,
   _toSnakeCase,
@@ -193,8 +196,21 @@ describe('helper tests', function () {
   });
 
   it('_avoidKeywords should be ok', function () {
-    _config({ keywords: ['key'] });
+    _config({
+      keywords: {
+        general: 'key',
+        function: ['function'],
+        class: ['class'],
+        param_variables: ['var']
+      }
+    });
     expect(_avoidKeywords('key')).to.be.eql('key_');
+    expect(_avoidFuncKeywords('key')).to.be.eql('key_');
+    expect(_avoidFuncKeywords('function')).to.be.eql('function_');
+    expect(_avoidClassKeywords('key')).to.be.eql('key_');
+    expect(_avoidClassKeywords('class')).to.be.eql('class_');
+    expect(_avoidVarKeywords('key')).to.be.eql('key_');
+    expect(_avoidVarKeywords('var')).to.be.eql('var_');
   });
 
   it('_modify should be ok', function () {
@@ -220,7 +236,7 @@ describe('helper tests', function () {
     expect(_symbol('ASSIGN')).to.be.eql('=');
   });
 
-  it('_isSnakeCase should be ok', function() {
+  it('_isSnakeCase should be ok', function () {
     expect(_isSnakeCase('tea_rpc')).to.be.eql(true);
     expect(_isSnakeCase('tea')).to.be.eql(true);
     expect(_isSnakeCase('tearpc')).to.be.eql(true);
