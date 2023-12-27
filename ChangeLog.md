@@ -1,5 +1,8 @@
 # ChangeLog
 
+## 1.2.17 - 2023-12-27
+* Fix: correct model name when first letter is capitalized && and some keywords
+
 ## 1.2.16 - 2023-09-13
 * Feat: support importing additional package
 
