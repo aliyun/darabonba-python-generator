@@ -30,7 +30,7 @@
   "author": "Alibaba Cloud OpenAPI Team",
   "license": "Apache-2.0",
   "dependencies": {
-    "@darabonba/parser": "^1.2.10",
+    "@darabonba/parser": "^2.0.4",
     "enum": "^3.0.4"
   }
 }
