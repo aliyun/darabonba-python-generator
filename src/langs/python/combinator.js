@@ -538,9 +538,9 @@ class Combinator extends CombinatorBase {
           this.emitComplexValidate(emitter, `k${depth}`, fieldType.itemType, depth + 1);
           this.levelDown();
         } else {
-          emitter.emitln(`if self.${_name(name)}:`, this.level);
+          emitter.emitln(`if self.${_varName(name)}:`, this.level);
           this.levelUp();
-          emitter.emitln(`for k in self.${_name(name)}:`, this.level);
+          emitter.emitln(`for k in self.${_varName(name)}:`, this.level);
           this.levelUp();
           this.emitComplexValidate(emitter, 'k', fieldType.itemType, depth + 1);
           this.levelDown();
@@ -553,9 +553,9 @@ class Combinator extends CombinatorBase {
           this.emitComplexValidate(emitter, `v${depth}`, fieldType.valType, depth + 1);
           this.levelDown();
         } else {
-          emitter.emitln(`if self.${_name(name)}:`, this.level);
+          emitter.emitln(`if self.${_varName(name)}:`, this.level);
           this.levelUp();
-          emitter.emitln(`for v in self.${_name(name)}.values():`, this.level);
+          emitter.emitln(`for v in self.${_varName(name)}.values():`, this.level);
           this.levelUp();
           this.emitComplexValidate(emitter, 'v', fieldType.valType, depth + 1);
           this.levelDown();
@@ -587,29 +587,29 @@ class Combinator extends CombinatorBase {
 
       if (required.length > 0) {
         emitter.emitln(
-          `self.validate_required(self.${_name(prop.name)}, '${_name(prop.name)}')`,
+          `self.validate_required(self.${_varName(prop.name)}, '${_varName(prop.name)}')`,
           this.level
         );
         haveValidate = true;
       }
       if (maxLength.length > 0 || pattern.length > 0 || maximum.length > 0 || minimum.length > 0) {
-        emitter.emitln(`if self.${_name(prop.name)} is not None:`, this.level);
+        emitter.emitln(`if self.${_varName(prop.name)} is not None:`, this.level);
         this.levelUp();
 
         if (maxLength.length > 0) {
-          emitter.emitln(`self.validate_max_length(self.${_name(prop.name)}, '${_name(prop.name)}', ${maxLength[0].value})`, this.level);
+          emitter.emitln(`self.validate_max_length(self.${_varName(prop.name)}, '${_varName(prop.name)}', ${maxLength[0].value})`, this.level);
         }
 
         if (pattern.length > 0) {
-          emitter.emitln(`self.validate_pattern(self.${_name(prop.name)}, '${_name(prop.name)}', '${pattern[0].value}')`, this.level);
+          emitter.emitln(`self.validate_pattern(self.${_varName(prop.name)}, '${_varName(prop.name)}', '${pattern[0].value}')`, this.level);
         }
 
         if (maximum.length > 0) {
-          emitter.emitln(`self.validate_maximum(self.${_name(prop.name)}, '${_name(prop.name)}', ${maximum[0].value})`, this.level);
+          emitter.emitln(`self.validate_maximum(self.${_varName(prop.name)}, '${_varName(prop.name)}', ${maximum[0].value})`, this.level);
         }
 
         if (minimum.length > 0) {
-          emitter.emitln(`self.validate_minimum(self.${_name(prop.name)}, '${_name(prop.name)}', ${minimum[0].value})`, this.level);
+          emitter.emitln(`self.validate_minimum(self.${_varName(prop.name)}, '${_varName(prop.name)}', ${minimum[0].value})`, this.level);
         }
         this.levelDown();
         haveValidate = true;
@@ -624,9 +624,9 @@ class Combinator extends CombinatorBase {
           emitter.emit(emt.output);
         }
       } else if (prop.type.objectType === 'model') {
-        emitter.emitln(`if self.${_name(prop.name)}:`, this.level);
+        emitter.emitln(`if self.${_varName(prop.name)}:`, this.level);
         this.levelUp();
-        emitter.emitln(`self.${_name(prop.name)}.validate()`, this.level);
+        emitter.emitln(`self.${_varName(prop.name)}.validate()`, this.level);
         this.levelDown();
         haveValidate = true;
       }
@@ -666,9 +666,9 @@ class Combinator extends CombinatorBase {
         }
       } else {
         emitter.emitln(`result['${fieldName}'] = []`, this.level);
-        emitter.emitln(`if self.${_name(name)} is not None:`, this.level);
+        emitter.emitln(`if self.${_varName(name)} is not None:`, this.level);
         this.levelUp();
-        emitter.emitln(`for k in self.${_name(name)}:`, this.level);
+        emitter.emitln(`for k in self.${_varName(name)}:`, this.level);
         this.levelUp();
         if (type.itemType.valType || type.itemType.itemType) {
           const propInfo = {
@@ -710,9 +710,9 @@ class Combinator extends CombinatorBase {
         }
       } else {
         emitter.emitln(`result['${fieldName}'] = {}`, this.level);
-        emitter.emitln(`if self.${_name(name)} is not None:`, this.level);
+        emitter.emitln(`if self.${_varName(name)} is not None:`, this.level);
         this.levelUp();
-        emitter.emitln(`for k, v in self.${_name(name)}.items():`, this.level);
+        emitter.emitln(`for k, v in self.${_varName(name)}.items():`, this.level);
         this.levelUp();
         if (type.valType.valType || type.valType.itemType) {
           const propInfo = {
@@ -769,19 +769,19 @@ class Combinator extends CombinatorBase {
         if (emt.needSave === true) {
           emitter.emit(emt.output);
         } else {
-          emitter.emitln(`if self.${_name(prop.name)} is not None:`, this.level);
+          emitter.emitln(`if self.${_varName(prop.name)} is not None:`, this.level);
           this.levelUp();
-          emitter.emitln(`result['${name}'] = self.${_name(prop.name)}`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_varName(prop.name)}`, this.level);
           this.levelDown();
         }
 
       } else {
-        emitter.emitln(`if self.${_name(prop.name)} is not None:`, this.level);
+        emitter.emitln(`if self.${_varName(prop.name)} is not None:`, this.level);
         this.levelUp();
         if (prop.type.objectType === 'model') {
-          emitter.emitln(`result['${name}'] = self.${_name(prop.name)}.to_map()`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_varName(prop.name)}.to_map()`, this.level);
         } else {
-          emitter.emitln(`result['${name}'] = self.${_name(prop.name)}`, this.level);
+          emitter.emitln(`result['${name}'] = self.${_varName(prop.name)}`, this.level);
         }
         this.levelDown();
       }
@@ -819,7 +819,7 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`${carrier}['k${num}'] = l${depth}`, this.level);
         }
       } else {
-        emitter.emitln(`self.${_name(name)} = []`, this.level);
+        emitter.emitln(`self.${_varName(name)} = []`, this.level);
         emitter.emitln(`if m.get('${fieldName}') is not None:`, this.level);
         this.levelUp();
         emitter.emitln(`for k in m.get('${fieldName}'):`, this.level);
@@ -831,11 +831,11 @@ class Combinator extends CombinatorBase {
             type: type.itemType,
             parentType: type.lexeme
           };
-          this.emitComplexFromMap(emitter, propInfo, `self.${_name(name)}`, depth + 1);
+          this.emitComplexFromMap(emitter, propInfo, `self.${_varName(name)}`, depth + 1);
         } else {
           if (type.itemType.objectType === 'model') {
             emitter.emitln(`temp_model = ${type.itemType.lexeme}()`, this.level);
-            emitter.emitln(`self.${_name(name)}.append(temp_model.from_map(k))`, this.level);
+            emitter.emitln(`self.${_varName(name)}.append(temp_model.from_map(k))`, this.level);
             emitter.needSave = true;
           } else {
             emitter.needSave = false;
@@ -865,7 +865,7 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`${carrier}[k${num}] = d${depth}`, this.level);
         }
       } else {
-        emitter.emitln(`self.${_name(name)} = {}`, this.level);
+        emitter.emitln(`self.${_varName(name)} = {}`, this.level);
         emitter.emitln(`if m.get('${fieldName}') is not None:`, this.level);
         this.levelUp();
         emitter.emitln(`for k, v in m.get('${fieldName}').items():`, this.level);
@@ -877,11 +877,11 @@ class Combinator extends CombinatorBase {
             type: type.valType,
             parentType: type.lexeme
           };
-          this.emitComplexFromMap(emitter, propInfo, `self.${_name(name)}`, depth + 1);
+          this.emitComplexFromMap(emitter, propInfo, `self.${_varName(name)}`, depth + 1);
         } else {
           if (type.valType.objectType === 'model') {
             emitter.emitln(`temp_model = ${type.valType.lexeme}()`, this.level);
-            emitter.emitln(`self.${_name(name)}[k] = temp_model.from_map(v)`, this.level);
+            emitter.emitln(`self.${_varName(name)}[k] = temp_model.from_map(v)`, this.level);
             emitter.needSave = true;
           } else {
             emitter.needSave = false;
@@ -935,7 +935,7 @@ class Combinator extends CombinatorBase {
         } else {
           emitter.emitln(`if m.get('${name}') is not None:`, this.level);
           this.levelUp();
-          emitter.emitln(`self.${_name(prop.name)} = m.get('${name}')`, this.level);
+          emitter.emitln(`self.${_varName(prop.name)} = m.get('${name}')`, this.level);
           this.levelDown();
         }
       } else {
@@ -944,9 +944,9 @@ class Combinator extends CombinatorBase {
         if (prop.type.objectType === 'model') {
           let type = _type(prop.type);
           emitter.emitln(`temp_model = ${type}()`, this.level);
-          emitter.emitln(`self.${_name(prop.name)} = temp_model.from_map(m['${name}'])`, this.level);
+          emitter.emitln(`self.${_varName(prop.name)} = temp_model.from_map(m['${name}'])`, this.level);
         } else {
-          emitter.emitln(`self.${_name(prop.name)} = m.get('${name}')`, this.level);
+          emitter.emitln(`self.${_varName(prop.name)} = m.get('${name}')`, this.level);
         }
         this.levelDown();
       }
@@ -1023,7 +1023,7 @@ class Combinator extends CombinatorBase {
           emitter.emitln(`# ${d}`, this.level);
         });
       }
-      emitter.emitln(`self.${_name(prop.name)} = ${_varName(prop.name)}`, this.level);
+      emitter.emitln(`self.${_varName(prop.name)} = ${_varName(prop.name)}`, this.level);
     });
     if (construct.body.length > 0) {
       construct.body.forEach(gram => {
