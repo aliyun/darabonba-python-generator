@@ -162,11 +162,11 @@ class ComplexRequest(TeaModel):
         # test keywords
         self.from_ = from_  # type: str
         # test keywords
-        self.self = self_  # type: str
+        self.self_ = self_  # type: str
         # test keywords
-        self.print = print_  # type: str
+        self.print_ = print_  # type: str
         # test keywords
-        self.exec = exec_  # type: str
+        self.exec_ = exec_  # type: str
 
     def validate(self):
         self.validate_required(self.access_key, 'access_key')
@@ -199,9 +199,9 @@ class ComplexRequest(TeaModel):
                         if k2:
                             k2.validate()
         self.validate_required(self.from_, 'from_')
-        self.validate_required(self.self, 'self')
-        self.validate_required(self.print, 'print')
-        self.validate_required(self.exec, 'exec')
+        self.validate_required(self.self_, 'self_')
+        self.validate_required(self.print_, 'print_')
+        self.validate_required(self.exec_, 'exec_')
 
     def to_map(self):
         _map = super(ComplexRequest, self).to_map()
@@ -249,12 +249,12 @@ class ComplexRequest(TeaModel):
                 result['ComplexList2'].append(l1)
         if self.from_ is not None:
             result['from'] = self.from_
-        if self.self is not None:
-            result['self'] = self.self
-        if self.print is not None:
-            result['print'] = self.print
-        if self.exec is not None:
-            result['exec'] = self.exec
+        if self.self_ is not None:
+            result['self'] = self.self_
+        if self.print_ is not None:
+            result['print'] = self.print_
+        if self.exec_ is not None:
+            result['exec'] = self.exec_
         return result
 
     def from_map(self, m=None):
@@ -305,11 +305,11 @@ class ComplexRequest(TeaModel):
         if m.get('from') is not None:
             self.from_ = m.get('from')
         if m.get('self') is not None:
-            self.self = m.get('self')
+            self.self_ = m.get('self')
         if m.get('print') is not None:
-            self.print = m.get('print')
+            self.print_ = m.get('print')
         if m.get('exec') is not None:
-            self.exec = m.get('exec')
+            self.exec_ = m.get('exec')
         return self
 
 

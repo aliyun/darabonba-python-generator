@@ -196,7 +196,7 @@ class ComplexRequest(TeaModel):
         # test keywords
         self.from_ = from_
         # test keywords
-        self.self = self_
+        self.self_ = self_
         # test keywords
         self.print = print
         # test keywords
@@ -233,7 +233,7 @@ class ComplexRequest(TeaModel):
                         if k2:
                             k2.validate()
         self.validate_required(self.from_, 'from_')
-        self.validate_required(self.self, 'self')
+        self.validate_required(self.self_, 'self_')
         self.validate_required(self.print, 'print')
         self.validate_required(self.exec, 'exec')
 
@@ -283,8 +283,8 @@ class ComplexRequest(TeaModel):
                 result['ComplexList2'].append(l1)
         if self.from_ is not None:
             result['from'] = self.from_
-        if self.self is not None:
-            result['self'] = self.self
+        if self.self_ is not None:
+            result['self'] = self.self_
         if self.print is not None:
             result['print'] = self.print
         if self.exec is not None:
@@ -339,7 +339,7 @@ class ComplexRequest(TeaModel):
         if m.get('from') is not None:
             self.from_ = m.get('from')
         if m.get('self') is not None:
-            self.self = m.get('self')
+            self.self_ = m.get('self')
         if m.get('print') is not None:
             self.print = m.get('print')
         if m.get('exec') is not None:
