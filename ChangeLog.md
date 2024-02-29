@@ -1,5 +1,8 @@
 # ChangeLog
 
+## 1.2.18 - 2024-02-29
+* Fix: avoid keywords in variables.
+
 ## 1.2.17 - 2023-12-27
 * Fix: correct model name when first letter is capitalized && and some keywords
 
