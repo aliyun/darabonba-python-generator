@@ -266,6 +266,14 @@ class GrammerReturn extends Grammer {
   }
 }
 
+class GrammerYield extends Grammer {
+  constructor(expr = '', type = '') {
+    super();
+    this.type = type; // null | grammer
+    this.expr = expr;
+  }
+}
+
 class GrammerLoop extends Grammer {
   constructor(type = '') {
     super();
@@ -539,6 +547,7 @@ module.exports = {
   GrammerCondition,
   GrammerException,
   GrammerReturnType,
+  GrammerYield,
 
   Behavior,
   BehaviorToMap,
