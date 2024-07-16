@@ -145,7 +145,8 @@ class MyModel(TeaModel):
     def __init__(self, stringfield=None, bytesfield=None, stringarrayfield=None, mapfield=None, name=None,
                  submodel=None, subarray=None, maparray=None, object=None, numberfield=None, readable=None, exist_model=None,
                  class_end_time=None, max_length=None, min_length=None, maximum=None, minimum=None, test_3=None,
-                 array_array_model=None, array_map_model=None, map_model=None, submodel_map=None, sub_model_model=None):
+                 array_array_model=None, array_map_model=None, map_model=None, submodel_map=None, sub_model_model=None,
+                 map_array_map=None, map_array_model=None):
         self.stringfield = stringfield  # type: str
         self.bytesfield = bytesfield  # type: bytes
         self.stringarrayfield = stringarrayfield  # type: list[str]
@@ -175,6 +176,8 @@ class MyModel(TeaModel):
         self.map_model = map_model  # type: dict[str, M]
         self.submodel_map = submodel_map  # type: dict[str, MyModelSubmodel]
         self.sub_model_model = sub_model_model  # type: MyModelSubModelModel
+        self.map_array_map = map_array_map  # type: dict[str, list[dict[str, str]]]
+        self.map_array_model = map_array_model  # type: dict[str, list[M]]
 
     def validate(self):
         self.validate_required(self.stringfield, 'stringfield')
@@ -226,6 +229,11 @@ class MyModel(TeaModel):
         self.validate_required(self.sub_model_model, 'sub_model_model')
         if self.sub_model_model:
             self.sub_model_model.validate()
+        if self.map_array_model:
+            for v in self.map_array_model.values():
+                for k1 in v:
+                    if k1:
+                        k1.validate()
 
     def to_map(self):
         _map = super(MyModel, self).to_map()
@@ -244,13 +252,13 @@ class MyModel(TeaModel):
         if self.name is not None:
             result['realName'] = self.name
         if self.submodel is not None:
-            result['submodel'] = self.submodel.to_map()
-        result['subarray'] = []
+            result['SubModel'] = self.submodel.to_map()
+        result['SubArray'] = []
         if self.subarray is not None:
             for k in self.subarray:
-                result['subarray'].append(k.to_map() if k else None)
+                result['SubArray'].append(k.to_map() if k else None)
         if self.maparray is not None:
-            result['maparray'] = self.maparray
+            result['MapArray'] = self.maparray
         if self.object is not None:
             result['object'] = self.object
         if self.numberfield is not None:
@@ -271,30 +279,39 @@ class MyModel(TeaModel):
             result['minimum'] = self.minimum
         if self.test_3 is not None:
             result['test3'] = self.test_3
-        result['arrayArrayModel'] = []
+        result['ArrayArrayModel'] = []
         if self.array_array_model is not None:
             for k in self.array_array_model:
                 l1 = []
                 for k1 in k:
                     l1.append(k1.to_map() if k1 else None)
-                result['arrayArrayModel'].append(l1)
-        result['arrayMapModel'] = []
+                result['ArrayArrayModel'].append(l1)
+        result['ArrayMapModel'] = []
         if self.array_map_model is not None:
             for k in self.array_map_model:
                 d1 = {}
                 for k1 ,v1 in k.items():
                     d1[k1] = v1.to_map()
-                result['arrayMapModel'].append(d1)
-        result['mapModel'] = {}
+                result['ArrayMapModel'].append(d1)
+        result['MapModel'] = {}
         if self.map_model is not None:
             for k, v in self.map_model.items():
-                result['mapModel'][k] = v.to_map()
-        result['submodelMap'] = {}
+                result['MapModel'][k] = v.to_map()
+        result['SubmodelMap'] = {}
         if self.submodel_map is not None:
             for k, v in self.submodel_map.items():
-                result['submodelMap'][k] = v.to_map()
+                result['SubmodelMap'][k] = v.to_map()
         if self.sub_model_model is not None:
-            result['subModelModel'] = self.sub_model_model.to_map()
+            result['SubModelModel'] = self.sub_model_model.to_map()
+        if self.map_array_map is not None:
+            result['MapArrayMap'] = self.map_array_map
+        result['MapArrayModel'] = {}
+        if self.map_array_model is not None:
+            for k, v in self.map_array_model.items():
+                l1 = []
+                for k1 in v:
+                    l1.append(k1.to_map() if k1 else None)
+                result['MapArrayModel'][k] = l1
         return result
 
     def from_map(self, m=None):
@@ -309,16 +326,16 @@ class MyModel(TeaModel):
             self.mapfield = m.get('mapfield')
         if m.get('realName') is not None:
             self.name = m.get('realName')
-        if m.get('submodel') is not None:
+        if m.get('SubModel') is not None:
             temp_model = MyModelSubmodel()
-            self.submodel = temp_model.from_map(m['submodel'])
+            self.submodel = temp_model.from_map(m['SubModel'])
         self.subarray = []
-        if m.get('subarray') is not None:
-            for k in m.get('subarray'):
+        if m.get('SubArray') is not None:
+            for k in m.get('SubArray'):
                 temp_model = M()
                 self.subarray.append(temp_model.from_map(k))
-        if m.get('maparray') is not None:
-            self.maparray = m.get('maparray')
+        if m.get('MapArray') is not None:
+            self.maparray = m.get('MapArray')
         if m.get('object') is not None:
             self.object = m.get('object')
         if m.get('numberfield') is not None:
@@ -341,34 +358,44 @@ class MyModel(TeaModel):
         if m.get('test3') is not None:
             self.test_3 = m.get('test3')
         self.array_array_model = []
-        if m.get('arrayArrayModel') is not None:
-            for k in m.get('arrayArrayModel'):
+        if m.get('ArrayArrayModel') is not None:
+            for k in m.get('ArrayArrayModel'):
                 l1 = []
                 for k1 in k:
                     temp_model = M()
                     l1.append(temp_model.from_map(k1))
                 self.array_array_model.append(l1)
         self.array_map_model = []
-        if m.get('arrayMapModel') is not None:
-            for k in m.get('arrayMapModel'):
+        if m.get('ArrayMapModel') is not None:
+            for k in m.get('ArrayMapModel'):
                 d1 = {}
                 for k1 ,v1 in k.items():
                     temp_model = M()
                     d1[k1] = temp_model.from_map(v1)
                 self.array_map_model.append(d1)
         self.map_model = {}
-        if m.get('mapModel') is not None:
-            for k, v in m.get('mapModel').items():
+        if m.get('MapModel') is not None:
+            for k, v in m.get('MapModel').items():
                 temp_model = M()
                 self.map_model[k] = temp_model.from_map(v)
         self.submodel_map = {}
-        if m.get('submodelMap') is not None:
-            for k, v in m.get('submodelMap').items():
+        if m.get('SubmodelMap') is not None:
+            for k, v in m.get('SubmodelMap').items():
                 temp_model = MyModelSubmodel()
                 self.submodel_map[k] = temp_model.from_map(v)
-        if m.get('subModelModel') is not None:
+        if m.get('SubModelModel') is not None:
             temp_model = MyModelSubModelModel()
-            self.sub_model_model = temp_model.from_map(m['subModelModel'])
+            self.sub_model_model = temp_model.from_map(m['SubModelModel'])
+        if m.get('MapArrayMap') is not None:
+            self.map_array_map = m.get('MapArrayMap')
+        self.map_array_model = {}
+        if m.get('MapArrayModel') is not None:
+            for k, v in m.get('MapArrayModel').items():
+                l1 = []
+                for k1 in v:
+                    temp_model = M()
+                    l1.append(temp_model.from_map(k1))
+                self.map_array_model['k'] = l1
         return self
 
 

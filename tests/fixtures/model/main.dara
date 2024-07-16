@@ -16,9 +16,9 @@ model MyModel = {
   name: string(name='realName'),
   submodel: {
     stringfield: string,
-  },
-  subarray: [ M ],
-  maparray: [ map[string]any ],
+  } (name='SubModel'),
+  subarray: [ M ] (name='SubArray'),
+  maparray: [ map[string]any ] (name='MapArray'),
   object: object,
   numberfield: integer,
   readable: readable,
@@ -29,15 +29,17 @@ model MyModel = {
   maximum?: long(description='校验最大值', example='10000', maximum='99000000'),
   minimum?: long(description='校验最小值', example='10000', minimum='0'),
   test3: [[string]](description='test3 desc', name='test3'),
-  arrayArrayModel: [[M]],
-  arrayMapModel: [ map[string]M ],
+  arrayArrayModel: [[M]] (name='ArrayArrayModel'),
+  arrayMapModel: [ map[string]M ] (name='ArrayMapModel'),
 
-  mapModel: map[string]M,
-  submodelMap: map[string]MyModel.submodel,
+  mapModel: map[string]M (name='MapModel'),
+  submodelMap: map[string]MyModel.submodel (name='SubmodelMap'),
 
   subModelModel: {
     subModel: [ M ]
-  }
+  } (name='SubModelModel'),
+  mapArrayMap?: map[string][ map[string]string ] (name='MapArrayMap'),
+  mapArrayModel?: map[string][ M ] (name='MapArrayModel'),
 };
 
 model M = {
