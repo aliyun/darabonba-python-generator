@@ -1,0 +1,20 @@
+{
+  "scope": "alibabacloud",
+  "name": "import",
+  "version": "0.0.1",
+  "main": "./import.dara",
+  "python": {
+    "package": "Import",
+    "clientName": "client",
+    "modelDirName": "Models"
+  },
+  "python2": {
+    "package": "Import",
+    "clientName": "client",
+    "modelDirName": "Models"
+  },
+  "releases": {
+    "python": "import:1.1.2",
+    "python2": "import2:1.1.2"
+  }
+}

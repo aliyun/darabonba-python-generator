@@ -1,0 +1,13 @@
+{
+  "scope": "alibabacloud",
+  "name": "main",
+  "version": "0.0.1",
+  "main": "./main.dara",
+  "libraries": {
+    "Import": "alibabacloud:Import:*",
+    "Source" : "alibabacloud:Source:*",
+    "Alias" : "alibabacloud:Alias:*",
+    "AliasSource" : "alibabacloud:AliasSource:*",
+    "Alias-Symbol": "alibabacloud:Alias-Symbol:*"
+  }
+}

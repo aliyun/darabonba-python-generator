@@ -1,0 +1,40 @@
+{
+  "name": "OSS",
+  "main": "./oss.dara",
+  "libraries": {},
+  "releases": {
+    "go": "github.com/aliyun/darabonba-go-generator"
+  },
+  "python": {
+    "package": "Source",
+    "clientName": "source_client",
+    "typedef": {
+      "HttpRequest": {
+        "import": "requests",
+        "type": "Request",
+        "package": "requests:2.21.0"
+      },
+      "HttpHeader": {
+        "import": null,
+        "type": "Dict[str, Any]",
+        "package": null
+      }
+    }
+  },
+  "python2": {
+    "package": "Source",
+    "clientName": "source_client",
+    "typedef": {
+      "HttpRequest": {
+        "import": "requests",
+        "type": "Request",
+        "package": "requests:2.21.0"
+      },
+      "HttpHeader": {
+        "import": null,
+        "type": "Dict[str, Any]",
+        "package": null
+      }
+    }
+  }
+}

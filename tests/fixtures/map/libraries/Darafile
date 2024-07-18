@@ -1,0 +1,19 @@
+{
+  "scope": "alibabacloud",
+  "name": "import",
+  "version": "0.0.1",
+  "main": "./import.dara",
+  "php": {
+    "package": "Source",
+    "clientName": "SourceClient",
+    "modelDirName": "Models"
+  },
+  "python": {
+    "package": "Source",
+    "clientName": "source_client"
+  },
+  "python2": {
+    "package": "Source",
+    "clientName": "source_client"
+  }
+}

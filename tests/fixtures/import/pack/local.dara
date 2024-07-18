@@ -1,0 +1,5 @@
+init();
+
+model Local = {
+  test?: string(name='test'),
+}

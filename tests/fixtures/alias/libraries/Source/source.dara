@@ -1,0 +1,1 @@
+static async function test(): void;

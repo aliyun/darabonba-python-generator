@@ -1,0 +1,30 @@
+{
+  "scope": "alibabacloud",
+  "name": "import",
+  "version": "0.0.1",
+  "main": "./import.dara",
+  "java": {
+    "package": "com.import",
+    "baseClient": "com.import.baseclient.BaseClient"
+  },
+  "csharp": {
+    "namespace": "AlibabaCloud.import"
+  },
+  "go": {
+    "baseClient": "gitlab.alibaba-inc.com/alicloud-sdk/import/baseclient"
+  },
+  "typescript": {
+    "baseClient": "@ali/import-baseclient"
+  },
+  "python": {
+    "package": "import",
+    "clientName": "client"
+  },
+  "python2": {
+    "package": "import",
+    "clientName": "client"
+  },
+  "releases": {
+    "ts": "@scope/module:*"
+  }
+}

@@ -1,0 +1,5 @@
+static function test(): void;
+
+model testModel {
+  str: string
+}

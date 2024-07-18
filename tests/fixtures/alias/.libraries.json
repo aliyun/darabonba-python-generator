@@ -1,0 +1,7 @@
+{
+  "alibabacloud:Import:*": "libraries/Import",
+  "alibabacloud:Alias:*": "libraries/Alias",
+  "alibabacloud:Source:*": "libraries/Source",
+  "alibabacloud:AliasSource:*": "libraries/AliasSource",
+  "alibabacloud:Alias-Symbol:*": "libraries/Alias-Symbol"
+}
