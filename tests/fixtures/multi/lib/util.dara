@@ -1,0 +1,5 @@
+@clientName("Util");
+
+static function test1(): iterator[string];
+
+static function getQuery(): map[string]string;

@@ -2,104 +2,256 @@ import Source;
 
 extends Source;
 
-const version = '2019-01-08';
-
+type @protocol = string
+type @pathname = string
+type @Strs = [ string ]
+type @compleList = [[string]]
+type @endpointMap = map[string]string
 type @configs = [ Source.Config ];
 
-init(config: Source.Config){
-  super(config);
-  @configs[0] = config;
+init(sourceConfig: Source.Config){
+  super(sourceConfig);
+  @configs[0] = sourceConfig;
+  var test : Source = new Source(sourceConfig);
 }
+
+exception Err1 = {
+  data: map[string]string
+}
+
+exception Err2 = {
+  accessErrMessage: string
+}
+
 
 model ComplexRequest = {
   accessKey: string,
   body: readable(name='Body', example='Body', description='Body'),
   strs: [ string ](name='Strs', example='Strs', description='Strs'),
+  mapList: [ map[string]any ](name='mapList', example='mapList', description='mapList', deprecated=false),
   header: {
-    content: string(name='Content', example='Content', signed='true', description='Body')
+    content: string(name='Content', example='Content
+
+test example
+test example11', signed='true', description='The ID of the security group to which you want to assign the instance. Instances in the same security group can communicate with each other. The maximum number of instances that a security group can contain depends on the type of the security group. For more information, see the "Security group limits" section in [Limits](https://help.aliyun.com/document_detail/25412.html#SecurityGroupQuota).
+
+>Notice:  The network type of the new instance must be the same as that of the security group specified by the `SecurityGroupId` parameter. For example, if the specified security group is of the VPC type, the new instance is also of the VPC type and you must specify `VSwitchId`.
+
+If you do not use `LaunchTemplateId` or `LaunchTemplateName` to specify a launch template, you must specify SecurityGroupId. Take note of the following items:
+
+*   You can set `SecurityGroupId` to specify a single security group or set `SecurityGroupIds.N` to specify one or more security groups. However, you cannot specify both `SecurityGroupId` and `SecurityGroupIds.N`.
+*   If `NetworkInterface.N.InstanceType` is set to `Primary`, you cannot specify `SecurityGroupId` or `SecurityGroupIds.N` but can specify `NetworkInterface.N.SecurityGroupId` or `NetworkInterface.N.SecurityGroupIds.N`.', nullable=true, checkBlank=true, sensitive=false)
   }(description='header', name='header'),
-  Num: number,
   configs: {
     key: string,
     value: [ string ],
     extra: map[string] string
   },
-  part?: [
-    {
-      partNumber?: string(description='PartNumber', name='PartNumber')
-    }
-  ](description='Part', name='Part'),
-  complexList: [[[ 
-    {
-      name?: string(name='Name'),
-      code?: int32(name='Code'),
-    }
-  ]]](name='complexList'),
-  complexList1: [[map[string]string]],
-  complexList2: [[[ 
-    {
-      any?: any(name='Name'),
-    }
-  ]]](name='ComplexList2'),
+  num: number(name='num', nullable=false, checkBlank=false, sensitive=true),
+  i64: int64,
+  f64: double,
+  b: boolean,
+  f32: float,
+  f64List: [ double ],
+  floatList: [ float ],
+  booleantList: [ boolean ],
+  i32: int32,
+  stringList: [ string ],
+  intList: [ integer ],
+  int32List: [ int32 ],
+  int16List: [ int16 ],
+  int64List: [ int64 ],
+  longList: [ long ],
+  uint64List: [ uint64 ],
+  uint32List: [ uint32 ],
+  uint16List: [ uint16 ],
+  u64: uint64,
+  u32: uint32,
+  u16: uint16,
+  obj: object,
+  any: any,
+  byt: bytes,
+  req: $Request,
+  resp: $Response,
+  map: map[string]string,
+  numMap: map[string]number,
+  modelMap: map[string]Source.Request,
+  request: Source.Request,
+  client: Source,
+  instance: Source.Request.instance,
   from: string(name='from', description='test keywords'),
   self: string(name='self', description='test keywords'),
   print: string(name='print', description='test keywords'),
   exec: string(name='exec', description='test keywords'),
+  str: string(name='srt', description='test keywords'),
+  part?: [
+    {
+      partNumber?: string(description='PartNumber', name='PartNumber')
+    }
+  ](description='Part', name='Part', deprecated=true),
 }
 
-async function hello(request: object, strs: [ string ]): [ string ] {
+model Response {
+  instance: ComplexRequest.part,
+}
+
+async function hello(request: object, strs: [ string ], complexList: [[string]]): [ string ] {
+  var a : [[string]] = null;
   return array1();
 }
 
-static async function print(reqeust: $Request, reqs: [ ComplexRequest ], response: $Response, val: map[string]string): Source.Request {
-  return {};
-}
+static async function print(reqeust: $Request, reqs: [ ComplexRequest ], response: $Response, val: map[string]string): Source.Request;
 
-api complex1(request: ComplexRequest, client: Source): Source.RuntimeObject {
-  var x = false;
-  var y = true;
-  var z = false;
-  if (x && y || !z) {
-    x = y;
-  }
-  // to map test.
-  var req = new Source.Request{};
-  var m = callToMap(req);
-  
+static function intToInt32(a: int32):void;
+api Complex1(request: ComplexRequest, sourceClient: Source): Source.RuntimeObject {
   var name = 'complex';
-  var mapVal = {test="ok"};
-  var version = `/${__module.version}${@pathname}`;
+  var read : readable = null;
+  var byt : bytes = null;
   var moduleModelMapVal: map[string] Source.RuntimeObject = {};
   var moduleMapVal: map[string] Source = {};
   var modelMapVal: map[string] ComplexRequest = {};
   var subModelMapVal: map[string] ComplexRequest.header = {};
+  var reqMap : map[string]ComplexRequest = null;
+  var mapString = {
+    str = request.accessKey,
+  };
+  var inte : integer = 1;
+  var a : integer = 1;
+  var b : int32 = null;
+  b = a;
+  var c : int32 = a;
+  intToInt32(a);
+  var mapVal = {
+    read = read,
+    test = '{"test":"ok"}',
+    b = request.b,
+    num = request.num,
+    u16 = request.u16,
+    u32 = request.u32,
+    u64 = request.u64,
+    u16List = request.uint16List,
+    u32List = request.uint32List,
+    u64List = request.uint64List,
+    i64List = request.int64List,
+    i16List = request.int16List,
+    i32List = request.int32List,
+    intList = request.intList,
+    stringList = request.stringList,
+    i32 = request.i32,
+    booleantList = request.booleantList,
+    floatList = request.floatList,
+    float64List = request.f64List,
+    f32 = request.f32,
+    f64 = request.f64,
+    i64 = request.i64,
+  };
+  var abool = true;
+  var req = new ComplexRequest{
+    b = false,
+    num = 10,
+    i32 = a,
+    intList = [10,11],
+    int16List = [10, 11],
+    int32List = [10, 11],
+    int64List = [10, 11],
+    longList = [10L, 11L],
+    floatList = [ 0.1f, 0.2f ],
+    stringList = ['10','11'],
+    booleantList = [ true, false ],
+  };
+  var longList : [long] = [
+    432435L 
+  ];
+  var anyList : [any] = [
+    432435L,
+    "str",
+    true,
+    10,
+    0.1f
+  ];
+  var floatMap : map[string]float = {
+    key1 = 0.1f,
+    key2 = 0.2
+  };
+  var doubleMap : map[string]double = {
+    key1 = 0.1d,
+    key2 = 0.2d
+  };
+  var intMap : map[string]integer = {
+    key1 = 1,
+    key2 = 2
+  };
+  var longMap : map[string]long = {
+    key1 = 1,
+    key2 = 2
+  };
+  var int16Map : map[string]int16 = {
+    key1 = 1,
+    key2 = 2
+  };
+  var int32Map : map[string]int32 = {
+    key1 = 1,
+    key2 = 2
+  };
+  var int64Map : map[string]int64 = {
+    key1 = 1,
+    key2 = 2
+  };
+  var anyMap : map[string]any = {
+    key1 = 0.1,
+    key2 = 1,
+    key3 = 'test',
+    key4 = true,
+    key5 = ['test', 1, true, ['test']],
+    key6 = [
+      {
+        a = "test",
+        b = 1,
+        c = true,
+        d = ['test'],
+      }
+    ],
+  };
+
+  for (var itemTmp : anyList) {
+    $Logger.info(`${itemTmp}`);
+  }
+
+  for (var item : ["1","2"]) {
+    var anyMap : map[string]string = {};
+    anyMap[item] = 'test';
+    break;
+  }
+  @Strs = request.strs;
+  @protocol = 'test';
+  @endpointMap[@protocol];
+  @endpointMap['test'] = 'ok';
+  request.strs = @Strs;
   __request.protocol = @protocol;
-  __request.port = 80;
+  __request.port = request.num;
   __request.method = 'GET';
   __request.pathname = `/${@pathname}`;
-  __request.query = Source.query({
+  __request.query = {
     date = '2019',
-    ...request.header,
-    ...mapVal
-  });
-  __request.body = Source.body();
-  request.from = 'test';
-  var from = new ComplexRequest{
-    from = 'test',
+    name = __request.method,
   };
-  Complex3(from);
+  var tmp = {
+    ...__request.query,
+    ...__request.headers,
+    ...__request,
+  };
 } returns {
-  if (true && true) {
+  if (true && true){
     return null;
-  } else if (true || false) {
+  } else if(Source.judgeStr("test") || false){
     return new Source.RuntimeObject{};
   }
-  client.print(request, '1');
-  client.printAsync(request, '1');
-  hello(request, ["1","2"]);
-  hello(null, null);
-  Complex3(null);
+  sourceClient.printData(request, '1');
+  hello(request, ["1","2"], null);
+  hello(null, null, null);
   return {};
+  Complex3(null, 'test');
+  return null;
 } runtime {
   timeouted = 'retry'
 } 
@@ -107,32 +259,44 @@ api complex1(request: ComplexRequest, client: Source): Source.RuntimeObject {
 api Complex2(request: ComplexRequest, str: [ string ], val: map[string]string): object {
   var name = 'complex';
   var config = new Source.Config{};
-  var client = new Source(config);
+  var sourceClient = new Source(config);
+  var configArray : [Source.Config] = [config];
+  sourceClient.printData(request, '1');
   __request.protocol = 'HTTP';
   __request.port = 80;
   __request.method = 'GET';
   __request.pathname = '/';
-  __request.query = Source.query({
+  __request.query = {
     date = '2019',
-    version = __module.version,
     protocol = __request.protocol,
-
-  });
-  __request.body = Source.body();
+  };
 }
 
-api Complex3(request: ComplexRequest): ComplexRequest {
-  var name = 'complex';
-  __request.protocol = TemplateString();
+api ComplexMap(): map[string]any {
+} runtime {
+  
+}
+
+api Complex3(request: ComplexRequest, name: string): ComplexRequest {
+  name = 'complex';
+  __request.protocol = templateString();
   __request.port = 80;
   __request.method = 'GET';
   __request.pathname = '/';
-  __request.query = Source.query({
+  __request.body = 'body';
+  __request.query = {
     date = '2019',
-  });
-  __request.body = Source.body();
-  __request.headers.host = 'hello';
+  };
+  var tmp : ComplexRequest = null;
+  tmp = returnModel();
+  name = @protocol;
 } returns {
+  var x = false;
+  var y = true;
+  var z = false;
+  if (x && y || !z) {
+    x = y;
+  }
   var resp = __response;
   var req = new Source.Request{
     accesskey = request.accessKey,
@@ -141,17 +305,80 @@ api Complex3(request: ComplexRequest): ComplexRequest {
   array0(request);
   req.accesskey = 'accesskey';
   req.accesskey = request.accessKey;
-  Source.parse(ComplexRequest);
+  printNull();
+  throwsFunc();
+  __response.statusCode;
   Source.array(request, '1');
-  Source.asyncFunc();
   return {
     ...__request.query
   };
 }
 
+static function assignWithArray() throws: void {
+  var list : [ string ] = null;
+  list = [ "test" ];
+
+  var str : string = null;
+  str = throwsFunc();
+}
+
+function mapAcess(): any {
+  var tmp : map[string]any = {
+    protocol = @endpointMap[@protocol]
+  };
+  return;
+}
+
+
+async function exprFunc(): [ string ] {
+  if (!true) {
+
+  }
+  var num = 10;
+  var req = new ComplexRequest{};
+  var mapVal : map[string]any = {
+    num = 10,
+    client = Source,
+    strs = array1(),
+    str = `string${num}`,
+    str1 = `string${req.accessKey}`,
+  };
+  return null;
+}
+
+static async function printNull(): void {
+  try {
+    var str = templateString();
+  } catch(e) {
+
+  } finally {
+    var final = 'ok';
+  }
+}
+
+static async function testTryWithComplexReturnType(): Source.Request {
+  try {
+    var str = templateString();
+  } catch(e) {
+
+  } finally {
+    var final = 'ok';
+  }
+  return null;
+}
+
+static async function testTryWithComplexReturnTypeWithOutCat(): Source.Request {
+  try {
+    var str = templateString();
+  } catch(e) {
+    var sim = 'a';
+  } finally {
+    var final = 'ok';
+  }
+  return null;
+}
+
 static function array0(req: object): [ any ] {
-  var temp = new Source.Config{};
-  var anyArr : [Source.Config] = [temp];
   return [];
 }
 
@@ -159,27 +386,91 @@ static function array1(): [ string ] {
   return ["1"];
 }
 
-static function array2(): [[ any ]] {
-  var temp = new Source.Config{};
-  var anyArr : [Source.Config] = [temp];
-  return [[anyArr]];
-}
-
-async function TemplateString(): string {
+async function templateString(): string {
   return `/${@protocol}`;
 }
 
-async function emptyModel(): void {
-  new ComplexRequest;
-  new ComplexRequest.header;
-  var status = '';
-  try {
-    status = 'failed';
-  } catch(e) {
-    status = 'catch exception';
-  } finally {
-    status = 'ok';
+function intOp(a: integer): void {
+  var b = a;
+  var tmp: map[string]integer = {
+    first = a
+  };
+  b++;
+  ++b;
+  b--;
+  --b;
+  tmp.a++;
+  ++tmp.a;
+  tmp.a--;
+  --tmp.a;
+}
+
+function throwsFunc() throws: string {
+  return `/${@protocol}`;
+}
+
+function throwsFunc1() throws: string {
+  return '';
+}
+
+function throwsFunc2() throws: void {
+  throw {
+    code = '',
+  };
+}
+
+function throwsFunc3() throws: string {
+  throw {
+    code = '',
+  };
+}
+
+function getInt(num: int32): int32 {
+  return num;
+}
+
+function returnFunc(): string {
+  var index: int32 = 0;
+  var i = getInt(index);
+  return null;
+}
+
+function returnFunc1(cfg: Source.Config): Source {
+  var config = new Source.Config{};
+  return new Source(config);
+}
+
+function returnFunc2(): map[string]any {
+  var tmp = {
+    subMap = 'ok',
+  };
+  var mapVal = {
+    test = tmp,
+  };
+  if (Source.judgeStr("test")) {
+    return mapVal['test'];
+  } else {
+    var body : readable = null;
+    return {
+      body = body,
+      ...tmp
+    };
   }
+}
+
+function returnModel(): ComplexRequest {
+  return new ComplexRequest{};
+}
+
+function emptyFunc(): void;
+
+api noReturn(): void {
+}
+
+function Error(e: $Error): $Error {
+  var tmp : $Error = null;
+  var c : class = null;
+  return e;
 }
 
 static function arrayAccess(): string {
@@ -196,12 +487,15 @@ static function arrayAccess2(): string {
   return config;
 }
 
-static function arrayAccess3(request: ComplexRequest, index: number): string {
+static function arrayAccess3(request: ComplexRequest): string {
+  var req = new Source.Request{};
+  arrayAccess4([req]);
   var configVal = request.configs.value[0];
-  var val = request.configs.value[index];
-  var i0 = 0;
-  val = request.configs.value[i0];
   return configVal;
+}
+
+static function arrayAccess4(requests: [ Source.Request ]): string {
+  return '';
 }
 
 static function arrayAssign(config: string): [ string ] {
@@ -220,8 +514,6 @@ static function arrayAssign2(config: string): [ string ] {
 
 static function arrayAssign3(request: ComplexRequest, config: string): void {
   request.configs.value[0] = config;
-  var i0 = 0;
-  request.configs.value[i0] = config;
 }
 
 static function mapAccess(request: ComplexRequest): string {
@@ -229,11 +521,8 @@ static function mapAccess(request: ComplexRequest): string {
   return configInfo;
 }
 
-static function mapAccess2(request: Source.Request, key: string): string {
+static function mapAccess2(request: Source.Request): string {
   var configInfo = request.configs.extra['name'];
-  var configValue = request.configs.extra[key];
-  var i0 = key;
-  configValue = request.configs.extra[i0];
   return configInfo;
 }
 
@@ -246,11 +535,34 @@ static function mapAccess3(): string {
   return data.configs['value'];
 }
 
+static function mapAccess4(request: ComplexRequest): string {
+  var key : string = 'name';
+  var model = request.modelMap[key];
+  var configInfo = request.configs.extra[key];
+  return configInfo;
+}
+
 static function mapAssign(request: ComplexRequest, name: string): void {
   request.configs.extra['name'] = name;
-  var i0 = 'name';
-  request.configs.extra[i0] = name;
+  var key : string = 'name';
+  name = key;
+  request.configs.extra[key] = name;
+  name = request.configs.extra['name'];
+  request.map[key] = name;
+  request.numMap[key] = 1;
+}  
+
+static function arrayimport2(request: [ Source.Request ]): string {
+  return '';
 }
+
+static async function defaultReturn(): void {
+  if (true) {
+
+  } else {
+    
+  }
+}  
 
 static function strFmt(): void {
   var s = 'strtest';
@@ -268,6 +580,42 @@ static function strFmt(): void {
   var fs3 = `${} ${s}`;
 }
 
-static function callToMap(m:map[string]any): map[string]any{
-  return m;
+async function multiTryCatch(a: number): void {
+  try {
+    if(a > 0) {
+      throw new Err1 {
+        name = "str",
+        code = "str",
+        data = {
+          key1 = "str",
+        }
+      };
+    } else if(a == 0) {
+      throw new Err2 {
+        name = "str",
+        code = "str",
+        accessErrMessage = "str2",
+      };
+    } else if(a == -10) {
+      throw new Source.Err3 {
+        name = "str",
+        code = "str",
+      };
+    } else {
+      throw new $Error{
+        name = "str",
+        code = "str",
+      }
+    }
+  } catch(err: Err1) {
+    $Logger.log(err.name);
+  } catch(err: Err2) {
+    $Logger.log(err.name);
+  } catch(err: Source.Err3) {
+    $Logger.log(err.name);
+  } catch(err) {
+    $Logger.log(err.name);
+  } finally {
+    var final = 'ok';
+  }
 }

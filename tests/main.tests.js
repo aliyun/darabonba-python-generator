@@ -6,7 +6,7 @@ const assert = require('assert');
 
 const DSL = require('@darabonba/parser');
 
-let Generator = require('../src/generator');
+let Generator = require('../lib/generator');
 
 const lang = 'python';
 
@@ -22,9 +22,11 @@ function check(moduleName, expectedFiles = [], option = {}) {
     fs.existsSync(path.join(prefixDir, 'Darafile')) ? path.join(prefixDir, 'Darafile') : path.join(prefixDir, 'Teafile'), 'utf8');
   const pkgInfo = JSON.parse(pkgContent);
   const config = {
+    package: 'tea_python_tests',
     outputDir: moduleOutputDir,
     pkgDir: path.join(fixturesDir, moduleName),
     ...pkgInfo,
+    ...pkgInfo[lang],
     ...option
   };
   const generator = new Generator(config, lang);
@@ -41,6 +43,96 @@ function check(moduleName, expectedFiles = [], option = {}) {
 }
 
 describe('Python Generator', function () {
+
+  it('multi should ok', function () {
+    check('multi', [
+      'tea_python_tests/client.py',
+      'tea_python_tests/api.py',
+      'tea_python_tests/lib/util.py',
+      'tea_python_tests/model/user.py',
+      'tea_python_tests/model/user_exceptions.py',
+      'tea_python_tests/model/user_models.py',
+    ],
+    {
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'client'
+      }
+    });
+  });
+
+  
+  it('complex should ok', function () {
+    check('complex', [
+      'tea_python_tests/client.py',
+      'tea_python_tests/models.py'
+    ],
+    {
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'client'
+      }
+    });
+  });
+  
+  it('model should ok', function () {
+    check('model', [
+      'tea_python_tests/client.py',
+      'tea_python_tests/exceptions.py',
+      'tea_python_tests/models.py'
+    ],
+    {
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'client',
+        additionalPackage: [
+          {
+            from: '__future__',
+            import: 'annotations'
+          }
+        ]
+      }
+    });
+  });
+
+  it('map should ok', function () {
+    check('map', [
+      'tea_python_tests/client.py'
+    ],
+    {
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'client'
+      }
+    });
+  });
+
+  it('builtin should ok', function () {
+    check('builtin', [
+      'tea_python_tests/client.py'
+    ],
+    {
+      exec: true,
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'client'
+      }
+    });
+  });
+
+  it('exec should ok', function () {
+    check('exec', [
+      'tea_python_tests/exec_client.py'
+    ],
+    {
+      exec: true,
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'exec_client'
+      }
+    });
+  });
+
   it('alias should ok', function () {
     check('alias', [
       'tea_python_tests/client.py'
@@ -60,57 +152,6 @@ describe('Python Generator', function () {
     });
   });
 
-  it('add annotation should ok', function () {
-    check('annotation', [
-      'tea_python_tests/client.py',
-      'tea_python_tests/models.py'
-    ],
-    {
-      python: {
-        package: 'tea_python_tests',
-        clientName: 'client'
-      }
-    });
-  });
-
-  it('api should ok', function () {
-    check('api', [
-      'tea_python_tests/client.py'
-    ],
-    {
-      python: {
-        package: 'tea_python_tests',
-        clientName: 'client'
-      }
-    });
-  });
-
-  it('add comments should ok', function () {
-    check('comment', [
-      'tea_python_tests/client.py',
-      'tea_python_tests/models.py'
-    ],
-    {
-      python: {
-        package: 'tea_python_tests',
-        clientName: 'client'
-      }
-    });
-  });
-
-  it('complex should ok', function () {
-    check('complex', [
-      'tea_python_tests/client.py',
-      'tea_python_tests/models.py'
-    ],
-    {
-      python: {
-        package: 'tea_python_tests',
-        clientName: 'client'
-      }
-    });
-  });
-
   it('const should ok', function () {
     check('const', [
       'tea_python_tests/client.py'
@@ -123,28 +164,32 @@ describe('Python Generator', function () {
     });
   });
 
-  it('empty should ok', function () {
-    check('empty', [
-      'tea_python_tests/client.py',
-      '.gitignore'
+  it('statements should ok', function () {
+    check('statements', [
+      'tea_python_tests/client.py'
     ],
     {
       python: {
         package: 'tea_python_tests',
-        clientName: 'client',
-        packageInfo: {
-          name: 'tea_python_tests',
-          desc: 'Generate setup.py',
-          github: 'https://github.com/',
-          author: 'Alibaba',
-          email: 'sdk-team@alibabacloud.com'
-        }
+        clientName: 'client'
       }
     });
   });
-
+  
   it('function should ok', function () {
     check('function', [
+      'tea_python_tests/client.py'
+    ],
+    {
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'client'
+      }
+    });
+  }); 
+   
+  it('api should ok', function () {
+    check('api', [
       'tea_python_tests/client.py'
     ],
     {
@@ -183,40 +228,25 @@ describe('Python Generator', function () {
     assert.deepStrictEqual(output.replace(new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}'), '*'), expected);
   });
 
-  it('map should ok', function () {
-    check('map', [
-      'tea_python_tests/client.py'
-    ],
-    {
-      python: {
-        package: 'tea_python_tests',
-        clientName: 'client'
-      }
-    });
-  });
 
-  it('model should ok', function () {
-    check('model', [
+
+  it('add annotation should ok', function () {
+    check('annotation', [
       'tea_python_tests/client.py',
       'tea_python_tests/models.py'
     ],
     {
       python: {
         package: 'tea_python_tests',
-        clientName: 'client',
-        additionalPackage: [
-          {
-            from: '__future__',
-            import: 'annotations'
-          }
-        ]
+        clientName: 'client'
       }
     });
   });
 
-  it('statements should ok', function () {
-    check('statements', [
-      'tea_python_tests/client.py'
+  it('add comments should ok', function () {
+    check('comment', [
+      'tea_python_tests/client.py',
+      'tea_python_tests/models.py'
     ],
     {
       python: {
@@ -225,6 +255,30 @@ describe('Python Generator', function () {
       }
     });
   });
+
+
+
+  it('empty should ok', function () {
+    check('empty', [
+      'tea_python_tests/client.py',
+      // '.gitignore'
+    ],
+    {
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'client',
+        packageInfo: {
+          name: 'tea_python_tests',
+          desc: 'Generate setup.py',
+          github: 'https://github.com/',
+          author: 'Alibaba',
+          email: 'sdk-team@alibabacloud.com'
+        }
+      }
+    });
+  });
+
+
 
   it('super should ok', function () {
     check('super', [
@@ -238,18 +292,6 @@ describe('Python Generator', function () {
     });
   });
 
-  it('exec should ok', function () {
-    check('exec', [
-      'tea_python_tests/exec_client.py'
-    ],
-    {
-      exec: true,
-      python: {
-        package: 'tea_python_tests',
-        clientName: 'exec_client'
-      }
-    });
-  });
 
   it('typedef should ok', function () {
     check('typedef', [

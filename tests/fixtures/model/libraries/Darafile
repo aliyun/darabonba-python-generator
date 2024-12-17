@@ -1,0 +1,20 @@
+{
+  "scope": "darabonba",
+  "name": "import",
+  "version": "0.0.1",
+  "main": "./import.dara",
+  "java": {
+    "package": "com.import"
+  },
+  "csharp": {
+    "namespace": "Darabonba.import"
+  },
+  "python": {
+    "package": "Source",
+    "clientName": "client",
+    "modelDirName": "Models"
+  },
+  "releases": {
+    "php": "scope/name:1.0.0"
+  }
+}

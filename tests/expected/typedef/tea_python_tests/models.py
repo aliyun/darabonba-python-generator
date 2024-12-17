@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from Tea.model import TeaModel
-from requests import Request
+from __future__ import annotations
+from darabonba.model import DaraModel 
+from requests import Request 
+from Tea.model import TeaModel 
 
 
-class M(TeaModel):
+
+
+class M(DaraModel):
     def __init__(
-        self,
+        self, 
         a: Request = None,
         b: TeaModel = None,
     ):
@@ -35,5 +39,4 @@ class M(TeaModel):
         if m.get('b') is not None:
             self.b = m.get('b')
         return self
-
 

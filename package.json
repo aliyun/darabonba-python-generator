@@ -1,6 +1,6 @@
 {
   "name": "@darabonba/python-generator",
-  "version": "",
+  "version": "2.0.0",
   "description": "The darabonba generator for Python",
   "main": "lib/generator.js",
   "directories": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "lint": "eslint --fix lib/ tests/",
-    "test": "mocha -R spec -t 3000 tests/*.test.js",
+    "test": "mocha -R spec -t 3000 tests/*.tests.js",
     "test-cov": "nyc -r=lcov -r=html -r=text -r=json npm run test",
     "ci": "npm run lint && npm run test-cov"
   },
@@ -30,11 +30,8 @@
   "author": "Alibaba Cloud OpenAPI Team",
   "license": "Apache-2.0",
   "dependencies": {
-<<<<<<< HEAD
-    "@darabonba/parser": "^1.4.7",
-=======
-    "@darabonba/parser": "^^2.0.5",
->>>>>>> a4d2a93 (init generator for darabonba2.0)
+    "@darabonba/annotation-parser": "^1.0.1",
+    "@darabonba/parser": "^2.1.4",
     "enum": "^3.0.4"
   }
 }

@@ -3,6 +3,9 @@
   "name": "import",
   "version": "0.0.1",
   "main": "./import.dara",
+  "releases": {
+    "ts": "@scope/name:*"
+  },
   "php": {
     "package": "Source",
     "clientName": "SourceClient",

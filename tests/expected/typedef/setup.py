@@ -38,7 +38,7 @@ URL = "https://github.com/"
 VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
     "requests>=2.21.0, <3.0.0",
-    "alibabacloud-tea>=0.2.9, <1.0.0"
+    "darabonba-core>=0.2.9, <1.0.0"
 ]
 
 LONG_DESCRIPTION = ''

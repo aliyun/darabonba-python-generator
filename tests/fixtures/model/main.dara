@@ -1,14 +1,33 @@
-model useBeforeDefineModel = {
-  subModel: {
-    useBeforeDefineModel: UseBeforeDefineModelOnSubModel
-  }
+import Source;
+
+model M = {
+  subM: {}
 };
 
-model UseBeforeDefineModelOnSubModel = {
-  m: MyModel,
+model Class = {};
+
+model model = {
+  str: string
+}
+
+exception MainFile extends $Error {
+  size: number,
+  data: map[string]model,
+  model: {
+    str: string,
+    model: {
+      str: string
+    },
+  }
 }
 
 model MyModel = {
+  model: {
+    str: string,
+    model: {
+      str: string
+    },
+  },
   stringfield: string,
   bytesfield: bytes,
   stringarrayfield: [ string ],
@@ -16,44 +35,43 @@ model MyModel = {
   name: string(name='realName'),
   submodel: {
     stringfield: string,
-  } (name='SubModel'),
-  subarray: [ M ] (name='SubArray'),
-  maparray: [ map[string]any ] (name='MapArray'),
+    model: {
+      str: string
+    },
+  },
+  submodelMap: map[string]MyModel.submodel,
+  mapModel: map[string]M,
+  subarraymodel: [ {} ],
+  subarray: [ M ],
+  ssubarray: [[ M ]],
+  ssubmarray: [[ Source ]],
+  ssubmmarray: [[ Source.Request ]],
+  maparray: [ map[string]any ],
+  mapsubmarray: [ map[string]Source ],
+  moduleModelMap: map[string]Source.Request,
+  subModelMap: map[string]M.subM,
+  modelMap: map[string]M,
+  moduleMap: map[string]Source,
   object: object,
-  numberfield: integer,
   readable: readable,
+  writable: writable,
   existModel: M,
-  classEndTime?: string(description='结束时间', example='2018-10-10T10:10:00Z', pattern='\\\\d{4}[-]\\\\d{1,2}[-]\\\\d{1,2}(\\\\s\\\\d{2}:\\\\d{2}(:\\\\d{2})?)?', name='class_end_time'),
-  maxLength?: string(description='最大长度', example='10000', maxLength='10', name='max-length'),
-  minLength?: string(description='最小长度', example='10000', minLength='0', name='min-length'),
-  maximum?: long(description='校验最大值', example='10000', maximum='99000000'),
-  minimum?: long(description='校验最小值', example='10000', minimum='0'),
-  test3: [[string]](description='test3 desc', name='test3'),
-  arrayArrayModel: [[M]] (name='ArrayArrayModel'),
-  arrayMapModel: [ map[string]M ] (name='ArrayMapModel'),
-
-  mapModel: map[string]M (name='MapModel'),
-  submodelMap: map[string]MyModel.submodel (name='SubmodelMap'),
-
-  subModelModel: {
-    subModel: [ M ]
-  } (name='SubModelModel'),
-  mapArrayMap?: map[string][ map[string]string ] (name='MapArrayMap'),
-  mapArrayModel?: map[string][ M ] (name='MapArrayModel'),
+  request: $Request,
+  complexList: [ [ string ] ],
+  numberfield: number,
+  integerField: integer,
+  floatField: float,
+  doubleField: double,
+  longField: long,
+  ulongField: ulong,
+  int8Field: int8,
+  int16Field: int16,
+  int32Field: int32,
+  int64Field: int64,
+  uint8Field: uint8,
+  uint16Field: uint16,
+  uint32Field: uint32,
+  uint64Field: uint64,
+  link?: string(name='link', example='http://*/*.png'),
 };
 
-model M = {
-    oneself: M,
-    selfArray: [M],
-    selfMap: map[string]M,
-    selfArrayMap: [ map[string]M ],
-    selfArrayArray: [ [ M ] ]
-};
-
-model Node {
-  child?: {
-    subChild?: {
-      childNode?: Node(name='childNode'),
-    }(name='subChild'),
-  }(name='child'),
-}

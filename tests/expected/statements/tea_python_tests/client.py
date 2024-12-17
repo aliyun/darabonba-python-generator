@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from Tea.request import TeaRequest
-from Tea.exceptions import TeaException
-from Tea.core import TeaCore
+from __future__ import annotations
+from darabonba.core import DaraCore 
+from darabonba.request import DaraRequest 
+from darabonba.exceptions import DaraException 
 
 
 class Client:
@@ -10,43 +11,45 @@ class Client:
         pass
 
     def hello(self) -> None:
-        _request = TeaRequest()
+        _request = DaraRequest()
         _request.method = 'GET'
         _request.pathname = '/'
         _request.headers = {
             'host': 'www.test.com'
         }
         if True:
-            _request.headers['host'] = 'www.test2.com'
+            _request.headers["host"] = 'www.test2.com'
         _last_request = _request
-        _response = TeaCore.do_action(_request)
+        _response = DaraCore.do_action(_request)
         if True:
-            raise TeaException(_request, _response)
+            raise DaraException(_request, _response)
         else:
             True
+
         self.hello_if()
-        not False
+                not False
         a = None
         a = 'string'
         return
 
     async def hello_async(self) -> None:
-        _request = TeaRequest()
+        _request = DaraRequest()
         _request.method = 'GET'
         _request.pathname = '/'
         _request.headers = {
             'host': 'www.test.com'
         }
         if True:
-            _request.headers['host'] = 'www.test2.com'
+            _request.headers["host"] = 'www.test2.com'
         _last_request = _request
-        _response = await TeaCore.async_do_action(_request)
+        _response = await DaraCore.async_do_action(_request)
         if True:
-            raise TeaException(_request, _response)
+            raise DaraException(_request, _response)
         else:
             True
+
         self.hello_if()
-        not False
+                not False
         a = None
         a = 'string'
         return
@@ -64,11 +67,11 @@ class Client:
 
     @staticmethod
     def hello_throw() -> None:
-        raise TeaException({})
+        raise DaraException({})
 
     @staticmethod
     def hello_for_break() -> None:
-        for item in {}:
+        for item in [ ]:
             break
 
     @staticmethod
