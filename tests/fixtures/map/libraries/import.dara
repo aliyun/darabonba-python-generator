@@ -5,3 +5,7 @@ init(config: Config);
 model Config = {
   strValue:string
 }
+
+static function hello(): string {
+  return 'str';
+}

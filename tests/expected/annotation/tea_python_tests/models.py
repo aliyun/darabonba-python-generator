@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from Tea.model import TeaModel
+from __future__ import annotations
+from darabonba.model import DaraModel 
 
 
-class Test(TeaModel):
-    """
-    TestModel
-    """
+"""
+ * @remarks
+ * TestModel
+"""
+class Test(DaraModel):
     def __init__(
-        self,
+        self, 
         test: str = None,
     ):
-        # Alichange app id 
+        # Alichange app id
         self.test = test
 
     def validate(self):
@@ -32,5 +34,4 @@ class Test(TeaModel):
         if m.get('test') is not None:
             self.test = m.get('test')
         return self
-
 

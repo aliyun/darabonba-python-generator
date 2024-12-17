@@ -5,3 +5,12 @@ output/
 .DS_Store
 .nyc_output/
 tests/package/
+package-lock
+.idea/
+.vscode/
+.gitignore
+.git/
+.gitmodules
+.gitignore
+.gitattributes
+.gitkeep

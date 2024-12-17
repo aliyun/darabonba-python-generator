@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
+from __future__ import annotations
+from darabonba.core import DaraCore 
 from typing import Dict, List
-from Tea.core import TeaCore
 
 
 class Client:
@@ -15,9 +16,11 @@ class Client:
     @staticmethod
     def hello_map() -> Dict[str, str]:
         m = {}
-        return TeaCore.merge({
+        return DaraCore.merge({
             'key': 'value',
-            'key-1': 'value-1'
+            'key-1': 'value-1',
+            'key-2': 'value-2',
+            '': 'value-3',
         }, m)
 
     @staticmethod
@@ -46,16 +49,12 @@ class Client:
 
     @staticmethod
     def hello_interface() -> None:
-        """
-        interface mode
-        """
+        # interface mode
         raise Exception('Un-implemented')
 
     @staticmethod
     async def hello_interface_async() -> None:
-        """
-        interface mode
-        """
+        # interface mode
         raise Exception('Un-implemented')
 
     def a_params(self) -> None:

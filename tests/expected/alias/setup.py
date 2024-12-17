@@ -24,21 +24,23 @@ from setuptools import setup, find_packages
 """
 setup module for tea_python_tests.
 
-Created on 24/12/2020
+Created on *
 
 @author: Alibaba
 """
 
 PACKAGE = "tea_python_tests"
-NAME = "tea_python_tests" or "alibabacloud-package"
-DESCRIPTION = "Generate setup.py"
+NAME = "tea_python_tests"
+DESCRIPTION = ""
 AUTHOR = "Alibaba"
 AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/"
 VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
-    "source>=0.0.1, <1.0.0",
-    "import>=1.1.2, <2.0.0"
+     "alibabacloud-tea>=1.0.0",
+    "source==0.0.1",
+    "import==1.1.2",
+    "alibabacloud_tea_util==0.3.11"
 ]
 
 LONG_DESCRIPTION = ''
@@ -69,9 +71,9 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Software Development"
     )
 )

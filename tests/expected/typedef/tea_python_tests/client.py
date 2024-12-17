@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
-from requests import Request, Response
-from Tea.model import TeaModel
-from Source.source_client import SourceClient
-
-from tea_python_tests import models as main_models
+from __future__ import annotations
+from requests import Request 
+from Tea.model import TeaModel 
+from Source.source_client import SourceClient 
+from tea_python_tests import models as main_models 
+from requests import Response 
+from typing import Dict, Any
 
 
 class Client:
@@ -12,7 +14,7 @@ class Client:
     _model: TeaModel = None
 
     def __init__(
-        self, 
+        self,
         request: Request,
         model: TeaModel,
     ):
@@ -26,8 +28,8 @@ class Client:
     ) -> None:
         oss = SourceClient(test_1)
         m = main_models.M(
-            a=test_1,
-            b=test_2
+            a = test_1,
+            b = test_2
         )
         self._vid = test_1
         self._model = test_2
@@ -39,8 +41,8 @@ class Client:
     ) -> None:
         oss = SourceClient(test_1)
         m = main_models.M(
-            a=test_1,
-            b=test_2
+            a = test_1,
+            b = test_2
         )
         self._vid = test_1
         self._model = test_2

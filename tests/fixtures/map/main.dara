@@ -4,10 +4,25 @@ extends Source;
 
 init(config: Source.Config){
   super(config);
+  var a = {
+    "test" = "test",
+  };
+  var c = {
+    "test" = "test",
+  };
   @endpointRule = 'central';
   @endpointMap = {
-    ap-northeast-1 = 'cusanalytic.aliyuncs.com',
-    ap-south-1 = 'cusanalytic.aliyuncs.com',
+    "ap-northeast-1" = 'cusanalytic.aliyuncs.com',
+    "ap-south-1" = 'cusanalytic.aliyuncs.com',
+    ...a,
+    ...c,
+    ap-south-2-test = Source.hello(),
+  };
+  var b =  {
+    "ap-northeast-1" = {
+      "ap-south-1" = 'cusanalytic.aliyuncs.com',
+    },
+    "ap-south-2" = Source.hello(),
   };
   @endpointMap['ap-northeast-1'];
   @endpointMap['ap-northeast-1'] = "";
