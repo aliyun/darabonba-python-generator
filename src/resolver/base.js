@@ -3,6 +3,8 @@
 const debug = require('../lib/debug');
 
 const {
+  _string,
+  _escape,
   _isBasicType
 } = require('../lib/helper');
 
@@ -176,7 +178,7 @@ class BaseResolver {
       } else if (typeNode.type === 'modelBody') {
         // is sub model
         typeInfo['objectType'] = 'model';
-        typeInfo['lexeme'] = this.combinator.addModelInclude([this.object.name, sourceNode.fieldName.lexeme].join('.'));
+        typeInfo['lexeme'] = this.combinator.addModelInclude([this.object.name, _escape(sourceNode.fieldName.lexeme) || _string(sourceNode.fieldName)].join('.'));
         return typeInfo;
       } else if (_isBasicType(typeNode.type)) {
         return this.resolveType(typeNode.type, typeNode);
