@@ -43,7 +43,10 @@ const {
 } = require('../langs/common/enum');
 
 const {
-  _isBasicType
+  _isBasicType,
+  _string,
+  _escape
+
 } = require('../lib/helper');
 
 const systemPackage = ['Util'];
@@ -158,7 +161,7 @@ class ClientResolver extends BaseResolver {
     ast.params.params.forEach(p => {
       var param = new GrammerValue();
       param.type = this.resolveType(p.paramType, p);
-      param.key = p.paramName.lexeme;
+      param.key = _escape(p.paramName.lexeme || _string(p.paramName));
       if (p.needValidate) {
         func.addBodyNode(new GrammerCall('method', [
           { type: 'object', name: param.key },
@@ -450,8 +453,8 @@ class ClientResolver extends BaseResolver {
           valGrammer.needCast = true;
           exprChild.isExpand = true;
         }
-        if (field.fieldName && field.fieldName.lexeme) {
-          exprChild.key = field.fieldName.lexeme;
+        if (field.fieldName && (field.fieldName.lexeme || field.fieldName.string)) {
+          exprChild.key = (field.fieldName.lexeme) || _string(field.fieldName);
         }
         this.renderGrammerValue(exprChild, field.expr, expectedType);
         this.findComments(valGrammer, field);
