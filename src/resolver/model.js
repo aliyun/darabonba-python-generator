@@ -6,7 +6,9 @@ const assert = require('assert');
 const BaseResolver = require('./base');
 
 const {
-  _isBasicType
+  _string,
+  _escape,
+  _isBasicType,  
 } = require('../lib/helper');
 
 const {
@@ -95,7 +97,7 @@ class ModelResolver extends BaseResolver {
 
       const prop = new PropItem();
       prop.belong = object.index;
-      prop.name = node.fieldName.lexeme;
+      prop.name = _escape(node.fieldName.lexeme) || _string(node.fieldName);
       prop.type = this.resolveType(node.fieldValue, node);
       
       prop.modify.push(Modify.public());
@@ -141,7 +143,7 @@ class ModelResolver extends BaseResolver {
   }
 
   findSubModelsUsed(node, subModelUsed = [], pre = '') {
-    let name = node.fieldName.lexeme;
+    let name = _escape(node.fieldName.lexeme) || _string(node.fieldName);
     if (pre !== '') {
       name = pre + '.' + name;
     }

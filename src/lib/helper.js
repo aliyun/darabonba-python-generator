@@ -41,7 +41,12 @@ function _subModelName(name) {
 }
 
 function _string(str) {
-  return str.string;
+  if (str.string === '""') {
+    return '\\"\\"';
+  }
+  return str.string.replace(/([^\\])"+|^"/g, function (str) {
+    return str.replace(/"/g, '\\"');
+  });
 }
 
 function _isBasicType(type) {
@@ -172,9 +177,14 @@ function _toSnakeCase(str) {
   return res;
 }
 
+function _escape(str) {
+  return str.includes('-') ? `${str}` : str;
+}
+
 
 module.exports = {
   _config,
+  _escape,
   _upperFirst,
   _camelCase,
   _string,
