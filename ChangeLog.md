@@ -1,5 +1,8 @@
 # ChangeLog
 
+## 1.2.19 - 2025-01-13
+* Adjust field name for object.
+
 ## 1.2.18 - 2024-02-29
 * Fix: avoid keywords in variables.
 
