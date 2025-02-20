@@ -25,6 +25,7 @@ const {
   GrammerCondition,
   GrammerException,
   GrammerReturnType,
+  GrammerYield,
 
   BehaviorRetry,
   BehaviorToMap,
@@ -923,6 +924,31 @@ class ClientResolver extends BaseResolver {
         tryGram.setFinally(finallyGram);
       }
       node = tryGram;
+    } else if (stmt.type === 'yield') {
+      node = new GrammerYield();
+      if (typeof stmt.expr === 'undefined') {
+        node.type = 'null';
+      } else if (stmt.expr.type === 'null') {
+        node.type = 'null';
+      } else if (stmt.expr.type === 'call') {
+        let val = this.renderGrammerValue(null, stmt.expr);
+        node.expr = val;
+        node.type = 'grammer';
+      } else if (_isBasicType(stmt.expr.type)) {
+        node.type = stmt.expr.type;
+        node.expr = this.renderGrammerValue(null, stmt.expr);
+      } else {
+        node.expr = this.renderGrammerValue(null, stmt.expr);
+        node.type = 'grammer';
+      }
+      if (stmt.expectedType && stmt.expectedType.type === 'model') {
+        let expected = '';
+        if (stmt.expectedType.moduleName) {
+          expected += `${stmt.expectedType.moduleName}.`;
+        }
+        expected += stmt.expectedType.name;
+        node.expr = new BehaviorToModel(node.expr, expected);
+      }
     } else {
       debug.stack(stmt);
     }

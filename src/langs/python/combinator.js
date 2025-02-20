@@ -1680,6 +1680,17 @@ class Combinator extends CombinatorBase {
     }
   }
 
+  grammerYield(emitter, gram) {
+    emitter.emit('yield ');
+    if (gram.type === 'grammer') {
+      this.grammer(emitter, gram.expr, false, false);
+    } else if (gram.type === 'string') {
+      emitter.emit('\'\'');
+    } else {
+      this.grammer(emitter, gram.expr, false, false);
+    }
+  }
+
   grammerContinue(emitter, gram) {
     emitter.emit('continue');
   }

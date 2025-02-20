@@ -292,4 +292,23 @@ describe('Python Generator', function () {
       }
     });
   });
+
+  it('iterator should ok', function () {
+    check('iterator', [
+      'tea_python_tests/client.py'
+    ],
+    {
+      python: {
+        package: 'tea_python_tests',
+        clientName: 'client',
+        packageInfo: {
+          name: 'tea_python_tests',
+          desc: 'Generate setup.py',
+          github: 'https://github.com/',
+          author: 'Alibaba',
+          email: 'sdk-team@alibabacloud.com'
+        }
+      }
+    });
+  });
 });

@@ -22,7 +22,8 @@ class SymbolEnum extends Enum {
       'REVERSE',
       'CONCAT',
       'JUDGE',
-      'RISK'
+      'RISK',
+      'YIELD'
     ], { name: 'symbol', ignoreCase: true });
   }
   assign() {
@@ -161,7 +162,8 @@ class TypeEnum extends Enum {
       'list',
       'object',
       'readable',
-      'writable'
+      'writable',
+      'iterator'
     ], { name: 'types', ignoreCase: true });
   }
 }
