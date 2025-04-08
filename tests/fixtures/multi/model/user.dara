@@ -1,4 +1,5 @@
 import DARAUtil;
+import DARAUtil.Util as Utils;
 import "../lib/util" Util;
 
 
@@ -13,6 +14,7 @@ model Info extends BaseInfo {
 
 
 static async function test(): asyncIterator[string]{
+ Utils.test();
  var it:iterator[string] = Util.test1();
  for(var test : it) {
     yield test;

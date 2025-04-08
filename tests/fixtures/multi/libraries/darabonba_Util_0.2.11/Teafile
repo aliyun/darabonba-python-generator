@@ -3,6 +3,9 @@
 	"name": "Util",
 	"version": "0.2.11",
 	"main": "./main.tea",
+	"exports": {
+		"Util": "./util.tea"
+	},
 	"releases": {
 		"go": "github.com/alibabacloud-go/tea-utils/v2/service:v2.0.4",
 		"ts": "@alicloud/tea-util:^1.4.7",
@@ -29,7 +32,10 @@
 	},
 	"python": {
 		"package": "alibabacloud_tea_util",
-		"clientName": "client"
+		"clientName": "client",
+		"exports": {
+		  "Util": "Utils"
+		}
 	},
 	"python2": {
 		"package": "alibabacloud_tea_util",

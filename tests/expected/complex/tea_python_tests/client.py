@@ -29,8 +29,9 @@ class Client(SourceClient):
         source_config: source_models.Config,
     ):
         super().__init__(source_config)
-                self._configs[0] = source_config
+        self._configs[0] = source_config
         test = SourceClient(source_config)
+        self.print_data(DaraCore.to_map(source_config), 'test')
 
     def complex_1(
         self,
@@ -978,7 +979,7 @@ class Client(SourceClient):
             'b',
             'c'
         ]
-                configs[3] = config
+        configs[3] = config
         return configs
 
     @staticmethod
@@ -992,7 +993,7 @@ class Client(SourceClient):
                 'c'
             ]
         }
-                data["configs"][3] = config
+        data["configs"][3] = config
         return data.get("configs")
 
     @staticmethod
@@ -1000,7 +1001,7 @@ class Client(SourceClient):
         request: main_models.ComplexRequest,
         config: str,
     ) -> None:
-                request.configs.value[0] = config
+        request.configs.value[0] = config
 
     @staticmethod
     def map_access(
