@@ -13,6 +13,7 @@ init(sourceConfig: Source.Config){
   super(sourceConfig);
   @configs[0] = sourceConfig;
   var test : Source = new Source(sourceConfig);
+  printData(sourceConfig, 'test');
 }
 
 exception Err1 = {
