@@ -401,9 +401,8 @@ class ComplexRequest(DaraModel):
             result['numMap'] = self.num_map
         if self.model_map is not None:
             result['modelMap'] = {}
-            for k1, v1 in k.items():
+            for k1, v1 in self.model_map.items():
                 result['modelMap'][k1] = v1.to_map() if v1 else None
-
 
         if self.request is not None:
             result['request'] = self.request.to_map()
@@ -424,12 +423,9 @@ class ComplexRequest(DaraModel):
         if self.str is not None:
             result['srt'] = self.str
         if self.part is not None:
-            l1 = 0
             result['Part'] = []
             for k1 in self.part:
-                l1 += 1
-                result['Part'][l1] = k1.to_map() if k1 else None
-
+                result['Part'].append(k1.to_map() if k1 else None)
 
         return result
 
@@ -444,11 +440,11 @@ class ComplexRequest(DaraModel):
         if m.get('mapList') is not None:
             self.map_list = m.get('mapList')
         if m.get('header') is not None:
-            temp_model = ComplexRequestHeader
+            temp_model = ComplexRequestHeader()
             self.header = temp_model.from_map(m.get('header'))
 
         if m.get('configs') is not None:
-            temp_model = ComplexRequestConfigs
+            temp_model = ComplexRequestConfigs()
             self.configs = temp_model.from_map(m.get('configs'))
 
         if m.get('num') is not None:
@@ -500,10 +496,12 @@ class ComplexRequest(DaraModel):
         if m.get('byt') is not None:
             self.byt = m.get('byt')
         if m.get('req') is not None:
-            self.req = DaraRequest.from_map(m.get('req'))
+            temp_model = DaraRequest()
+            self.req = temp_model.from_map(m.get('req'))
 
         if m.get('resp') is not None:
-            self.resp = DaraResponse.from_map(m.get('resp'))
+            temp_model = DaraResponse()
+            self.resp = temp_model.from_map(m.get('resp'))
 
         if m.get('map') is not None:
             self.map = m.get('map')
@@ -512,15 +510,18 @@ class ComplexRequest(DaraModel):
         if m.get('modelMap') is not None:
             self.model_map = {}
             for k1, v1 in m.get('modelMap').items():
-                self.model_map[k1] = SourceClient.from_map(v1)
+                temp_model = SourceClient()
+                self.model_map[k1] = temp_model.from_map(v1)
 
         if m.get('request') is not None:
-            self.request = SourceClient.from_map(m.get('request'))
+            temp_model = SourceClient()
+            self.request = temp_model.from_map(m.get('request'))
 
         if m.get('client') is not None:
             self.client = m.get('client')
         if m.get('instance') is not None:
-            self.instance = SourceClient.from_map(m.get('instance'))
+            temp_model = SourceClient()
+            self.instance = temp_model.from_map(m.get('instance'))
 
         if m.get('from') is not None:
             self.from_ = m.get('from')
@@ -536,9 +537,8 @@ class ComplexRequest(DaraModel):
             l1 = 0
             self.part = []
             for k1 in m.get('Part'):
-                l1 += 1
-                temp_model = ComplexRequestPart
-                self.part[l1] = temp_model.from_map(k1)
+                temp_model = ComplexRequestPart()
+                self.part.append(temp_model.from_map(k1))
 
         return self
 
