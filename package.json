@@ -1,6 +1,6 @@
 {
   "name": "@darabonba/python-generator",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "The darabonba generator for Python",
   "main": "lib/generator.js",
   "directories": {
