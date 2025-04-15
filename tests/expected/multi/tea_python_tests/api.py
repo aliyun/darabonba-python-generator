@@ -8,8 +8,6 @@ from darabonba.request import DaraRequest
 from tea_python_tests.lib.util import Util 
 
 
-
-
 class Client:
     def __init__(self):
         pass
