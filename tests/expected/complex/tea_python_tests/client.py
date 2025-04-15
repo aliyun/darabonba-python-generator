@@ -1114,11 +1114,11 @@ class Client(SourceClient):
                     code = 'str'
                 )
 
-        except main_models.Err1 as err :
+        except main_exceptions.Err1Exception as err :
             logging.log(logging.NOTSET, err.name)
-        except main_models.Err2 as err :
+        except main_exceptions.Err2Exception as err :
             logging.log(logging.NOTSET, err.name)
-        except source_models.Err3 as err :
+        except source_exceptions.Err3Exception as err :
             logging.log(logging.NOTSET, err.name)
         except Exception as err :
             logging.log(logging.NOTSET, err.name)
@@ -1156,11 +1156,11 @@ class Client(SourceClient):
                     code = 'str'
                 )
 
-        except main_models.Err1 as err :
+        except main_exceptions.Err1Exception as err :
             logging.log(logging.NOTSET, err.name)
-        except main_models.Err2 as err :
+        except main_exceptions.Err2Exception as err :
             logging.log(logging.NOTSET, err.name)
-        except source_models.Err3 as err :
+        except source_exceptions.Err3Exception as err :
             logging.log(logging.NOTSET, err.name)
         except Exception as err :
             logging.log(logging.NOTSET, err.name)

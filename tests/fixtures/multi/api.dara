@@ -1,6 +1,10 @@
 import "./model/user" User;
 import "./lib/util" Util;
 
+model TestModelDir2  {
+    test: number,
+}
+
 init(){
 }
 

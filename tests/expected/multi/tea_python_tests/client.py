@@ -7,8 +7,6 @@ from tea_python_tests.api import Client as APIClient
 from typing import Generator, AsyncGenerator
 
 
-
-
 class Client:
     _user: user_models.Info = None
     def __init__(self):
