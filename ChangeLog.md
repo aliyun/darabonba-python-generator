@@ -1,5 +1,8 @@
 # ChangeLog
 
+# 2.0.4
+- Fixed the writable & readable assert logic.
+
 # 2.0.3
 - Optimized the directory structure of models and exceptions.
 
