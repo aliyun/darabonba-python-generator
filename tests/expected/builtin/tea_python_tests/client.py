@@ -16,7 +16,7 @@ from darabonba.utils.stream import Stream as DaraStream
 from darabonba.url import Url as DaraURL 
 from darabonba.utils.xml import XML as DaraXML 
 import sys 
-from typing import List, Any, BytesIO, StringIO
+from typing import List, Any
 
 
 class Client:
@@ -618,8 +618,8 @@ class Client:
                 'key': 'value'
             }
             obj = maps
-            ws = BytesIO(json.dumps(obj).encode('utf-8'))
-            rs = StringIO(json.dumps(maps))
+            ws = DaraStream.to_writable(obj)
+            rs = DaraStream.to_readable(maps)
             data = rs.read(30)
             if not DaraCore.is_null(data):
                 ws.write(data)
@@ -669,8 +669,8 @@ class Client:
                 'key': 'value'
             }
             obj = maps
-            ws = BytesIO(json.dumps(obj).encode('utf-8'))
-            rs = StringIO(json.dumps(maps))
+            ws = DaraStream.to_writable(obj)
+            rs = DaraStream.to_readable(maps)
             data = rs.read(30)
             if not DaraCore.is_null(data):
                 ws.write(data)
