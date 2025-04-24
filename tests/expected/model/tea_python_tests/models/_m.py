@@ -18,11 +18,10 @@ class M(DaraModel):
             self.sub_m.validate()
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         if self.sub_m is not None:
             result['subM'] = self.sub_m.to_map()
 

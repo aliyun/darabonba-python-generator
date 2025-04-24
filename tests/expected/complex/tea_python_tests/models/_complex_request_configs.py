@@ -22,26 +22,31 @@ class ComplexRequestConfigs(DaraModel):
         self.validate_required(self.extra, 'extra')
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         if self.key is not None:
             result['key'] = self.key
+
         if self.value is not None:
             result['value'] = self.value
+
         if self.extra is not None:
             result['extra'] = self.extra
+
         return result
 
     def from_map(self, m: dict = None):
         m = m or dict()
         if m.get('key') is not None:
             self.key = m.get('key')
+
         if m.get('value') is not None:
             self.value = m.get('value')
+
         if m.get('extra') is not None:
             self.extra = m.get('extra')
+
         return self
 

@@ -55,18 +55,19 @@ class BaseInfo(darautil_models.RuntimeOptions):
         self.validate_required(self.max_attemp, 'max_attemp')
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         if self.max_attemp is not None:
             result['maxAttemp'] = self.max_attemp
+
         return result
 
     def from_map(self, m: dict = None):
         m = m or dict()
         if m.get('maxAttemp') is not None:
             self.max_attemp = m.get('maxAttemp')
+
         return self
 
