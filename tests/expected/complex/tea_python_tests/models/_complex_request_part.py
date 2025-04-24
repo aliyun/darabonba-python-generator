@@ -16,18 +16,19 @@ class ComplexRequestPart(DaraModel):
         pass
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         if self.part_number is not None:
             result['PartNumber'] = self.part_number
+
         return result
 
     def from_map(self, m: dict = None):
         m = m or dict()
         if m.get('PartNumber') is not None:
             self.part_number = m.get('PartNumber')
+
         return self
 

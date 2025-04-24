@@ -21,13 +21,13 @@ class MyModelModel(DaraModel):
             self.model.validate()
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         if self.str is not None:
             result['str'] = self.str
+
         if self.model is not None:
             result['model'] = self.model.to_map()
 
@@ -37,6 +37,7 @@ class MyModelModel(DaraModel):
         m = m or dict()
         if m.get('str') is not None:
             self.str = m.get('str')
+
         if m.get('model') is not None:
             temp_model = main_models.MyModelModelModel()
             self.model = temp_model.from_map(m.get('model'))

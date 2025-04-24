@@ -11,11 +11,10 @@ class Class(DaraModel):
         pass
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         return result
 
     def from_map(self, m: dict = None):

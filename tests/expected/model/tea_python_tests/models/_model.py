@@ -15,18 +15,19 @@ class Model(DaraModel):
         self.validate_required(self.str, 'str')
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         if self.str is not None:
             result['str'] = self.str
+
         return result
 
     def from_map(self, m: dict = None):
         m = m or dict()
         if m.get('str') is not None:
             self.str = m.get('str')
+
         return self
 

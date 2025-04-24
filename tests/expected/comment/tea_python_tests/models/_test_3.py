@@ -33,18 +33,19 @@ class Test3(DaraModel):
         self.validate_required(self.test_1, 'test_1')
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
     # model的test front comment
         if self.test is not None:
             result['test'] = self.test
+
     # empty comment1
     # empy comment2
         if self.test_1 is not None:
             result['test1'] = self.test_1
+
         return result
 
     def from_map(self, m: dict = None):
@@ -52,10 +53,12 @@ class Test3(DaraModel):
     # model的test front comment
         if m.get('test') is not None:
             self.test = m.get('test')
+
     # empty comment1
     # empy comment2
         if m.get('test1') is not None:
             self.test_1 = m.get('test1')
+
         return self
 
     # odel的test back comment

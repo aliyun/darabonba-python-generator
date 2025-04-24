@@ -21,13 +21,13 @@ class MyModelSubmodel(DaraModel):
             self.model.validate()
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         if self.stringfield is not None:
             result['stringfield'] = self.stringfield
+
         if self.model is not None:
             result['model'] = self.model.to_map()
 
@@ -37,6 +37,7 @@ class MyModelSubmodel(DaraModel):
         m = m or dict()
         if m.get('stringfield') is not None:
             self.stringfield = m.get('stringfield')
+
         if m.get('model') is not None:
             temp_model = main_models.MyModelSubmodelModel()
             self.model = temp_model.from_map(m.get('model'))

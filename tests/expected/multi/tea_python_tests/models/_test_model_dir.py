@@ -20,23 +20,26 @@ class TestModelDIR(DaraModel):
         self.validate_required(self.a, 'a')
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         if self.test is not None:
             result['test'] = self.test
+
         if self.a is not None:
             result['a'] = self.a
+
         return result
 
     def from_map(self, m: dict = None):
         m = m or dict()
         if m.get('test') is not None:
             self.test = m.get('test')
+
         if m.get('a') is not None:
             self.a = m.get('a')
+
         return self
 
 
@@ -55,13 +58,13 @@ class TestModelDir(DaraModel):
         self.validate_required(self.m, 'm')
 
     def to_map(self):
+        result = dict()
         _map = super().to_map()
         if _map is not None:
-            return _map
-
-        result = dict()
+            result = _map
         if self.test is not None:
             result['test'] = self.test
+
         if self.m is not None:
             result['m'] = self.m.to_map()
 
@@ -71,6 +74,7 @@ class TestModelDir(DaraModel):
         m = m or dict()
         if m.get('test') is not None:
             self.test = m.get('test')
+
         if m.get('m') is not None:
             temp_model = user_models.Info()
             self.m = temp_model.from_map(m.get('m'))
