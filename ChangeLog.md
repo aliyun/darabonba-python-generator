@@ -1,5 +1,9 @@
 # ChangeLog
 
+# 2.0.5
+- Add the model generate config.
+- Fixed the model validate function error. 
+
 # 2.0.4
 - Fixed the writable & readable assert logic.
 
