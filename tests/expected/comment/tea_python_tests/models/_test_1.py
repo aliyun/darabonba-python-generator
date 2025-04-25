@@ -14,7 +14,7 @@ from typing import List
 """
 class Test1(DaraModel):
     def __init__(
-        self, *,
+        self,
         test: str = None,
     # odel的test back comment
         test_2: str = None,

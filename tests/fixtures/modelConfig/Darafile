@@ -1,0 +1,13 @@
+{
+  "scope": "darabonba",
+  "name": "main",
+  "version": "0.0.1",
+  "main": "./main.dara",
+  "libraries": {
+    "Source": "darabonba:Import:*"
+  },
+  "python": {
+    "noneEmpty": true,
+    "strictModel": true
+  }
+}

@@ -6,7 +6,7 @@ from tea_python_tests import user_exceptions as main_exceptions
 
 class Err1Exception(main_exceptions.BaseInfoException):
     def __init__(
-        self, *,
+        self,
         max_attemp: int = None,
         autoretry: bool = None,
         ignore_ssl: bool = None,

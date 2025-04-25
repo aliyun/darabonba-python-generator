@@ -5,17 +5,17 @@ from darabonba.model import DaraModel
 from tea_python_tests import models as main_models 
 
 
-class MyModelSubmodel(DaraModel):
+class MainFileModel(DaraModel):
     def __init__(
-        self,
-        stringfield: str = None,
-        model: main_models.MyModelSubmodelModel = None,
+        self, *,
+        str: str = None,
+        model: main_models.MainFileModelModel = None,
     ):
-        self.stringfield = stringfield
+        self.str = str
         self.model = model
 
     def validate(self):
-        self.validate_required(self.stringfield, 'stringfield')
+        self.validate_required(self.str, 'str')
         self.validate_required(self.model, 'model')
         if self.model:
             self.model.validate()
@@ -25,8 +25,8 @@ class MyModelSubmodel(DaraModel):
         _map = super().to_map()
         if _map is not None:
             result = _map
-        if self.stringfield is not None:
-            result['stringfield'] = self.stringfield
+        if self.str is not None:
+            result['str'] = self.str
 
         if self.model is not None:
             result['model'] = self.model.to_map()
@@ -35,11 +35,11 @@ class MyModelSubmodel(DaraModel):
 
     def from_map(self, m: dict = None):
         m = m or dict()
-        if m.get('stringfield') is not None:
-            self.stringfield = m.get('stringfield')
+        if m.get('str') is not None:
+            self.str = m.get('str')
 
         if m.get('model') is not None:
-            temp_model = main_models.MyModelSubmodelModel()
+            temp_model = main_models.MainFileModelModel()
             self.model = temp_model.from_map(m.get('model'))
 
         return self

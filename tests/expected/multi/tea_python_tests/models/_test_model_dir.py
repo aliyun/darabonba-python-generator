@@ -8,7 +8,7 @@ from typing import Any
 
 class TestModelDIR(DaraModel):
     def __init__(
-        self, *,
+        self,
         test: str = None,
         a: Any = None,
     ):
@@ -46,7 +46,7 @@ class TestModelDIR(DaraModel):
 
 class TestModelDir(DaraModel):
     def __init__(
-        self, *,
+        self,
         test: int = None,
         m: user_models.Info = None,
     ):

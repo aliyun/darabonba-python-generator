@@ -10,7 +10,7 @@ from darabonba.model import DaraModel
 """
 class Test2(DaraModel):
     def __init__(
-        self, *,
+        self,
     # model的test front comment
         test: str = None,
     # model的test front comment

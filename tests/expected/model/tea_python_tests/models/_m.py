@@ -7,7 +7,7 @@ from tea_python_tests import models as main_models
 
 class M(DaraModel):
     def __init__(
-        self, *,
+        self,
         sub_m: main_models.MSubM = None,
     ):
         self.sub_m = sub_m

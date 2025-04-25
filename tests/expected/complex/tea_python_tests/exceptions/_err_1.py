@@ -7,7 +7,7 @@ from typing import Dict
 
 class Err1Exception(DaraException):
     def __init__(
-        self, *,
+        self,
         message: str = None,
         code: str = None,
         stack: str = None,

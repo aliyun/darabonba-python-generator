@@ -6,7 +6,7 @@ from tea_python_tests import user_models as main_models
 
 class Info(main_models.BaseInfo):
     def __init__(
-        self, *,
+        self,
         max_attemp: int = None,
         autoretry: bool = None,
         ignore_ssl: bool = None,

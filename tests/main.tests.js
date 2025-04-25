@@ -102,6 +102,24 @@ describe('Python Generator', function () {
       });
   });
 
+  it('model config should ok', function () {
+    check('modelConfig', 'tea_python_tests',
+      {
+        python: {
+          package: 'tea_python_tests',
+          clientName: 'client',
+          noneEmpty: true,
+          strictModel: true,
+          additionalPackage: [
+            {
+              from: '__future__',
+              import: 'annotations'
+            }
+          ]
+        }
+      });
+  });
+
   it('map should ok', function () {
     check('map', 'tea_python_tests',
       {
