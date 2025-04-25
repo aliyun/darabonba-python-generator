@@ -6,7 +6,7 @@ from darabonba.model import DaraModel
 
 class MainFileModelModel(DaraModel):
     def __init__(
-        self, *,
+        self,
         str: str = None,
     ):
         self.str = str

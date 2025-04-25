@@ -6,7 +6,7 @@ from darabonba.model import DaraModel
 
 class ComplexRequestPart(DaraModel):
     def __init__(
-        self, *,
+        self,
         part_number: str = None,
     ):
         # PartNumber

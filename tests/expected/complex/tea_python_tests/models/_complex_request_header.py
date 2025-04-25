@@ -8,7 +8,7 @@ from darabonba.model import DaraModel
 
 class ComplexRequestHeader(DaraModel):
     def __init__(
-        self, *,
+        self,
         content: str = None,
     ):
         # The ID of the security group to which you want to assign the instance. Instances in the same security group can communicate with each other. The maximum number of instances that a security group can contain depends on the type of the security group. For more information, see the "Security group limits" section in [Limits](https://help.aliyun.com/document_detail/25412.html#SecurityGroupQuota).

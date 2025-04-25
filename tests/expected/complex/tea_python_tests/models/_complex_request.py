@@ -12,7 +12,7 @@ from typing import BinaryIO, List, Dict, Any
 
 class ComplexRequest(DaraModel):
     def __init__(
-        self, *,
+        self,
         access_key: str = None,
         body: BinaryIO = None,
         strs: List[str] = None,

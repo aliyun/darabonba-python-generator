@@ -10,7 +10,7 @@ from Tea.model import TeaModel
 
 class M(DaraModel):
     def __init__(
-        self, *,
+        self,
         a: Request = None,
         b: TeaModel = None,
     ):

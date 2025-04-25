@@ -7,7 +7,7 @@ from typing import List, Dict
 
 class ComplexRequestConfigs(DaraModel):
     def __init__(
-        self, *,
+        self,
         key: str = None,
         value: List[str] = None,
         extra: Dict[str, str] = None,

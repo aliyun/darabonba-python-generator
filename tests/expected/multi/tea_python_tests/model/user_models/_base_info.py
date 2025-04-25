@@ -8,7 +8,7 @@ from alibabacloud_tea_util import models as darautil_models
 
 class BaseInfo(darautil_models.RuntimeOptions):
     def __init__(
-        self, *,
+        self,
         autoretry: bool = None,
         ignore_ssl: bool = None,
         key: str = None,

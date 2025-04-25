@@ -10,7 +10,7 @@ from darabonba.model import DaraModel
 """
 class Test(DaraModel):
     def __init__(
-        self, *,
+        self,
         test: str = None,
     ):
         # Alichange app id

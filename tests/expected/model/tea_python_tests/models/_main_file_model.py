@@ -7,7 +7,7 @@ from tea_python_tests import models as main_models
 
 class MainFileModel(DaraModel):
     def __init__(
-        self, *,
+        self,
         str: str = None,
         model: main_models.MainFileModelModel = None,
     ):

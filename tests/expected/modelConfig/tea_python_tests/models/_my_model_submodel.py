@@ -7,7 +7,7 @@ from tea_python_tests import models as main_models
 
 class MyModelSubmodel(DaraModel):
     def __init__(
-        self,
+        self, *,
         stringfield: str = None,
         model: main_models.MyModelSubmodelModel = None,
     ):

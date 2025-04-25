@@ -8,7 +8,7 @@ from darabonba.model import DaraModel
 
 class TestModelDir2(DaraModel):
     def __init__(
-        self, *,
+        self,
         test: int = None,
     ):
         self.test = test

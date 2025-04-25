@@ -6,7 +6,7 @@ from tea_python_tests import user_exceptions as main_exceptions
 
 class Err2Exception(main_exceptions.ErrException):
     def __init__(
-        self, *,
+        self,
         msg: str = None,
         msg_2: str = None,
     ):

@@ -6,7 +6,7 @@ from darabonba.exceptions import DaraException
 
 class Err2Exception(DaraException):
     def __init__(
-        self, *,
+        self,
         message: str = None,
         code: str = None,
         stack: str = None,

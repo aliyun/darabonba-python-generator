@@ -11,7 +11,7 @@ from typing import List, Dict, Any, BinaryIO
 
 class MyModel(DaraModel):
     def __init__(
-        self,
+        self, *,
         model: main_models.MyModelModel = None,
         stringfield: str = None,
         bytesfield: bytes = None,
@@ -237,28 +237,28 @@ class MyModel(DaraModel):
         if self.submodel is not None:
             result['submodel'] = self.submodel.to_map()
 
-        result['submodelMap'] = {}
         if self.submodel_map is not None:
+            result['submodelMap'] = {}
             for k1, v1 in self.submodel_map.items():
                 result['submodelMap'][k1] = v1.to_map() if v1 else None
 
-        result['mapModel'] = {}
         if self.map_model is not None:
+            result['mapModel'] = {}
             for k1, v1 in self.map_model.items():
                 result['mapModel'][k1] = v1.to_map() if v1 else None
 
-        result['subarraymodel'] = []
         if self.subarraymodel is not None:
+            result['subarraymodel'] = []
             for k1 in self.subarraymodel:
                 result['subarraymodel'].append(k1.to_map() if k1 else None)
 
-        result['subarray'] = []
         if self.subarray is not None:
+            result['subarray'] = []
             for k1 in self.subarray:
                 result['subarray'].append(k1.to_map() if k1 else None)
 
-        result['ssubarray'] = []
         if self.ssubarray is not None:
+            result['ssubarray'] = []
             for k1 in self.ssubarray:
                 l1 = []
                 for k2 in k1:
@@ -271,16 +271,16 @@ class MyModel(DaraModel):
         if self.sssubmarray is not None:
             result['sssubmarray'] = self.sssubmarray
 
-        result['ssubmmarray'] = []
         if self.ssubmmarray is not None:
+            result['ssubmmarray'] = []
             for k1 in self.ssubmmarray:
                 l1 = []
                 for k2 in k1:
                     l1.append(k2.to_map() if k2 else None)
                 result['ssubmmarray'].append(l1)
 
-        result['sssubmmarray'] = []
         if self.sssubmmarray is not None:
+            result['sssubmmarray'] = []
             for k1 in self.sssubmmarray:
                 l1 = []
                 for k2 in k1:
@@ -296,21 +296,21 @@ class MyModel(DaraModel):
         if self.mapsubmarray is not None:
             result['mapsubmarray'] = self.mapsubmarray
 
-        result['moduleModelMap'] = {}
         if self.module_model_map is not None:
+            result['moduleModelMap'] = {}
             for k1, v1 in self.module_model_map.items():
                 result['moduleModelMap'][k1] = v1.to_map() if v1 else None
 
-        result['arrModuleModelMap'] = []
         if self.arr_module_model_map is not None:
+            result['arrModuleModelMap'] = []
             for k1 in self.arr_module_model_map:
                 d1 = {}
                 for k2, v2 in self.arr_module_model_map.items():
                     d1[k2] = v2.to_map() if v2 else None
                 result['arrModuleModelMap'].append(d1)
 
-        result['arrsModuleModelMap'] = []
         if self.arrs_module_model_map is not None:
+            result['arrsModuleModelMap'] = []
             for k1 in self.arrs_module_model_map:
                 l1 = []
                 for k2 in k1:
@@ -320,13 +320,13 @@ class MyModel(DaraModel):
                     l1.append(d2)
                 result['arrsModuleModelMap'].append(l1)
 
-        result['subModelMap'] = {}
         if self.sub_model_map is not None:
+            result['subModelMap'] = {}
             for k1, v1 in self.sub_model_map.items():
                 result['subModelMap'][k1] = v1.to_map() if v1 else None
 
-        result['modelMap'] = {}
         if self.model_map is not None:
+            result['modelMap'] = {}
             for k1, v1 in self.model_map.items():
                 result['modelMap'][k1] = v1.to_map() if v1 else None
 
@@ -423,32 +423,32 @@ class MyModel(DaraModel):
             temp_model = main_models.MyModelSubmodel()
             self.submodel = temp_model.from_map(m.get('submodel'))
 
-        self.submodel_map = {}
         if m.get('submodelMap') is not None:
+            self.submodel_map = {}
             for k1, v1 in m.get('submodelMap').items():
                 temp_model = main_models.MyModelSubmodel()
                 self.submodel_map[k1] = temp_model.from_map(v1)
 
-        self.map_model = {}
         if m.get('mapModel') is not None:
+            self.map_model = {}
             for k1, v1 in m.get('mapModel').items():
                 temp_model = main_models.M()
                 self.map_model[k1] = temp_model.from_map(v1)
 
-        self.subarraymodel = []
         if m.get('subarraymodel') is not None:
+            self.subarraymodel = []
             for k1 in m.get('subarraymodel'):
                 temp_model = main_models.MyModelSubarraymodel()
                 self.subarraymodel.append(temp_model.from_map(k1))
 
-        self.subarray = []
         if m.get('subarray') is not None:
+            self.subarray = []
             for k1 in m.get('subarray'):
                 temp_model = main_models.M()
                 self.subarray.append(temp_model.from_map(k1))
 
-        self.ssubarray = []
         if m.get('ssubarray') is not None:
+            self.ssubarray = []
             for k1 in m.get('ssubarray'):
                 for k2 in k1:
                     l1 = []
@@ -462,8 +462,8 @@ class MyModel(DaraModel):
         if m.get('sssubmarray') is not None:
             self.sssubmarray = m.get('sssubmarray')
 
-        self.ssubmmarray = []
         if m.get('ssubmmarray') is not None:
+            self.ssubmmarray = []
             for k1 in m.get('ssubmmarray'):
                 for k2 in k1:
                     l1 = []
@@ -471,8 +471,8 @@ class MyModel(DaraModel):
                     l1.append(temp_model.from_map(k2))
                 self.ssubmmarray.append(l1)
 
-        self.sssubmmarray = []
         if m.get('sssubmmarray') is not None:
+            self.sssubmmarray = []
             for k1 in m.get('sssubmmarray'):
                 for k2 in k1:
                     l1 = []
@@ -489,14 +489,14 @@ class MyModel(DaraModel):
         if m.get('mapsubmarray') is not None:
             self.mapsubmarray = m.get('mapsubmarray')
 
-        self.module_model_map = {}
         if m.get('moduleModelMap') is not None:
+            self.module_model_map = {}
             for k1, v1 in m.get('moduleModelMap').items():
                 temp_model = source_models.Request()
                 self.module_model_map[k1] = temp_model.from_map(v1)
 
-        self.arr_module_model_map = []
         if m.get('arrModuleModelMap') is not None:
+            self.arr_module_model_map = []
             for k1 in m.get('arrModuleModelMap'):
                 for k2, v2 in k1.items():
                     d1 = {}
@@ -504,8 +504,8 @@ class MyModel(DaraModel):
                     d1[k2] = temp_model.from_map(v2)
                 self.arr_module_model_map.append(d1)
 
-        self.arrs_module_model_map = []
         if m.get('arrsModuleModelMap') is not None:
+            self.arrs_module_model_map = []
             for k1 in m.get('arrsModuleModelMap'):
                 for k2 in k1:
                     l1 = []
@@ -516,14 +516,14 @@ class MyModel(DaraModel):
                     l1.append(d2)
                 self.arrs_module_model_map.append(l1)
 
-        self.sub_model_map = {}
         if m.get('subModelMap') is not None:
+            self.sub_model_map = {}
             for k1, v1 in m.get('subModelMap').items():
                 temp_model = main_models.MSubM()
                 self.sub_model_map[k1] = temp_model.from_map(v1)
 
-        self.model_map = {}
         if m.get('modelMap') is not None:
+            self.model_map = {}
             for k1, v1 in m.get('modelMap').items():
                 temp_model = main_models.M()
                 self.model_map[k1] = temp_model.from_map(v1)
