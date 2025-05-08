@@ -1,5 +1,8 @@
 # ChangeLog
 
+# 2.0.6
+- Fixed the from map init submodel name.
+
 # 2.0.5
 - Add the model generate config.
 - Fixed the model validate function error. 
