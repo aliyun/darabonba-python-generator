@@ -1,6 +1,9 @@
 # ChangeLog
 
 # 2.0.6
+- Fixed the FileField from.
+
+# 2.0.6
 - Fixed the from map init submodel name.
 
 # 2.0.5
