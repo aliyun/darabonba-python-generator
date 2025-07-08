@@ -4,20 +4,24 @@ from __future__ import annotations
 
 
 
-from ._msub_m import MSubM
-from ._main_file_model_model import MainFileModelModel
-from ._main_file_model import MainFileModel
-from ._my_model_model_model import MyModelModelModel
-from ._my_model_model import MyModelModel
-from ._my_model_submodel_model import MyModelSubmodelModel
-from ._my_model_submodel import MyModelSubmodel
-from ._my_model_subarraymodel import MyModelSubarraymodel
 from ._m import M
 from ._class import Class
 from ._model import Model
 from ._my_model import MyModel
+from ._m import MSubM
+from ._main_file import MainFileModelModel
+from ._main_file import MainFileModel
+from ._my_model import MyModelModelModel
+from ._my_model import MyModelModel
+from ._my_model import MyModelSubmodelModel
+from ._my_model import MyModelSubmodel
+from ._my_model import MyModelSubarraymodel
 
 __all__ = [
+    M,
+    Class,
+    Model,
+    MyModel,
     MSubM,
     MainFileModelModel,
     MainFileModel,
@@ -25,9 +29,5 @@ __all__ = [
     MyModelModel,
     MyModelSubmodelModel,
     MyModelSubmodel,
-    MyModelSubarraymodel,
-    M,
-    Class,
-    Model,
-    MyModel
+    MyModelSubarraymodel
 ]
