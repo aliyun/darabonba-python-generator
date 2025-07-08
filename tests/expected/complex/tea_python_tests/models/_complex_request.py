@@ -461,3 +461,113 @@ class ComplexRequest(DaraModel):
 
         return self
 
+class ComplexRequestPart(DaraModel):
+    def __init__(
+        self,
+        part_number: str = None,
+    ):
+        # PartNumber
+        self.part_number = part_number
+
+    def validate(self):
+        pass
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.part_number is not None:
+            result['PartNumber'] = self.part_number
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('PartNumber') is not None:
+            self.part_number = m.get('PartNumber')
+
+        return self
+
+class ComplexRequestConfigs(DaraModel):
+    def __init__(
+        self,
+        key: str = None,
+        value: List[str] = None,
+        extra: Dict[str, str] = None,
+    ):
+        self.key = key
+        self.value = value
+        self.extra = extra
+
+    def validate(self):
+        self.validate_required(self.key, 'key')
+        self.validate_required(self.value, 'value')
+        self.validate_required(self.extra, 'extra')
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.key is not None:
+            result['key'] = self.key
+
+        if self.value is not None:
+            result['value'] = self.value
+
+        if self.extra is not None:
+            result['extra'] = self.extra
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('key') is not None:
+            self.key = m.get('key')
+
+        if m.get('value') is not None:
+            self.value = m.get('value')
+
+        if m.get('extra') is not None:
+            self.extra = m.get('extra')
+
+        return self
+
+
+
+class ComplexRequestHeader(DaraModel):
+    def __init__(
+        self,
+        content: str = None,
+    ):
+        # The ID of the security group to which you want to assign the instance. Instances in the same security group can communicate with each other. The maximum number of instances that a security group can contain depends on the type of the security group. For more information, see the "Security group limits" section in [Limits](https://help.aliyun.com/document_detail/25412.html#SecurityGroupQuota).
+        # 
+        # >Notice:  The network type of the new instance must be the same as that of the security group specified by the `SecurityGroupId` parameter. For example, if the specified security group is of the VPC type, the new instance is also of the VPC type and you must specify `VSwitchId`.
+        # 
+        # If you do not use `LaunchTemplateId` or `LaunchTemplateName` to specify a launch template, you must specify SecurityGroupId. Take note of the following items:
+        # 
+        # *   You can set `SecurityGroupId` to specify a single security group or set `SecurityGroupIds.N` to specify one or more security groups. However, you cannot specify both `SecurityGroupId` and `SecurityGroupIds.N`.
+        # *   If `NetworkInterface.N.InstanceType` is set to `Primary`, you cannot specify `SecurityGroupId` or `SecurityGroupIds.N` but can specify `NetworkInterface.N.SecurityGroupId` or `NetworkInterface.N.SecurityGroupIds.N`.
+        self.content = content
+
+    def validate(self):
+        self.validate_required(self.content, 'content')
+
+    def to_map(self):
+        result = dict()
+        _map = super().to_map()
+        if _map is not None:
+            result = _map
+        if self.content is not None:
+            result['Content'] = self.content
+
+        return result
+
+    def from_map(self, m: dict = None):
+        m = m or dict()
+        if m.get('Content') is not None:
+            self.content = m.get('Content')
+
+        return self
+
