@@ -450,8 +450,8 @@ class MyModel(DaraModel):
         if m.get('ssubarray') is not None:
             self.ssubarray = []
             for k1 in m.get('ssubarray'):
+                l1 = []
                 for k2 in k1:
-                    l1 = []
                     temp_model = main_models.M()
                     l1.append(temp_model.from_map(k2))
                 self.ssubarray.append(l1)
@@ -465,8 +465,8 @@ class MyModel(DaraModel):
         if m.get('ssubmmarray') is not None:
             self.ssubmmarray = []
             for k1 in m.get('ssubmmarray'):
+                l1 = []
                 for k2 in k1:
-                    l1 = []
                     temp_model = source_models.Request()
                     l1.append(temp_model.from_map(k2))
                 self.ssubmmarray.append(l1)
@@ -474,10 +474,10 @@ class MyModel(DaraModel):
         if m.get('sssubmmarray') is not None:
             self.sssubmmarray = []
             for k1 in m.get('sssubmmarray'):
+                l1 = []
                 for k2 in k1:
-                    l1 = []
+                    l2 = []
                     for k3 in k2:
-                        l2 = []
                         temp_model = source_models.Request()
                         l2.append(temp_model.from_map(k3))
                     l1.append(l2)
@@ -498,8 +498,8 @@ class MyModel(DaraModel):
         if m.get('arrModuleModelMap') is not None:
             self.arr_module_model_map = []
             for k1 in m.get('arrModuleModelMap'):
+                d1 = {}
                 for k2, v2 in k1.items():
-                    d1 = {}
                     temp_model = source_models.Request()
                     d1[k2] = temp_model.from_map(v2)
                 self.arr_module_model_map.append(d1)
@@ -507,10 +507,10 @@ class MyModel(DaraModel):
         if m.get('arrsModuleModelMap') is not None:
             self.arrs_module_model_map = []
             for k1 in m.get('arrsModuleModelMap'):
+                l1 = []
                 for k2 in k1:
-                    l1 = []
+                    d2 = {}
                     for k3, v3 in k2.items():
-                        d2 = {}
                         temp_model = source_models.Request()
                         d2[k3] = temp_model.from_map(v3)
                     l1.append(d2)
