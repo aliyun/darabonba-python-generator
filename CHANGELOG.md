@@ -1,5 +1,8 @@
 # ChangeLog
 
+# 2.0.9
+- Fixed the arr & map init error in from map
+
 # 2.0.8
 - Optimized the directory structure of models
 
