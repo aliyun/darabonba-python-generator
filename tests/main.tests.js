@@ -159,14 +159,19 @@ describe('Python Generator', function () {
           package: 'tea_python_tests',
           clientName: 'client',
           packageInfo: {
-            name: 'tea_python_tests',
+            name: 'tea-python-tests',
             desc: 'Generate setup.py',
-            github: 'https://github.com/',
-            author: 'Alibaba',
-            email: 'sdk-team@alibabacloud.com'
+            github: 'https://github.com/dara',
+            author: 'AlibabaCloud SDK Team',
+            email: 'sdkteam@alibabacloud.com',
+            require: ['xxx>=0.0.1, <1.0.0', 'xxx>=0.0.1, <1.0.0']
           }
         }
       });
+    const expectedContent = fs.readFileSync(path.join(__dirname, 'expected', 'alias', 'setup.py'), 'utf8');
+    const acutalContent = fs.readFileSync(path.join(__dirname, 'output', 'alias', 'setup.py'), 'utf8');
+
+    assert.deepStrictEqual(expectedContent, acutalContent);
   });
 
   it('const should ok', function () {

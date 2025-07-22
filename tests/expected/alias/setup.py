@@ -30,17 +30,19 @@ Created on *
 """
 
 PACKAGE = "tea_python_tests"
-NAME = "tea_python_tests"
-DESCRIPTION = ""
-AUTHOR = "Alibaba"
-AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
-URL = "https://github.com/"
+NAME = "tea-python-tests"
+DESCRIPTION = "Generate setup.py"
+AUTHOR = "AlibabaCloud SDK Team"
+AUTHOR_EMAIL = "sdkteam@alibabacloud.com"
+URL = "https://github.com/dara"
 VERSION = __import__(PACKAGE).__version__
 REQUIRES = [
-     "alibabacloud-tea>=1.0.0",
-    "source==0.0.1",
-    "import==1.1.2",
-    "alibabacloud_tea_util==0.3.11"
+    "darabonba-core>=1.0.0, <2.0.0",
+    "source>=0.0.1, <1.0.0",
+    "import>=1.1.2, <2.0.0",
+    "alibabacloud_tea_util>=0.3.11, <1.0.0",
+    "xxx1>=0.0.1, <1.0.0",
+    "xxx2>=0.0.1, <1.0.0"
 ]
 
 LONG_DESCRIPTION = ''
