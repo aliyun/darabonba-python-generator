@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from darabonba.core import DaraCore 
-from darabonba.exceptions import UnretryableException 
-from darabonba.policy.retry import RetryPolicyContext 
-from darabonba.request import DaraRequest 
-from tea_python_tests.lib.util import Util 
 
+from darabonba.core import DaraCore
+from darabonba.exceptions import UnretryableException
+from darabonba.policy.retry import RetryPolicyContext
+from darabonba.request import DaraRequest
+from tea_python_tests.lib.util import Util
 
 class Client:
     def __init__(self):

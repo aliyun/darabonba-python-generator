@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from tea_python_tests import user_models as main_models 
 
+from tea_python_tests import user_models as main_models
 
 class Info(main_models.BaseInfo):
     def __init__(
