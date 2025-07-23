@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from darabonba.exceptions import DaraException 
 
+from darabonba.exceptions import DaraException
 
 class Err2Exception(DaraException):
     def __init__(

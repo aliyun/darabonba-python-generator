@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-import base64 
-from darabonba.utils.bytes import Bytes as DaraBytes 
-from darabonba.date import Date as DaraDate 
-import os 
-from darabonba.file import File as DaraFile 
-from darabonba.utils.form import Form as DaraForm 
-from darabonba.core import DaraCore as DaraCore 
-import json 
-import logging 
-import random 
-import math 
-from darabonba.utils.stream import Stream as DaraStream 
-from darabonba.url import Url as DaraURL 
-from darabonba.utils.xml import XML as DaraXML 
-import sys 
+
+import base64
+import json
+import logging
+import math
+import os
+import random
+import sys
+
 from typing import List, Any
 
+from darabonba.core import DaraCore as DaraCore
+from darabonba.date import Date as DaraDate
+from darabonba.file import File as DaraFile
+from darabonba.url import Url as DaraURL
+from darabonba.utils.bytes import Bytes as DaraBytes
+from darabonba.utils.form import Form as DaraForm
+from darabonba.utils.stream import Stream as DaraStream
+from darabonba.utils.xml import XML as DaraXML
 
 class Client:
 

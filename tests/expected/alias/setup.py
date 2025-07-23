@@ -22,11 +22,11 @@ import os
 from setuptools import setup, find_packages
 
 """
-setup module for tea_python_tests.
+setup module for tea-python-tests.
 
 Created on *
 
-@author: Alibaba
+@author: AlibabaCloud SDK Team
 """
 
 PACKAGE = "tea_python_tests"
@@ -65,17 +65,19 @@ setup(
     include_package_data=True,
     platforms="any",
     install_requires=REQUIRES,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     classifiers=(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: Software Development"
     )
 )
