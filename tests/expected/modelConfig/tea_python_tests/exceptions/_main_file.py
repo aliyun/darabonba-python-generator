@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from darabonba.exceptions import DaraException 
-from tea_python_tests import models as main_models 
+
 from typing import Dict
 
+from darabonba.exceptions import DaraException
+from tea_python_tests import models as main_models
 
 class MainFileException(DaraException):
     def __init__(

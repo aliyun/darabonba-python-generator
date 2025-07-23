@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from tea_python_tests import user_exceptions as main_exceptions 
 
+from tea_python_tests import user_exceptions as main_exceptions
 
 class Err1Exception(main_exceptions.BaseInfoException):
     def __init__(

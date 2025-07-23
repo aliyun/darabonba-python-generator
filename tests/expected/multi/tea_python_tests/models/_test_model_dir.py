@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from darabonba.model import DaraModel 
-from tea_python_tests.model import user_models as user_models 
+
 from typing import Any
 
+from darabonba.model import DaraModel
+from tea_python_tests.model import user_models as user_models
 
 class TestModelDIR(DaraModel):
     def __init__(

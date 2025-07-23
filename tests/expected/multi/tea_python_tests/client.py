@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from tea_python_tests.model import user_models as user_models 
-from tea_python_tests.lib.util import Util 
-from tea_python_tests.api import Client as APIClient 
+
 from typing import Generator, AsyncGenerator
 
+from tea_python_tests.api import Client as APIClient
+from tea_python_tests.lib.util import Util
+from tea_python_tests.model import user_models as user_models
 
 class Client:
     _user: user_models.Info = None

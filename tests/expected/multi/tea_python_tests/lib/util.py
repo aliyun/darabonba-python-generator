@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Generator, Dict
 
-
 class Util:
 
     def __init__(self):

@@ -75,7 +75,7 @@ describe('Python Generator', function () {
       });
   });
 
-  
+
   it('complex should ok', function () {
     check('complex', 'tea_python_tests',
       {
@@ -85,7 +85,7 @@ describe('Python Generator', function () {
         }
       });
   });
-  
+
   it('model should ok', function () {
     check('model', 'tea_python_tests',
       {
@@ -159,14 +159,19 @@ describe('Python Generator', function () {
           package: 'tea_python_tests',
           clientName: 'client',
           packageInfo: {
-            name: 'tea_python_tests',
+            name: 'tea-python-tests',
             desc: 'Generate setup.py',
-            github: 'https://github.com/',
-            author: 'Alibaba',
-            email: 'sdk-team@alibabacloud.com'
+            github: 'https://github.com/dara',
+            author: 'AlibabaCloud SDK Team',
+            email: 'sdkteam@alibabacloud.com',
+            require: ['xxx>=0.0.1, <1.0.0', 'xxx>=0.0.1, <1.0.0']
           }
         }
       });
+    const expectedContent = fs.readFileSync(path.join(__dirname, 'expected', 'alias', 'setup.py'), 'utf8');
+    const acutalContent = fs.readFileSync(path.join(__dirname, 'output', 'alias', 'setup.py'), 'utf8');
+
+    assert.deepStrictEqual(expectedContent, acutalContent);
   });
 
   it('const should ok', function () {
@@ -188,7 +193,7 @@ describe('Python Generator', function () {
         }
       });
   });
-  
+
   it('function should ok', function () {
     check('function', 'tea_python_tests',
       {
@@ -197,8 +202,8 @@ describe('Python Generator', function () {
           clientName: 'client'
         }
       });
-  }); 
-   
+  });
+
   it('api should ok', function () {
     check('api', 'tea_python_tests',
       {
@@ -261,22 +266,20 @@ describe('Python Generator', function () {
 
   it('empty should ok', function () {
     check('empty', 'tea_python_tests',
-    {
-      python: {
-        package: 'tea_python_tests',
-        clientName: 'client',
-        packageInfo: {
-          name: 'tea_python_tests',
-          desc: 'Generate setup.py',
-          github: 'https://github.com/',
-          author: 'Alibaba',
-          email: 'sdk-team@alibabacloud.com'
+      {
+        python: {
+          package: 'tea_python_tests',
+          clientName: 'client',
+          packageInfo: {
+            name: 'tea_python_tests',
+            desc: 'Generate setup.py',
+            github: 'https://github.com/',
+            author: 'Alibaba',
+            email: 'sdk-team@alibabacloud.com'
+          }
         }
-      }
-    });
+      });
   });
-
-
 
   it('super should ok', function () {
     check('super', 'tea_python_tests',
