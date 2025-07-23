@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from darabonba.model import DaraModel 
-from tea_python_tests import models as main_models 
-from darabonba.request import DaraRequest 
-from darabonba.response import DaraResponse 
-from Source import models as source_models 
-from Source.source_client import SourceClient 
+
 from typing import BinaryIO, List, Dict, Any
 
+from darabonba.model import DaraModel
+from darabonba.request import DaraRequest
+from darabonba.response import DaraResponse
+from Source import models as source_models
+from Source.source_client import SourceClient
+from tea_python_tests import models as main_models
 
 class ComplexRequest(DaraModel):
     def __init__(

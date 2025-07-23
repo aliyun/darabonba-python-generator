@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from darabonba.model import DaraModel 
-from tea_python_tests import models as main_models 
 
+from darabonba.model import DaraModel
+from tea_python_tests import models as main_models
 
 class MainFileModel(DaraModel):
     def __init__(

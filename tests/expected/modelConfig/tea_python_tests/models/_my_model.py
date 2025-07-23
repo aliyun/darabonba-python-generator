@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from darabonba.model import DaraModel 
-from tea_python_tests import models as main_models 
-from Source.client import Client as SourceClient 
-from Source import models as source_models 
-from darabonba.request import DaraRequest 
+
 from typing import List, Dict, Any, BinaryIO
 
+from darabonba.model import DaraModel
+from darabonba.request import DaraRequest
+from Source import models as source_models
+from Source.client import Client as SourceClient
+from tea_python_tests import models as main_models
 
 class MyModel(DaraModel):
     def __init__(

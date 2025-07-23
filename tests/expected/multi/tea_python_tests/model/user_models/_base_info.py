@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from alibabacloud_tea_util import models as darautil_models 
 
+from alibabacloud_tea_util import models as darautil_models
 
 
 

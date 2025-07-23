@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from Source.source_client import SourceClient 
-from Source import models as source_models 
 
+from Source import models as source_models
+from Source.source_client import SourceClient
 
 
 

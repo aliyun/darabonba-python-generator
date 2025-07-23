@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from requests import Request 
-from Tea.model import TeaModel 
-from Source.source_client import SourceClient 
-from tea_python_tests import models as main_models 
-from requests import Response 
+
 from typing import Dict, Any
 
+from requests import Request, Response
+from Source.source_client import SourceClient
+from tea_python_tests import models as main_models
+from Tea.model import TeaModel
 
 class Client:
     _vid: Request = None

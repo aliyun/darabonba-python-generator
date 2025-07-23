@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # This file is auto-generated, don't edit it. Thanks.
 from __future__ import annotations
-from alibabacloud_tea_util.util import Utils 
-from tea_python_tests.lib.util import Util 
+
 from typing import Generator, AsyncGenerator
 
+from alibabacloud_tea_util.util import Utils
+from tea_python_tests.lib.util import Util
 
 class Client:
 
