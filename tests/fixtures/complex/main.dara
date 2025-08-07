@@ -247,7 +247,7 @@ api Complex1(request: ComplexRequest, sourceClient: Source): Source.RuntimeObjec
   } else if(Source.judgeStr("test") || false){
     return new Source.RuntimeObject{};
   }
-  sourceClient.printData(request, '1');
+  sourceClient.printDataAsync(request, '1');
   hello(request, ["1","2"], null);
   hello(null, null, null);
   return {};
@@ -262,7 +262,7 @@ api Complex2(request: ComplexRequest, str: [ string ], val: map[string]string): 
   var config = new Source.Config{};
   var sourceClient = new Source(config);
   var configArray : [Source.Config] = [config];
-  sourceClient.printData(request, '1');
+  sourceClient.printDataSSE(request, '1');
   __request.protocol = 'HTTP';
   __request.port = 80;
   __request.method = 'GET';
