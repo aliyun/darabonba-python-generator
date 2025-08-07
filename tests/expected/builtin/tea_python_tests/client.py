@@ -677,7 +677,7 @@ class Client:
             if not DaraCore.is_null(data):
                 ws.write(data)
 
-        awiat DaraCore.sleep_async(a)
+        await DaraCore.sleep_async(a)
         default_val = args[0] or args[1]
         if default_val == b:
             return
