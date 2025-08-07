@@ -226,7 +226,7 @@ class Client(SourceClient):
                     return
                 elif SourceClient.judge_str('test') or False:
                     return source_models.RuntimeObject()
-                source_client.print_data(DaraCore.to_map(request), '1')
+                source_client.print_data_async(DaraCore.to_map(request), '1')
                 self.hello(DaraCore.to_map(request), [
                     '1',
                     '2'
@@ -441,7 +441,7 @@ class Client(SourceClient):
                     return
                 elif SourceClient.judge_str('test') or False:
                     return source_models.RuntimeObject()
-                source_client.print_data(DaraCore.to_map(request), '1')
+                await source_client.print_data_async_async(DaraCore.to_map(request), '1')
                 await self.hello_async(DaraCore.to_map(request), [
                     '1',
                     '2'
@@ -476,7 +476,7 @@ class Client(SourceClient):
         config_array = [
             config
         ]
-        source_client.print_data(DaraCore.to_map(request), '1')
+        source_client.print_data_sse(DaraCore.to_map(request), '1')
         _request.protocol = 'HTTP'
         _request.port = 80
         _request.method = 'GET'
@@ -503,7 +503,7 @@ class Client(SourceClient):
         config_array = [
             config
         ]
-        source_client.print_data(DaraCore.to_map(request), '1')
+        source_client.print_data_sse_async(DaraCore.to_map(request), '1')
         _request.protocol = 'HTTP'
         _request.port = 80
         _request.method = 'GET'
