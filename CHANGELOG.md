@@ -1,5 +1,8 @@
 # ChangeLog
 
+# 2.0.10
+- Upgrade the sse function generate function.
+
 # 2.0.9
 - Fixed the arr & map init error in from map
 
