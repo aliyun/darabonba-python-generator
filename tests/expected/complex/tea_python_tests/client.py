@@ -1115,12 +1115,12 @@ class Client(SourceClient):
                     code = 'str'
                 )
 
-        except main_exceptions.Err1Exception as err :
-            logging.log(logging.NOTSET, err.name)
-        except main_exceptions.Err2Exception as err :
-            logging.log(logging.NOTSET, err.name)
-        except source_exceptions.Err3Exception as err :
-            logging.log(logging.NOTSET, err.name)
+        except main_exceptions.Err1Exception as err1 :
+            logging.log(logging.NOTSET, err_1.name)
+        except main_exceptions.Err2Exception as err2 :
+            logging.log(logging.NOTSET, err_2.name)
+        except source_exceptions.Err3Exception as err3 :
+            logging.log(logging.NOTSET, err_3.name)
         except Exception as err :
             logging.log(logging.NOTSET, err.name)
         finally:
@@ -1157,12 +1157,12 @@ class Client(SourceClient):
                     code = 'str'
                 )
 
-        except main_exceptions.Err1Exception as err :
-            logging.log(logging.NOTSET, err.name)
-        except main_exceptions.Err2Exception as err :
-            logging.log(logging.NOTSET, err.name)
-        except source_exceptions.Err3Exception as err :
-            logging.log(logging.NOTSET, err.name)
+        except main_exceptions.Err1Exception as err1 :
+            logging.log(logging.NOTSET, err_1.name)
+        except main_exceptions.Err2Exception as err2 :
+            logging.log(logging.NOTSET, err_2.name)
+        except source_exceptions.Err3Exception as err3 :
+            logging.log(logging.NOTSET, err_3.name)
         except Exception as err :
             logging.log(logging.NOTSET, err.name)
         finally:

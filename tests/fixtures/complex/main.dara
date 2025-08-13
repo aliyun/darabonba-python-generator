@@ -608,12 +608,12 @@ async function multiTryCatch(a: number): void {
         code = "str",
       }
     }
-  } catch(err: Err1) {
-    $Logger.log(err.name);
-  } catch(err: Err2) {
-    $Logger.log(err.name);
-  } catch(err: Source.Err3) {
-    $Logger.log(err.name);
+  } catch(err1: Err1) {
+    $Logger.log(err1.name);
+  } catch(err2: Err2) {
+    $Logger.log(err2.name);
+  } catch(err3: Source.Err3) {
+    $Logger.log(err3.name);
   } catch(err) {
     $Logger.log(err.name);
   } finally {
