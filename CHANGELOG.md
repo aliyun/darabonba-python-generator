@@ -1,5 +1,8 @@
 # ChangeLog
 
+# 2.0.12
+- Fixed the catch id error.
+
 # 2.0.10
 - Upgrade the sse function generate function.
 
