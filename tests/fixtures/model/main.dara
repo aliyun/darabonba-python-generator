@@ -28,6 +28,10 @@ model MyModel = {
       str: string
     },
   },
+  CORSRules: string,
+  CORSRulesCORSR: string,
+  XMLParserHTTPMessage: string,
+  TestOAuth2Name: string,
   stringfield: string,
   bytesfield: bytes,
   stringarrayfield: [ string ],

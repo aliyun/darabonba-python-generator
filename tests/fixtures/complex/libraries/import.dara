@@ -30,6 +30,7 @@ static function parse(c: class): void;
 static async function asyncFunc(): void;
 
 model Request = {
+  CORSRules: string,
   accesskey?: string(name='accesskey', description='accesskey'),
   region?: string(name='region', description='region'),
   instance: {

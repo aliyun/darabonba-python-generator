@@ -300,6 +300,7 @@ api Complex3(request: ComplexRequest, name: string): ComplexRequest {
   }
   var resp = __response;
   var req = new Source.Request{
+    CORSRules = "test",
     accesskey = request.accessKey,
     region = resp.statusMessage
   };

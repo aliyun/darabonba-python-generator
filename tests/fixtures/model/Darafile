@@ -5,5 +5,13 @@
   "main": "./main.dara",
   "libraries": {
     "Source": "darabonba:Import:*"
+  },
+  "python": {
+    "keywords": [
+      "CORS",
+      "XML",
+      "HTTP",
+      "OAuth2"
+    ]
   }
 }

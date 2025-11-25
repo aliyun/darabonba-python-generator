@@ -5,5 +5,10 @@
   "main": "./main.dara",
   "libraries": {
     "Source": "alibabacloud:Import:*"
+  },
+  "python": {
+    "keywords": [
+      "CORS"
+    ]
   }
 }
