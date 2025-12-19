@@ -35,3 +35,11 @@ static async function helloInterface(): void;
 async function aParams(): void {
   helloParams("a", "b");
 }
+
+async function testJWTWithOption(): void {
+  helloParams("a", "b");
+}
+
+async function testOAuth2forOption(): void {
+  helloParams("a", "b");
+}

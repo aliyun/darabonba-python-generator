@@ -20,7 +20,7 @@ from tea_python_tests import models as main_models
 class Client(SourceClient):
     _protocol: str = None
     _pathname: str = None
-    __strs: List[str] = None
+    _strs: List[str] = None
     _comple_list: List[List[str]] = None
     _endpoint_map: Dict[str, str] = None
     _configs: List[source_models.Config] = None
@@ -206,11 +206,11 @@ class Client(SourceClient):
                     any_map = {}
                     any_map[item] = 'test'
                     break
-                self.__strs = request.strs
+                self._strs = request.strs
                 self._protocol = 'test'
                 self._endpoint_map.get(self._protocol)
                 self._endpoint_map['test'] = 'ok'
-                request.strs = self.__strs
+                request.strs = self._strs
                 _request.protocol = self._protocol
                 _request.port = request.num
                 _request.method = 'GET'
@@ -421,11 +421,11 @@ class Client(SourceClient):
                     any_map = {}
                     any_map[item] = 'test'
                     break
-                self.__strs = request.strs
+                self._strs = request.strs
                 self._protocol = 'test'
                 self._endpoint_map.get(self._protocol)
                 self._endpoint_map['test'] = 'ok'
-                request.strs = self.__strs
+                request.strs = self._strs
                 _request.protocol = self._protocol
                 _request.port = request.num
                 _request.method = 'GET'
@@ -611,6 +611,7 @@ class Client(SourceClient):
             x = y
         resp = _response
         req = source_models.Request(
+            cors_rules = 'test',
             accesskey = request.access_key,
             region = resp.status_message
         )
@@ -653,6 +654,7 @@ class Client(SourceClient):
             x = y
         resp = _response
         req = source_models.Request(
+            cors_rules = 'test',
             accesskey = request.access_key,
             region = resp.status_message
         )

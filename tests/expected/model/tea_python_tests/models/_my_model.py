@@ -14,6 +14,10 @@ class MyModel(DaraModel):
     def __init__(
         self,
         model: main_models.MyModelModel = None,
+        cors_rules: str = None,
+        cors_rules_cors_r: str = None,
+        xml_parser_http_message: str = None,
+        test_oauth2_name: str = None,
         stringfield: str = None,
         bytesfield: bytes = None,
         stringarrayfield: List[str] = None,
@@ -60,6 +64,10 @@ class MyModel(DaraModel):
         link: str = None,
     ):
         self.model = model
+        self.cors_rules = cors_rules
+        self.cors_rules_cors_r = cors_rules_cors_r
+        self.xml_parser_http_message = xml_parser_http_message
+        self.test_oauth2_name = test_oauth2_name
         self.stringfield = stringfield
         self.bytesfield = bytesfield
         self.stringarrayfield = stringarrayfield
@@ -109,6 +117,10 @@ class MyModel(DaraModel):
         self.validate_required(self.model, 'model')
         if self.model:
             self.model.validate()
+        self.validate_required(self.cors_rules, 'cors_rules')
+        self.validate_required(self.cors_rules_cors_r, 'cors_rules_cors_r')
+        self.validate_required(self.xml_parser_http_message, 'xml_parser_http_message')
+        self.validate_required(self.test_oauth2_name, 'test_oauth2_name')
         self.validate_required(self.stringfield, 'stringfield')
         self.validate_required(self.bytesfield, 'bytesfield')
         self.validate_required(self.stringarrayfield, 'stringarrayfield')
@@ -219,6 +231,18 @@ class MyModel(DaraModel):
             result = _map
         if self.model is not None:
             result['model'] = self.model.to_map()
+
+        if self.cors_rules is not None:
+            result['CORSRules'] = self.cors_rules
+
+        if self.cors_rules_cors_r is not None:
+            result['CORSRulesCORSR'] = self.cors_rules_cors_r
+
+        if self.xml_parser_http_message is not None:
+            result['XMLParserHTTPMessage'] = self.xml_parser_http_message
+
+        if self.test_oauth2_name is not None:
+            result['TestOAuth2Name'] = self.test_oauth2_name
 
         if self.stringfield is not None:
             result['stringfield'] = self.stringfield
@@ -404,6 +428,18 @@ class MyModel(DaraModel):
         if m.get('model') is not None:
             temp_model = main_models.MyModelModel()
             self.model = temp_model.from_map(m.get('model'))
+
+        if m.get('CORSRules') is not None:
+            self.cors_rules = m.get('CORSRules')
+
+        if m.get('CORSRulesCORSR') is not None:
+            self.cors_rules_cors_r = m.get('CORSRulesCORSR')
+
+        if m.get('XMLParserHTTPMessage') is not None:
+            self.xml_parser_http_message = m.get('XMLParserHTTPMessage')
+
+        if m.get('TestOAuth2Name') is not None:
+            self.test_oauth2_name = m.get('TestOAuth2Name')
 
         if m.get('stringfield') is not None:
             self.stringfield = m.get('stringfield')

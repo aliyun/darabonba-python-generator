@@ -63,3 +63,15 @@ class Client:
 
     async def a_params_async(self) -> None:
         await self.hello_params_async('a', 'b')
+
+    def test_jwt_with_option(self) -> None:
+        self.hello_params('a', 'b')
+
+    async def test_jwt_with_option_async(self) -> None:
+        await self.hello_params_async('a', 'b')
+
+    def test_oauth2_for_option(self) -> None:
+        self.hello_params('a', 'b')
+
+    async def test_oauth2_for_option_async(self) -> None:
+        await self.hello_params_async('a', 'b')

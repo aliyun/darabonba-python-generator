@@ -23,7 +23,10 @@
   },
   "python": {
     "package": "Source",
-    "clientName": "source_client"
+    "clientName": "source_client",
+    "keywords": [
+      "CORS"
+    ]
   },
   "python2": {
     "package": "Source",
