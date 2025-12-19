@@ -1,5 +1,8 @@
 # ChangeLog
 
+# 2.0.13
+- Support snake case with keywords.
+
 # 2.0.12
 - Fixed the catch id error.
 
