@@ -1,0 +1,21 @@
+{
+  "scope": "alibabacloud",
+  "name": "OpenApiV2",
+  "version": "0.1.27",
+  "main": "./main.tea",
+  "exports": {
+    "OpenApiUtil": "./utils.dara",
+    "WebSocketUtils": "./websocketUtils.dara"
+  },
+  "releases": {
+    "python": "alibabacloud_tea_openapi:0.4.4"
+  },
+  "python": {
+    "package": "alibabacloud_tea_openapi",
+    "clientName": "client",
+    "exports": {
+      "OpenApiUtil": "Utils",
+      "WebSocketUtils": "Client"
+    }
+  }
+}
