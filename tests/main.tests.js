@@ -330,4 +330,14 @@ describe('Python Generator', function () {
         }
       });
   });
+
+  it('websocket inner module import should use snake_case', function () {
+    check('websocket', 'tea_python_tests',
+      {
+        python: {
+          package: 'tea_python_tests',
+          clientName: 'client'
+        }
+      });
+  });
 });

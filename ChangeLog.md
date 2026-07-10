@@ -1,7 +1,7 @@
 # ChangeLog
 
-# 2.0.13
-- Support snake case with keywords.
+# 2.0.14
+- Fixed inner module import path to use snake_case for exported dara filenames.
 
 # 2.0.12
 - Fixed the catch id error.
