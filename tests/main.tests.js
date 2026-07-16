@@ -194,6 +194,16 @@ describe('Python Generator', function () {
       });
   });
 
+  it('try $Error.message should ok', function () {
+    check('try', 'tea_python_tests',
+      {
+        python: {
+          package: 'tea_python_tests',
+          clientName: 'client'
+        }
+      });
+  });
+
   it('function should ok', function () {
     check('function', 'tea_python_tests',
       {
