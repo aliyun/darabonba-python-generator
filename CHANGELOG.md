@@ -1,5 +1,11 @@
 # ChangeLog
 
+# 2.0.15
+- Fixed `$Error.message` codegen to avoid accessing non-existent `Exception.message` in Python 3.
+
+# 2.0.14
+- Fixed inner module import path to use snake_case for exported dara filenames.
+
 # 2.0.12
 - Fixed the catch id error.
 

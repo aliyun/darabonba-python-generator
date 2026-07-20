@@ -1,0 +1,15 @@
+static function wrapError(): void {
+  try {
+    throw {
+      message = "boom"
+    };
+  } catch(error) {
+    throw {
+      message = error.message
+    };
+  }
+}
+
+static function typedError(e: $Error): string {
+  return e.message;
+}
