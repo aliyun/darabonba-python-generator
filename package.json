@@ -17,7 +17,7 @@
     "url": "git@github.com:aliyun/darabonba-python-generator.git"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
+    "chai": "^5.1.0",
     "eslint": "^8.55.0",
     "expect.js": "^0.3.1",
     "has-flag": "^5.0.1",
