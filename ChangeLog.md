@@ -1,5 +1,8 @@
 # ChangeLog
 
+# 2.0.16
+- Resolve inner export dara paths with POSIX/Windows separators and reject camelCase Python module names (websocketUtils → websocket_utils).
+
 # 2.0.15
 - Fixed `$Error.message` codegen to avoid accessing non-existent `Exception.message` in Python 3.
 

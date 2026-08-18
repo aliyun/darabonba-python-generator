@@ -349,5 +349,13 @@ describe('Python Generator', function () {
           clientName: 'client'
         }
       });
+    const clientSrc = fs.readFileSync(
+      path.join(outputDir, 'websocket', 'tea_python_tests', 'client.py'),
+      'utf8'
+    );
+    assert.ok(clientSrc.includes('alibabacloud_tea_openapi.websocket_utils'));
+    assert.ok(clientSrc.includes('websocket_utils_models'));
+    assert.ok(!clientSrc.includes('websocketUtils'));
+    assert.ok(!clientSrc.includes('websocketUtils_models'));
   });
 });
