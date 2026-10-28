@@ -1,0 +1,13 @@
+{
+  "scope": "alibabacloud",
+  "name": "openapi",
+  "version": "0.0.1",
+  "main": "./main.dara",
+  "python": {
+    "package": "alibabacloud_tea_openapi",
+    "clientName": "client"
+  },
+  "releases": {
+    "python": "alibabacloud_tea_openapi:0.4.5"
+  }
+}

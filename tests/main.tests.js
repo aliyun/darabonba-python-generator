@@ -350,4 +350,26 @@ describe('Python Generator', function () {
         }
       });
   });
+
+  it('openapi product wires pop gateway', function () {
+    const moduleName = 'popv4';
+    const prefixDir = path.join(fixturesDir, moduleName);
+    const pkg = JSON.parse(fs.readFileSync(path.join(prefixDir, 'Darafile'), 'utf8'));
+    const moduleOutputDir = path.join(outputDir, moduleName);
+    const config = {
+      outputDir: moduleOutputDir,
+      pkgDir: prefixDir,
+      ...pkg,
+      ...pkg.python
+    };
+    const generator = new Generator(config, lang);
+    const mainFilePath = path.join(prefixDir, 'main.dara');
+    generator.visit(DSL.parse(fs.readFileSync(mainFilePath, 'utf8'), mainFilePath));
+    const client = fs.readFileSync(path.join(moduleOutputDir, 'tea_python_tests', 'client.py'), 'utf8');
+    assert.ok(client.includes('from alibabacloud_gateway_pop.client import Client as PopClient'));
+    assert.ok(client.includes("self._product_id = 'Ecs'"));
+    assert.ok(client.includes('self._spi = PopClient()'));
+    const setup = fs.readFileSync(path.join(moduleOutputDir, 'setup.py'), 'utf8');
+    assert.ok(setup.includes('alibabacloud_gateway_pop>=0.1.4'));
+  });
 });
